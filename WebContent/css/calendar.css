@@ -1,0 +1,68 @@
+/*
+
+	INSTRUCTIONS ---------------------------------------------------------------------------------
+  
+  1. link this stylesheet in the head of your HTML
+  	 <link href="YOUR PATH/calendar.css" rel="stylesheet" type="text/css" />
+     
+  2. Set the file name as data-theme attribute on your input
+  	 <input data-theme="calendar" />
+     
+  3. That's it!
+  
+  When you run script the style will be automatically applied.
+
+*/
+div.datedropper.calendar {
+  border-radius: 5px;
+  width: 173px;
+}
+div.datedropper.calendar .picker {
+  border-radius: 5px;
+  box-shadow: 0 0 41px 0px rgba(0, 0, 0, 0.09);
+}
+div.datedropper.calendar .pick-l {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+div.datedropper.calendar:before,
+div.datedropper.calendar .pick-submit,
+div.datedropper.calendar .pick-lg-b .pick-sl:before,
+div.datedropper.calendar .pick-m,
+div.datedropper.calendar .pick-lg-h {
+  background-color: #e64a89;
+}
+div.datedropper.calendar .pick-y.pick-jump,
+div.datedropper.calendar .pick li span,
+div.datedropper.calendar .pick-lg-b .pick-wke,
+div.datedropper.calendar .pick-btn {
+  color: #e64a89;
+}
+div.datedropper.calendar .picker,
+div.datedropper.calendar .pick-l {
+  background-color: #FFf;
+}
+div.datedropper.calendar .picker,
+div.datedropper.calendar .pick-arw,
+div.datedropper.calendar .pick-l {
+  color: #4D4D4D;
+}
+div.datedropper.calendar .pick-m,
+div.datedropper.calendar .pick-m .pick-arw,
+div.datedropper.calendar .pick-lg-h,
+div.datedropper.calendar .pick-lg-b .pick-sl,
+div.datedropper.calendar .pick-submit {
+  color: #fff;
+}
+div.datedropper.calendar.picker-tiny:before,
+div.datedropper.calendar.picker-tiny .pick-m {
+  background-color: #FFf;
+}
+div.datedropper.calendar.picker-tiny .pick-m,
+div.datedropper.calendar.picker-tiny .pick-m .pick-arw {
+  color: #4D4D4D;
+}
+div.datedropper.calendar.picker-lkd .pick-submit {
+  background-color: #FFf;
+  color: #4D4D4D;
+}
