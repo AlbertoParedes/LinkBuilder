@@ -67,22 +67,21 @@ function abrirBox(id) {
 
 function selectClient(id, metodo) {
 	changeThemeC(id);
+	var mes = $(".picker .pick-m .pick-sl").val();
+	var year = $(".picker .pick-y .pick-sl").val();
+	$(".datedropper").remove();
 	
 	//pintamos las keywords del cliente seleccionado
 	
-	$.post('Data', {metodo : metodo, posicion : id
+	$.post('Data', {
+		metodo : metodo, 
+		posicion : id,
+		mes: mes,
+		year: year
 	}, function(responseText) {
 		$('#uniqueClient').html(responseText);
 	});
-	
-	
-	//pintamos las keywords en la vista keywords pasandole el cliente
-	$.post('Data', {
-		metodo : 'lkk',
-		posicion : id
-	}, function(responseText) {
-		$('#lkk').html(responseText);
-	});
+
 	
 	c = 1;
 	
@@ -267,6 +266,8 @@ function liSelectCat(id,id_ul){
 	var op = $("#selCat_"+id_ul+" > #"+id).text();
 	$("#spCat_"+id_ul).text(op);
 	
+	
+	
 }
 
 //Hide the menus if visible
@@ -282,9 +283,23 @@ window.addEventListener('click', function(e){
 });
 
 
-
-
-
+//caundo cambiamos el mes se cambiará la tabla
+function changeMonth(){
+	var mes = $(".picker .pick-m .pick-sl").val();
+	var year = $(".picker .pick-y .pick-sl").val();
+	var id = $("#lstC .item_select").attr('id');
+	
+	//chv = change view
+	$.post('Data', {
+		metodo : 'chv',
+		mes: mes,
+		year: year,
+		id: id
+	}, function(responseText) {
+		$('#results_Client table tbody').html(responseText);
+	});
+	
+}
 
 
 

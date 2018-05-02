@@ -82,7 +82,7 @@
 					</div>
 					
 					<!-- tag element -->
-					<input type="text" data-lang="es" data-lock="to" data-large-mode="true" data-format="F" data-theme="calendar"/>
+					
 					<!-- init dateDropper -->
 
 					 
@@ -135,10 +135,6 @@
 			
 			
 							
-		</script>
-		
-		<script>
-			$('input').dateDropper();
 		</script>
 
 	<script type="text/javascript">

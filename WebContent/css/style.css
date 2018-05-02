@@ -161,11 +161,22 @@ input:checked + .slider:before {-webkit-transform: translateX(11px);-ms-transfor
 
 .visible{display: block;}
 .slCt li {padding-top: 5px;font-family: gotham, helvetica, arial, sans-serif;font-size: 12px;cursor: pointer;color: #878787;}
-.slCt li:hover{color:#1f5eff}
-.liActive{color:#1f5eff!important;}
+.slCt li:hover{color:#4688F1}
+.liActive{color:#4688F1!important;}
 
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{font-family: gotham, helvetica, arial, sans-serif;font-size: 13px;color: #878787;    border-bottom: 1px solid #ececec;    padding-top: 6px;padding-bottom: 6px;}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{font-family: gotham, helvetica, arial, sans-serif;font-size: 13px;color: #878787;    border-bottom: 1px solid #ececec;    padding-top: 6px;padding-bottom: 6px;    border-top: 0px;}
 .table span{font-family: gotham, helvetica, arial, sans-serif;font-size: 13px;}
 .cabeceraTable{font-family: gotham, helvetica, arial, sans-serif!important;color: #606060!important;font-size: 16px!important;line-height: 28px!important;padding-left: 9px!important;font-weight: 400;}
 .tdCat{cursor: pointer;}
-
+.inCal{position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer!important;
+    font-family: gotham, helvetica, arial, sans-serif;
+    font-size: 24px;
+    font-weight: 300;
+    border: 0;
+    width: auto;
+    text-align: right;
+    padding-right: 26px;width: 170px;
+    color: #FABB2D}

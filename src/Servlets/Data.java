@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -24,6 +25,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import Classes.Webservice;
+import Objects.Categoria;
 import Objects.Cliente;
 import Objects.Foro;
 import Objects.Resultado;
@@ -34,8 +36,8 @@ public class Data extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 	private Cliente cliente = new Cliente();
-	private int id_user ;
-	private String name_user;
+	private ArrayList<Foro> foros = new ArrayList<Foro>();
+	private ArrayList<Categoria> categorias = new ArrayList<Categoria>();
 
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -56,25 +58,56 @@ public class Data extends HttpServlet {
 
 	private void cargarPage(HttpServletRequest request, HttpServletResponse response, int id_user, String name_user) throws ServletException, IOException, ParseException {
 		System.out.println(id_user+" "+name_user+"############################");
-
 		Webservice ws = new Webservice();
 		
-		String json = ws.getJSON("getCliRes.php");
-		System.out.println(json);
-	
-		
+		//obtenemos todas las categorias
+		String json = ws.getJSON("getCategorias.php");
 		Object jsonObject =JSONValue.parse(json.toString());
 	    JSONArray arrayData = (JSONArray)jsonObject;
-	   
-	    ArrayList<Cliente> clientes = new ArrayList<Cliente>();
-
+	    for(int i=0;i<arrayData.size();i++){
+	    	JSONObject row =(JSONObject)arrayData.get(i); 
+	    	int id = Integer.parseInt(row.get("id_categoria").toString());
+	        String nombre = row.get("enlace").toString();
+	    	categorias.add(new Categoria(id, nombre));
+	    }
 	    
-	    int id_c = -1; 
-	    
+	    //obtenemos todos los foros
+	    json = ws.getJSON("getForos.php");
+	    System.out.println(json+"www");
+	    jsonObject =JSONValue.parse(json.toString());
+	    arrayData = (JSONArray)jsonObject;
 	    for(int j=0;j<arrayData.size();j++){
-	    	
-	        JSONObject row =(JSONObject)arrayData.get(j);
+	    	JSONObject row =(JSONObject)arrayData.get(j);
+	    	int id_foro = Integer.parseInt(row.get("id_foro").toString());
+	    	int categoria = Integer.parseInt(row.get("categoria").toString());
+	    	String web_foro = (String) row.get("web_foro");
+	        int dr = Integer.parseInt(row.get("DR").toString());
+	        int da = Integer.parseInt(row.get("DA").toString());
+	        String tipoF = (String) row.get("tipo");
+	        String tematica = (String) row.get("tematica");
+	        String descripcion = (String) row.get("descripcion");
+	        int req_aprobacion =Integer.parseInt(row.get("req_aprobacion").toString());
+	        int req_registro = Integer.parseInt(row.get("req_registro").toString());
+	        int aparece_fecha =Integer.parseInt(row.get("aparece_fecha").toString());
+	        String reutilizable = (String) row.get("reutilizable");
 	        
+	        foros.add(new Foro(id_foro, web_foro, tipoF, dr, da, tematica, descripcion, categoria, req_aprobacion, req_registro, aparece_fecha, reutilizable));
+	    }
+	    for (int i = 0; i < foros.size(); i++) {
+			System.out.println(foros.get(i).toString());
+		}
+		
+		//obtenemos todos los clientes con sus resultados
+		json = ws.getJSON("getCliRes.php");
+		//System.out.println(json);
+
+		jsonObject =JSONValue.parse(json.toString());
+	    arrayData = (JSONArray)jsonObject;
+	    ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+	    int id_c = -1;    
+	    for(int j=0;j<arrayData.size();j++){
+	        
+	    	JSONObject row =(JSONObject)arrayData.get(j); 
 	        //para el cliente
 	        int id_cliente = Integer.parseInt(row.get("id_cliente").toString());
 	        String web_cliente = (String) row.get("web");
@@ -90,7 +123,6 @@ public class Data extends HttpServlet {
 	        String linkbuilder = (String) row.get("linkbuilder");     
 	        
 	        //para el array de resultados del cliente
-	        
 	        int id_resultado = Integer.parseInt(row.get("id_resultado").toString());
 	        int id_foro = Integer.parseInt(row.get("id_foro").toString());
 	        String enlace = (String) row.get("enlace");
@@ -106,7 +138,6 @@ public class Data extends HttpServlet {
 	        String anchorR = (String) row.get("anchorR");
 	        
 	        //para el array de foros del cliente
-	        
 	        String web_foro = (String) row.get("web_foro");
 	        int dr = Integer.parseInt(row.get("DR").toString());
 	        int da = Integer.parseInt(row.get("DA").toString());
@@ -118,7 +149,6 @@ public class Data extends HttpServlet {
 	        int aparece_fecha =Integer.parseInt(row.get("aparece_fecha").toString());
 	        String reutilizable = (String) row.get("reutilizable");
 
-	        
 	        if(id_c != id_cliente) {
 	        	Resultado r = new Resultado(nombre, id_resultado, id_cliente, id_foro, enlace, date, tipoRes, destino, categoria, estado, anchorR);
 	        	Foro f = new Foro(id_foro, web_foro, tipoF, dr, da, tematica, descripcion, categoria, req_aprobacion, req_registro, aparece_fecha, reutilizable);
@@ -126,16 +156,13 @@ public class Data extends HttpServlet {
 	        	c.getResultados().add(r);
 	        	c.getForos().add(f);
 	        	clientes.add(c);
-	        	
 	 	        //System.out.println(id_cliente);
 	        	id_c = id_cliente;
 	        }else {
 	        	Resultado r = new Resultado(nombre, id_resultado, id_cliente, id_foro, enlace, date, tipoRes, destino, categoria, estado, anchorR);
 	        	Foro f = new Foro(id_foro, web_foro, tipoF, dr, da, tematica, descripcion, categoria, req_aprobacion, req_registro, aparece_fecha, reutilizable);
-	        	
 	        	clientes.get(clientes.size()-1).getResultados().add(r);
 	        	clientes.get(clientes.size()-1).getForos().add(f);
-	        	
 	        }
 	       
 	        
@@ -172,120 +199,80 @@ public class Data extends HttpServlet {
 
 		if (metodo.equals("lkc")) {
 			mostrarResultados(request, response, out);
+		}else if(metodo.equals("chv")) {
+			morstarResultadosMes(request, response, out);
 		}
-		
-		
-		
-		
-		
-		else if(metodo.equals("lkk")){
-			mostrarKeywordsKeywords(request, response, out);
-		}else if(metodo.equals("lkr")) {
-			mostrarDatosKeyword(request, response, out);
-		}else if(metodo.equals("sk")) {
-			mostrarKeywordsInput(request, response, out);
-		}else if(metodo.equals("sc")) {
-			mostrarClientesInput(request, response, out);
-		}else if(metodo.equals("st")) {
-			mostrarStadisticas(request, response);
-		}
-			
-		
-		
-		
-
-
 
 
 	}
 
-	private void mostrarStadisticas(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-		/*int c = Integer.parseInt(request.getParameter("id"));       
-		cliente = clientes.get(c);
-		Gson gson = new Gson();
-		
-		for (int i = 0; i < cliente.getRelaciones().size(); i++) {
-			ArrayList<Resultado> resultados = cliente.getRelaciones().get(i).getResultados();
-			Collections.sort(resultados, Collections.reverseOrder());
-		}
-		
-		String json = gson.toJson(cliente);
-		
-		System.out.println(json);
-		
-		response.getWriter().print(json);
-		*/
-	}
+	private void morstarResultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+		int posicion = Integer.parseInt(request.getParameter("id"));
+		int mes = Integer.parseInt(request.getParameter("mes"));
+		int year = Integer.parseInt(request.getParameter("year"));
+		out = response.getWriter();
 
-	private void mostrarDatosKeyword(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
-		/*String ck = request.getParameter("id");
-		String[] ids = ck.split("_");
-		System.out.println(ck);
-		System.out.println("Posicion cliente: "+ids[0]);
-		System.out.println("Posicion keyword: "+ids[1]);
-
-		int posicion = Integer.parseInt(ids[0]);
-		int keyPosicion = Integer.parseInt(ids[1]);
 		cliente = clientes.get(posicion);
-		out = response.getWriter();	
-		System.out.println(cliente.getRelaciones().get(keyPosicion));
-
-		out.println("<div class=\"infoClient infoAdd\"><div class=\"nameClient nameClientAdd\">"+cliente.getName()+"</div><div class=\"urlClient urlAdd\"><a class=\"urlClient urlAdd link\" href=\""+cliente.getDominio()+"\">"+cliente.getDominio()+"</a></div></div> ");
-		out.println("<div class=\"infoClient\"><div class=\"nameClient\">"+cliente.getRelaciones().get(keyPosicion).getKeyword()+"</div><div class=\"urlClient\"></div></div> ");
-
-		out.println("<div class=\"keywordsClient keyCont\">");
-		out.println("	<div class=\"contentTable tblKey\"><div class=\"itemTable\"><div class=\"itemKeyword cabeceraTable\">Url</div><div class=\"horDiv\"><div class=\"posiKey itemKeyword cabeceraTable\">Posicion</div><div class=\"dateKey itemKeyword cabeceraTable\">Fecha</div></div></div></div>");
-		out.println("	<div id=\"ks\" class=\"contentTable\">");
-
-		ArrayList<Resultado> resultados = cliente.getRelaciones().get(keyPosicion).getResultados();
-		Collections.sort(resultados, Collections.reverseOrder());
-		for (int i = 0; i < resultados.size(); i++) {
-			System.out.println(resultados.get(i));	
-			ArrayList<Posicion_Url> resultList = new ArrayList<Posicion_Url>();
-			String results[] = resultados.get(i).getJson_resultados().split("],");
-			System.out.println("Numero de resultados encontrados: "+results.length);
-			for (String r : results) {
-				String datos[] = (r.replaceAll("[\\[\\]]", "")).split(",");
-				resultList.add(new Posicion_Url(datos[0], Integer.parseInt(datos[1])));
-			}
-
-			for (Posicion_Url r : resultList) {
-				System.out.println(r.getUrl() +" "+ r.getPosicion());
-			}
-
-			//item de cada resultado --------------------------------------------------------------------------------------------------
-			out.println("		<div class=\"itemTable\">");
-			out.println("			<div class=\"itemKeyword urlKey\"> "+resultList.get(0).getUrl());
-
-			if(resultList.size()>1) {
-				out.println("				<p id=\"key_"+i+"_"+resultados.get(i).getId_relacion()+"\" class=\"iconFlecha\" onclick=\"abrirBox(this.id)\"><i class=\"material-icons\">arrow_drop_down</i></p>");
-				out.println("				<div id=\"key_"+i+"_"+resultados.get(i).getId_relacion()+"_plus\" class=\"box\">");
-				out.println("					<div class=\"itemTable repItem\">");
-				for (int j = 1; j < resultList.size(); j++) {
-					out.println("						<div class=\"itemKeyword urlKey repUrl\"> "+resultList.get(j).getUrl()+"</div>");
-					out.println("						<div class=\"horDiv repDiv\"><div class=\"posiKey itemKeyword cp\">"+resultList.get(j).getPosicion()+"</div><div class=\"dateKey itemKeyword\">"+resultados.get(i).getDate()+"</div></div>");
+		
+		for (int i = 0; i < cliente.getResultados().size(); i++) {
+			
+			String fecha[] = cliente.getResultados().get(i).getFecha().toString().split("-");
+			int y = Integer.parseInt(fecha[0]);
+			int m = Integer.parseInt(fecha[1]);
+			
+			if(mes == m && year == y) {
+				
+				//lista de categorias---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				String htmlCategorias = "		<ul id=\"selCat_"+i+"\" class=\"slCt effect7\">";
+				String opCategoria = "Selecciona una categoria";
+				for (int j = 0; j < categorias.size(); j++) {
+					if(cliente.getResultados().get(i).getCategoria() == categorias.get(j).getId()) {
+						htmlCategorias += "			<li id=\""+categorias.get(j).getId()+"\" class=\"liActive\" onclick=\"liSelectCat(this.id,"+i+")\">"+categorias.get(j).getNombre()+"</li>";
+						opCategoria = categorias.get(j).getNombre();
+					}else {
+						htmlCategorias += "			<li id=\""+categorias.get(j).getId()+"\" onclick=\"liSelectCat(this.id,"+i+")\">"+categorias.get(j).getNombre()+"</li>";
+					}				
 				}
-				out.println("					</div>");
-				out.println("				</div>");
+				htmlCategorias += "		</ul>";
+				//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				
+				
+				out.println("<tr>");
+				out.println("	<td>"+cliente.getResultados().get(i).getEnlace()+"</td>");
+				out.println("	<td class=\"tdCat\">");
+				out.println("		<div class=\"tdCat\" id=\"dvCat_"+i+"\" onclick=\"selectCategory("+i+")\">");
+				out.println("			<span id=\"spCat_"+i+"\" class=\"tdCat\">"+opCategoria+"</span>");
+				out.println("		</div>");
+				out.println(		htmlCategorias);
+				out.println("	</td>");
+				out.println("	<td>mary@example.com</td>");
+				out.println("	<td>"+cliente.getResultados().get(i).getFecha()+"</td>");
+				out.println("	<td>"+cliente.getResultados().get(i).getTipo()+"</td> </tr>");
+				out.println("</tr>");
+	
 			}
-
-			out.println("			</div>");
-			out.println("			<div class=\"horDiv\"><div class=\"posiKey itemKeyword\">"+resultados.get(i).getPosicion()+"</div><div class=\"dateKey itemKeyword\">"+resultados.get(i).getDate()+"</div></div>");
-			out.println("		</div>");
-			//---------------------------------------------------------------------------------------------------------------------------
+			
+			
+			
 		}
-
-		out.println("	</div>");
-		out.println("</div>");
-
-
-
-*/
-
-
+		
+		
+		
 	}
 	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
 		int posicion = Integer.parseInt(request.getParameter("posicion"));
+		
+		
+		Date date= new Date();Calendar cal = Calendar.getInstance();cal.setTime(date);
+		int mes = cal.get(Calendar.MONTH)+1;
+		int year = cal.get(Calendar.YEAR);
+		//con esto mantenemos la fecha seleccionada aunque cambiemos de cliente
+		/*try {
+			mes = Integer.parseInt(request.getParameter("mes"));
+			year = Integer.parseInt(request.getParameter("year"));
+		} catch (Exception e) {}
+		*/
+		
 		out = response.getWriter();
 
 		cliente = clientes.get(posicion);
@@ -293,44 +280,60 @@ public class Data extends HttpServlet {
 		out.println("<div class=\"infoClient\">");
 		out.println("	<div class=\"nameClient\">"+cliente.getNombre()+"</div>");
 		out.println("	<div class=\"urlClient\">"+cliente.getWeb()+"</div>");
+		out.println("	<input id=\"dateSelected\" onchange=\"changeMonth()\" class=\"inCal\" data-lock=\"to\" type=\"text\" data-lang=\"es\" data-min-year=\"2017\"  data-large-mode=\"false\" data-format=\"F\" data-theme=\"calendar\"/>");
+		out.println("	<script>$('#dateSelected').dateDropper();</script>");
+		
 		out.println("</div>");
 		out.println("<div class=\"keywordsClient\">");
 		//out.println("	<div class=\"titleTable\">Keywords<div class=\"horDiv\"></div></div>");
-		out.println("	<div id=\"keywords_Client\" class=\"contentTable\">");
+		out.println("	<div id=\"results_Client\" class=\"contentTable\">");
 		//tabla
 		out.println("		<table class=\"table\">");
 		out.println("			<thead><tr><th class=\"cabeceraTable\">Link</th><th class=\"cabeceraTable\">Categoria</th><th class=\"cabeceraTable\">Web</th><th class=\"cabeceraTable\">Destino</th><th class=\"cabeceraTable\">Tipo</th></tr></thead>");
 		out.println("			<tbody>");
 		for (int i = 0; i < cliente.getResultados().size(); i++) {
-			out.println("			<tr> <td>"+cliente.getResultados().get(i).getEnlace()+"</td>"
-									  + "<td class=\"tdCat\"><div class=\"tdCat\" id=\"dvCat_"+i+"\" onclick=\"selectCategory("+i+")\"><span id=\"spCat_"+i+"\" class=\"tdCat\">Selecciona una categoria</span>"+ "</div>"
-									  + "	<ul id=\"selCat_"+i+"\" class=\"slCt effect7\">"
-									  + "		<li id=\"1\" onclick=\"liSelectCat(this.id,"+i+")\">Herramientas de análisis</li>"
-									  + "		<li id=\"2\" onclick=\"liSelectCat(this.id, "+i+")\">Marcadores</li>"
-									  + "		<li id=\"3\" onclick=\"liSelectCat(this.id, "+i+")\">Perfiles</li>"
-									  + "		<li id=\"4\" onclick=\"liSelectCat(this.id, "+i+")\">Comentarios en web</li>"
-									  + "		<li id=\"5\" onclick=\"liSelectCat(this.id, "+i+")\">Foros</li>"
-									  + "		<li id=\"6\" onclick=\"liSelectCat(this.id, "+i+")\">Redes sociales o agregadores</li>"
-									  + "		<li id=\"7\" onclick=\"liSelectCat(this.id, "+i+")\">Directorios</li>"
-									  + "		<li id=\"8\" onclick=\"liSelectCat(this.id, "+i+")\">Blog gratuitos</li>"
-									  + "		<li id=\"9\" onclick=\"liSelectCat(this.id, "+i+")\">Enlaces de interés</li>"
-									  + "		<li id=\"10\" onclick=\"liSelectCat(this.id, "+i+")\">Enlaces rotos</li>"
-									  + "		<li id=\"11\" onclick=\"liSelectCat(this.id, "+i+")\">Enlaces contextuales</li>"
-									  + "		<li id=\"12\" onclick=\"liSelectCat(this.id, "+i+")\">Guestblogging</li>"
-									  + "	</ul></td>"
-									  
-									  
-									  
-									  
-									  + "<td>mary@example.com</td>"
-									  + "<td>"+cliente.getResultados().get(i).getFecha()+"</td>"
-									  + "<td>"+cliente.getResultados().get(i).getTipo()+"</td> </tr>");						
+			
+			String fecha[] = cliente.getResultados().get(i).getFecha().toString().split("-");
+			int y = Integer.parseInt(fecha[0]);
+			int m = Integer.parseInt(fecha[1]);
+			
+			if(mes == m && year == y) {
+				//lista de categorias---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				String htmlCategorias = "		<ul id=\"selCat_"+i+"\" class=\"slCt effect7\">";
+				String opCategoria = "Selecciona una categoria";
+				for (int j = 0; j < categorias.size(); j++) {
+					if(cliente.getResultados().get(i).getCategoria() == categorias.get(j).getId()) {
+						htmlCategorias += "			<li id=\""+categorias.get(j).getId()+"\" class=\"liActive\" onclick=\"liSelectCat(this.id,"+i+")\">"+categorias.get(j).getNombre()+"</li>";
+						opCategoria = categorias.get(j).getNombre();
+					}else {
+						htmlCategorias += "			<li id=\""+categorias.get(j).getId()+"\" onclick=\"liSelectCat(this.id,"+i+")\">"+categorias.get(j).getNombre()+"</li>";
+					}				
+				}
+				htmlCategorias += "		</ul>";
+				//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				
+				out.println("<tr>");
+				out.println("	<td>"+cliente.getResultados().get(i).getEnlace()+"</td>");
+				out.println("	<td class=\"tdCat\">");
+				out.println("		<div class=\"tdCat\" id=\"dvCat_"+i+"\" onclick=\"selectCategory("+i+")\">");
+				out.println("			<span id=\"spCat_"+i+"\" class=\"tdCat\">"+opCategoria+"</span>");
+				out.println("		</div>");
+				out.println(		htmlCategorias);
+				out.println("	</td>");
+				out.println("	<td>mary@example.com</td>");
+				out.println("	<td>"+cliente.getResultados().get(i).getFecha()+"</td>");
+				out.println("	<td>"+cliente.getResultados().get(i).getTipo()+"</td> </tr>");
+				out.println("</tr>");		
+			}
+			
+						
 		}
 		out.println("			</tbody>");
 		out.println("		</table>");
 		out.println("	</div>");
 		
 		out.println("</div>");
+		
 		
 
 		
