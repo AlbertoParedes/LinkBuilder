@@ -251,8 +251,17 @@ function verify(){
 function selectCategory(id){
 	//cerrar los anteriores
 	$(".slCt").removeClass("visible");
+	$(".slWeb").removeClass("visible");
 	//-------------------------------
 	$("#selCat_"+id).addClass("visible");
+
+}
+function selectWeb(id){
+	//cerrar los anteriores
+	$(".slWeb").removeClass("visible");
+	$(".slCt").removeClass("visible");
+	//-------------------------------
+	$("#selWeb_"+id).addClass("visible");
 }
 
 //Seleccionamos la categoria de cada enlace
@@ -266,7 +275,31 @@ function liSelectCat(id,id_ul){
 	var op = $("#selCat_"+id_ul+" > #"+id).text();
 	$("#spCat_"+id_ul).text(op);
 	
+	cargarWebs(id,id_ul);
+
+}
+
+function cargarWebs(id,id_td){
+	var posArryC = $("#lstC .item_select").attr('id');
 	
+	$.post('Data', {
+		metodo : 'cwbs',
+		id: id,
+		id_td: id_td,
+		posArryC : posArryC
+	}, function(responseText) {
+		$('#tdWeb_'+id_td).html(responseText);
+	});
+	
+}
+
+function liSelectWeb(id,id_td){
+	$("#selWeb_"+id_td+" li").removeClass("liActive");
+	$("#selWeb_"+id_td+" > #"+id).addClass("liActive");
+	$("#selWeb_"+id_td).removeClass("visible");
+	
+	var op = $("#selWeb_"+id_td+" > #"+id).text();
+	$("#spWeb_"+id_td).text(op);
 	
 }
 
@@ -285,9 +318,16 @@ window.addEventListener('click', function(e){
 
 //caundo cambiamos el mes se cambiará la tabla
 function changeMonth(){
+	
+	
 	var mes = $(".picker .pick-m .pick-sl").val();
 	var year = $(".picker .pick-y .pick-sl").val();
 	var id = $("#lstC .item_select").attr('id');
+	
+	//limpiar cajas categoria
+	//$(".slCt").html("");
+	//Limpiamos cajas de webs
+	//$(".slWeb").html("");
 	
 	//chv = change view
 	$.post('Data', {
@@ -300,7 +340,6 @@ function changeMonth(){
 	});
 	
 }
-
 
 
 

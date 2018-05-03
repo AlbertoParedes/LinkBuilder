@@ -59,7 +59,9 @@ public class Data extends HttpServlet {
 	private void cargarPage(HttpServletRequest request, HttpServletResponse response, int id_user, String name_user) throws ServletException, IOException, ParseException {
 		System.out.println(id_user+" "+name_user+"############################");
 		Webservice ws = new Webservice();
-		
+		clientes.clear();
+		foros.clear();
+		categorias.clear();
 		//obtenemos todas las categorias
 		String json = ws.getJSON("getCategorias.php");
 		Object jsonObject =JSONValue.parse(json.toString());
@@ -93,9 +95,6 @@ public class Data extends HttpServlet {
 	        
 	        foros.add(new Foro(id_foro, web_foro, tipoF, dr, da, tematica, descripcion, categoria, req_aprobacion, req_registro, aparece_fecha, reutilizable));
 	    }
-	    for (int i = 0; i < foros.size(); i++) {
-			System.out.println(foros.get(i).toString());
-		}
 		
 		//obtenemos todos los clientes con sus resultados
 		json = ws.getJSON("getCliRes.php");
@@ -133,7 +132,7 @@ public class Data extends HttpServlet {
             java.sql.Date date = new java.sql.Date(dia.getTime());
 	        String tipoRes = (String) row.get("tipoRes");
 	        String destino = (String) row.get("destino");
-	        int categoria = Integer.parseInt(row.get("categoria").toString());
+	        int categoria = Integer.parseInt(row.get("categoriaResultado").toString());
 	        String estado = (String) row.get("estado");
 	        String anchorR = (String) row.get("anchorR");
 	        
@@ -198,12 +197,70 @@ public class Data extends HttpServlet {
 		out = response.getWriter();
 
 		if (metodo.equals("lkc")) {
-			mostrarResultados(request, response, out);
+			try {mostrarResultados(request, response, out);} catch (ParseException e) {e.printStackTrace();}
 		}else if(metodo.equals("chv")) {
 			morstarResultadosMes(request, response, out);
+		}else if(metodo.equals("cwbs")) {
+			mostrarWebsCat(request, response, out);
 		}
 
 
+	}
+
+	private void mostrarWebsCat(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		int idCategoria = Integer.parseInt(request.getParameter("id"));
+		int id_td = Integer.parseInt(request.getParameter("id_td"));
+		int p = Integer.parseInt(request.getParameter("posArryC"));
+		
+		//Aplicamos los cambios en la bbdd y en el array
+		Webservice ws = new Webservice();
+		ws.updateResultado(clientes.get(p).getResultados().get(id_td).getId_resultado()+"", "categoria", idCategoria+"" , "updateResultado.php");
+		clientes.get(p).getResultados().get(id_td).setCategoria(idCategoria);
+		
+		
+		ArrayList<Foro> forosDisponibles = foros;
+		ArrayList<Foro> forosUsados = clientes.get(p).getForos();
+		
+		
+		for (int i = 0; i < forosDisponibles.size(); i++) {
+			//System.out.println(forosDisponibles.get(i).getCategoria()+" = "+idCategoria);
+			if(forosDisponibles.get(i).getCategoria()!=idCategoria) {
+				forosDisponibles.remove(i);
+				System.out.println("eliminando");
+			}else {
+				System.out.println("id: "+forosDisponibles.get(i).getCategoria()+"          "+forosDisponibles.get(i).getWeb_foro());
+			}
+			
+			/*else {
+				for (int j = 0; j < forosUsados.size(); j++) {
+					if(forosDisponibles.get(i).getId_foro()==forosUsados.get(j).getId_foro()) {
+						forosDisponibles.remove(i);
+						forosUsados.remove(j);
+					}
+				}
+			}*/
+			
+			
+		}
+		
+		
+		System.out.println(forosDisponibles.size());
+		
+		
+		//Lista de todas las webs disponibles de la categoria seleccionada
+		String htmlWebs="		<ul id=\"selWeb_"+id_td+"\" class=\"slCt slWeb effect7\">";
+		for (int j = 0; j < foros.size(); j++) {
+			if(foros.get(j).getCategoria()==idCategoria) {
+				//System.out.println(foros.get(j).getWeb_foro());
+				htmlWebs += "			<li id=\""+foros.get(j).getId_foro()+"\" onclick=\"liSelectWeb(this.id,"+id_td+")\">"+foros.get(j).getWeb_foro()+"</li>";
+			}
+		}
+		htmlWebs += "		</ul>";
+		
+		out.println("		<div class=\"tdCat tdWeb\" id=\"dvWeb_"+id_td+"\" onclick=\"selectWeb("+id_td+")\">");
+		out.println("			<span id=\"spWeb_"+id_td+"\" class=\"tdCat tdWeb\">"+"Selecciona una web"+"</span>");
+		out.println("		</div>");
+		out.println(		htmlWebs);
 	}
 
 	private void morstarResultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
@@ -225,27 +282,46 @@ public class Data extends HttpServlet {
 				//lista de categorias---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 				String htmlCategorias = "		<ul id=\"selCat_"+i+"\" class=\"slCt effect7\">";
 				String opCategoria = "Selecciona una categoria";
+				int idCategoria = -1;
 				for (int j = 0; j < categorias.size(); j++) {
-					if(cliente.getResultados().get(i).getCategoria() == categorias.get(j).getId()) {
+					if(cliente.getResultados().get(i).getCategoria() == categorias.get(j).getId() && categorias.get(j).getId()!=0) {
 						htmlCategorias += "			<li id=\""+categorias.get(j).getId()+"\" class=\"liActive\" onclick=\"liSelectCat(this.id,"+i+")\">"+categorias.get(j).getNombre()+"</li>";
 						opCategoria = categorias.get(j).getNombre();
-					}else {
+						idCategoria = categorias.get(j).getId();
+					}else if(categorias.get(j).getId()!=0) {
 						htmlCategorias += "			<li id=\""+categorias.get(j).getId()+"\" onclick=\"liSelectCat(this.id,"+i+")\">"+categorias.get(j).getNombre()+"</li>";
 					}				
 				}
 				htmlCategorias += "		</ul>";
 				//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				//Lista de todas las webs disponibles de la categoria seleccionada
+				String htmlWebs="		<ul id=\"selWeb_"+i+"\" class=\"slCt slWeb effect7\">";
+				for (int j = 0; j < foros.size(); j++) {
+					if(foros.get(j).getCategoria()==idCategoria) {
+						//System.out.println(foros.get(j).getWeb_foro());
+						htmlWebs += "			<li id=\""+foros.get(j).getId_foro()+"\" onclick=\"liSelectWeb(this.id,"+i+")\">"+foros.get(j).getWeb_foro()+"</li>";
+					}
+				}
+				htmlWebs += "		</ul>";
 				
 				
-				out.println("<tr>");
-				out.println("	<td>"+cliente.getResultados().get(i).getEnlace()+"</td>");
+				out.println("<tr id=\""+i+"\">");
+				out.println("	<td><input class=\"inLink\" type=\"text\" value=\""+cliente.getResultados().get(i).getEnlace()+"\">"+"</td>");
+				
 				out.println("	<td class=\"tdCat\">");
 				out.println("		<div class=\"tdCat\" id=\"dvCat_"+i+"\" onclick=\"selectCategory("+i+")\">");
 				out.println("			<span id=\"spCat_"+i+"\" class=\"tdCat\">"+opCategoria+"</span>");
 				out.println("		</div>");
 				out.println(		htmlCategorias);
 				out.println("	</td>");
-				out.println("	<td>mary@example.com</td>");
+				
+				out.println("	<td id=\"tdWeb_"+i+"\" class=\"tdCat tdWeb\">");
+				out.println("		<div class=\"tdCat tdWeb\" id=\"dvWeb_"+i+"\" onclick=\"selectWeb("+i+")\">");
+				out.println("			<span id=\"spWeb_"+i+"\" class=\"tdCat tdWeb\">"+opCategoria+"</span>");
+				out.println("		</div>");
+				out.println(		htmlWebs);
+				out.println("	</td>");
+				
 				out.println("	<td>"+cliente.getResultados().get(i).getFecha()+"</td>");
 				out.println("	<td>"+cliente.getResultados().get(i).getTipo()+"</td> </tr>");
 				out.println("</tr>");
@@ -259,11 +335,12 @@ public class Data extends HttpServlet {
 		
 		
 	}
-	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ParseException {
 		int posicion = Integer.parseInt(request.getParameter("posicion"));
 		
 		
 		Date date= new Date();Calendar cal = Calendar.getInstance();cal.setTime(date);
+		int day = cal.get(Calendar.DAY_OF_MONTH);
 		int mes = cal.get(Calendar.MONTH)+1;
 		int year = cal.get(Calendar.YEAR);
 		//con esto mantenemos la fecha seleccionada aunque cambiemos de cliente
@@ -291,7 +368,71 @@ public class Data extends HttpServlet {
 		out.println("		<table class=\"table\">");
 		out.println("			<thead><tr><th class=\"cabeceraTable\">Link</th><th class=\"cabeceraTable\">Categoria</th><th class=\"cabeceraTable\">Web</th><th class=\"cabeceraTable\">Destino</th><th class=\"cabeceraTable\">Tipo</th></tr></thead>");
 		out.println("			<tbody>");
+		
+		
+		int follows = cliente.getFollows();
+		int followsDone = cliente.getFollows_done();
+		
+		//solo seleccionamos los resultados de la fecha deseada
+		ArrayList<Resultado> resultados = new ArrayList<Resultado>();
 		for (int i = 0; i < cliente.getResultados().size(); i++) {
+			System.out.println(cliente.getResultados().get(i).toString());
+			
+			String fecha[] = cliente.getResultados().get(i).getFecha().toString().split("-");
+			int y = Integer.parseInt(fecha[0]);
+			int m = Integer.parseInt(fecha[1]);
+			if(mes == m && year == y) {
+				resultados.add(cliente.getResultados().get(i));
+			}
+		}
+		//----------------------------------------------------------
+		
+		//Con esto creamos los resultados nuevos de cada mes, cuando los creamos pedimos al webservice que nos devuelva los resultados con sus id's para poder asignarselos a nuetro array de clientes
+		if(resultados.size()==0) {
+			Webservice ws = new Webservice();
+			for (int i = 0; i < cliente.getFollows(); i++) {
+				int id_cliente = cliente.getId_cliente();
+				String tipo ="FOLLOW";
+				ws.insertResultadoVacio(id_cliente, tipo, "insertResultadoVacio.php");
+				System.out.println("Insertando FOLLOW");
+			}
+			for (int i = 0; i < cliente.getNofollows(); i++) {
+				int id_cliente = cliente.getId_cliente();
+				String tipo ="NOFOLLOW";
+				ws.insertResultadoVacio(id_cliente, tipo, "insertResultadoVacio.php");
+				System.out.println("Insertando NOFOLLOW");
+			}
+			String fecha = year+"-"+mes+"-"+day;
+			String json = ws.getResultVacios(cliente.getId_cliente(), fecha, "getResultVacios.php");
+			System.out.println(json);
+			Object jsonObject =JSONValue.parse(json.toString());
+		    JSONArray arrayData = (JSONArray)jsonObject;
+		    for(int i=0;i<arrayData.size();i++){
+		    	JSONObject row =(JSONObject)arrayData.get(i);
+		    	//para el array de resultados del cliente
+		        int id_resultado = Integer.parseInt(row.get("id_resultado").toString());
+		        int id_foro = Integer.parseInt(row.get("id_foro").toString());
+		        String enlace = (String) row.get("enlace");
+		        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	            String dateInString = (String) row.get("fecha");
+	            Date dia = formatter.parse(dateInString);
+	            java.sql.Date dateR = new java.sql.Date(dia.getTime());
+		        String tipo = (String) row.get("tipo");
+		        String destino = (String) row.get("destino");
+		        int categoria = Integer.parseInt(row.get("categoria").toString());
+		        String estado = (String) row.get("estado");
+		        String anchorR = (String) row.get("anchorR");
+		    	
+		    	clientes.get(posicion).getResultados().add(new Resultado(clientes.get(posicion).getNombre(), id_resultado, clientes.get(posicion).getId_cliente(), id_foro, enlace, dateR, tipo, destino, categoria, estado, anchorR));
+		    }
+		    cliente = clientes.get(posicion);
+		}else {
+			System.out.println("curso del programa normal");
+		}
+		
+		
+		
+		/*for (int i = 0; i < cliente.getResultados().size(); i++) {
 			
 			String fecha[] = cliente.getResultados().get(i).getFecha().toString().split("-");
 			int y = Integer.parseInt(fecha[0]);
@@ -301,16 +442,31 @@ public class Data extends HttpServlet {
 				//lista de categorias---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 				String htmlCategorias = "		<ul id=\"selCat_"+i+"\" class=\"slCt effect7\">";
 				String opCategoria = "Selecciona una categoria";
+				int idCategoria = -1;
 				for (int j = 0; j < categorias.size(); j++) {
-					if(cliente.getResultados().get(i).getCategoria() == categorias.get(j).getId()) {
+					if(cliente.getResultados().get(i).getCategoria() == categorias.get(j).getId() && categorias.get(j).getId()!=0) {
 						htmlCategorias += "			<li id=\""+categorias.get(j).getId()+"\" class=\"liActive\" onclick=\"liSelectCat(this.id,"+i+")\">"+categorias.get(j).getNombre()+"</li>";
 						opCategoria = categorias.get(j).getNombre();
-					}else {
+						idCategoria = categorias.get(j).getId();
+					}else if(categorias.get(j).getId()!=0){
 						htmlCategorias += "			<li id=\""+categorias.get(j).getId()+"\" onclick=\"liSelectCat(this.id,"+i+")\">"+categorias.get(j).getNombre()+"</li>";
+						System.out.println("Nombree: "+categorias.get(j).getNombre());
 					}				
 				}
 				htmlCategorias += "		</ul>";
+				System.out.println(htmlCategorias);
 				//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				//Lista de todas las webs disponibles de la categoria seleccionada
+				String htmlWebs="		<ul id=\"selWeb_"+i+"\" class=\"slCt slWeb effect7\">";
+				for (int j = 0; j < foros.size(); j++) {
+					if(foros.get(j).getCategoria()==idCategoria) {
+						//System.out.println(foros.get(j).getWeb_foro());
+						htmlWebs += "			<li id=\""+foros.get(i).getId_foro()+"\" onclick=\"liSelectWeb(this.id,"+i+")\">"+foros.get(j).getWeb_foro()+"</li>";
+					}
+				}
+				htmlWebs += "		</ul>";
+				
+				System.out.println(cliente.getResultados().get(i).getId_foro());
 				
 				out.println("<tr>");
 				out.println("	<td>"+cliente.getResultados().get(i).getEnlace()+"</td>");
@@ -320,14 +476,23 @@ public class Data extends HttpServlet {
 				out.println("		</div>");
 				out.println(		htmlCategorias);
 				out.println("	</td>");
-				out.println("	<td>mary@example.com</td>");
+				
+				out.println("	<td id=\"tdWeb_"+i+"\" class=\"tdCat tdWeb\">");
+				out.println("		<div class=\"tdCat tdWeb\" id=\"dvWeb_"+i+"\" onclick=\"selectWeb("+i+")\">");
+				out.println("			<span id=\"spWeb_"+i+"\" class=\"tdCat tdWeb\">"+opCategoria+"</span>");
+				out.println("		</div>");
+				out.println(		htmlWebs);
+				out.println("	</td>");
+				
 				out.println("	<td>"+cliente.getResultados().get(i).getFecha()+"</td>");
 				out.println("	<td>"+cliente.getResultados().get(i).getTipo()+"</td> </tr>");
 				out.println("</tr>");		
 			}
 			
 						
-		}
+		}*/
+		
+		
 		out.println("			</tbody>");
 		out.println("		</table>");
 		out.println("	</div>");

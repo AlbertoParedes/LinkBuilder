@@ -35,8 +35,8 @@ public class Webservice {
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 			con.setDoOutput(true);      
 			int responseCode = con.getResponseCode();
-			System.out.println("\nSending 'POST' request to URL : " + url);
-			System.out.println("Response Code : " + responseCode);
+			//System.out.println("\nSending 'POST' request to URL : " + url);
+			//System.out.println("Response Code : " + responseCode);
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -60,6 +60,52 @@ public class Webservice {
 		StringBuffer response = new StringBuffer();
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("user", user);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
+	public String getResultVacios(int id,String fecha, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("id", id);
+		jsonObj.put("fecha", fecha);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
+	public String insertResultadoVacio(int id,String tipo, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("id", id);
+		jsonObj.put("tipo", tipo);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
+	public String updateResultado(String id_resultado,String campo,String valor, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("id_resultado", id_resultado);
+		jsonObj.put("campo", campo);
+		jsonObj.put("valor", valor);
 		List<JSONObject>  l = new LinkedList<JSONObject>();
 		l.addAll(Arrays.asList(jsonObj));
 
@@ -102,7 +148,7 @@ public class Webservice {
 				response.append(inputLine);
 			}
 			
-			System.out.println("respuesta: "+response.toString());
+			//System.out.println("respuesta: "+response.toString());
 
 			in.close();
 			
