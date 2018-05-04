@@ -59,25 +59,26 @@ public class Data extends HttpServlet {
 	private void cargarPage(HttpServletRequest request, HttpServletResponse response, int id_user, String name_user) throws ServletException, IOException, ParseException {
 		System.out.println(id_user+" "+name_user+"############################");
 		Webservice ws = new Webservice();
-		clientes.clear();
-		foros.clear();
-		categorias.clear();
+
 		//obtenemos todas las categorias
 		String json = ws.getJSON("getCategorias.php");
 		Object jsonObject =JSONValue.parse(json.toString());
 	    JSONArray arrayData = (JSONArray)jsonObject;
+	    ArrayList<Categoria> categorias = new ArrayList<Categoria>();
 	    for(int i=0;i<arrayData.size();i++){
 	    	JSONObject row =(JSONObject)arrayData.get(i); 
 	    	int id = Integer.parseInt(row.get("id_categoria").toString());
 	        String nombre = row.get("enlace").toString();
 	    	categorias.add(new Categoria(id, nombre));
 	    }
+	    this.categorias = categorias;
 	    
 	    //obtenemos todos los foros
 	    json = ws.getJSON("getForos.php");
 	    System.out.println(json+"www");
 	    jsonObject =JSONValue.parse(json.toString());
 	    arrayData = (JSONArray)jsonObject;
+	    ArrayList<Foro> foros = new ArrayList<Foro>();
 	    for(int j=0;j<arrayData.size();j++){
 	    	JSONObject row =(JSONObject)arrayData.get(j);
 	    	int id_foro = Integer.parseInt(row.get("id_foro").toString());
@@ -93,8 +94,11 @@ public class Data extends HttpServlet {
 	        int aparece_fecha =Integer.parseInt(row.get("aparece_fecha").toString());
 	        String reutilizable = (String) row.get("reutilizable");
 	        
-	        foros.add(new Foro(id_foro, web_foro, tipoF, dr, da, tematica, descripcion, categoria, req_aprobacion, req_registro, aparece_fecha, reutilizable));
+	        Foro f = new Foro(id_foro, web_foro, tipoF, dr, da, tematica, descripcion, categoria, req_aprobacion, req_registro, aparece_fecha, reutilizable);
+	        f.setPosArrayForos(j);
+	        foros.add(f);
 	    }
+	    this.foros = foros;
 		
 		//obtenemos todos los clientes con sus resultados
 		json = ws.getJSON("getCliRes.php");
@@ -149,7 +153,7 @@ public class Data extends HttpServlet {
 	        String reutilizable = (String) row.get("reutilizable");
 
 	        if(id_c != id_cliente) {
-	        	Resultado r = new Resultado(nombre, id_resultado, id_cliente, id_foro, enlace, date, tipoRes, destino, categoria, estado, anchorR);
+	        	Resultado r = new Resultado(nombre, id_resultado, id_cliente, id_foro, enlace, date, tipoRes, destino, categoria, estado, anchorR,web_foro);
 	        	Foro f = new Foro(id_foro, web_foro, tipoF, dr, da, tematica, descripcion, categoria, req_aprobacion, req_registro, aparece_fecha, reutilizable);
 	        	Cliente c = new Cliente(id_cliente, web_cliente, nombre, servicio, follows, nofollows, anchorC, blog, idioma, follows_done, nofollows_done, linkbuilder, new ArrayList<Resultado>(), new ArrayList<Foro>());
 	        	c.getResultados().add(r);
@@ -158,7 +162,7 @@ public class Data extends HttpServlet {
 	 	        //System.out.println(id_cliente);
 	        	id_c = id_cliente;
 	        }else {
-	        	Resultado r = new Resultado(nombre, id_resultado, id_cliente, id_foro, enlace, date, tipoRes, destino, categoria, estado, anchorR);
+	        	Resultado r = new Resultado(nombre, id_resultado, id_cliente, id_foro, enlace, date, tipoRes, destino, categoria, estado, anchorR,web_foro);
 	        	Foro f = new Foro(id_foro, web_foro, tipoF, dr, da, tematica, descripcion, categoria, req_aprobacion, req_registro, aparece_fecha, reutilizable);
 	        	clientes.get(clientes.size()-1).getResultados().add(r);
 	        	clientes.get(clientes.size()-1).getForos().add(f);
@@ -200,67 +204,102 @@ public class Data extends HttpServlet {
 			try {mostrarResultados(request, response, out);} catch (ParseException e) {e.printStackTrace();}
 		}else if(metodo.equals("chv")) {
 			morstarResultadosMes(request, response, out);
+		}else if(metodo.equals("sc")) {
+			guardarCategoria(request, response, out);
 		}else if(metodo.equals("cwbs")) {
 			mostrarWebsCat(request, response, out);
+		}else if(metodo.equals("sw")) {
+			guardarWeb(request, response, out);
 		}
 
-
+		//id_tr == id del resultado
 	}
-
-	private void mostrarWebsCat(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-		int idCategoria = Integer.parseInt(request.getParameter("id"));
-		int id_td = Integer.parseInt(request.getParameter("id_td"));
+	private void guardarWeb(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		int pArrayF = Integer.parseInt(request.getParameter("pArrayF"));
+		int id_tr = Integer.parseInt(request.getParameter("id_tr"));
+		int p = Integer.parseInt(request.getParameter("posArryC"));
+		int elemtAnterior = Integer.parseInt(request.getParameter("elemtAnterior"));
+		System.out.println(clientes.get(p).getResultados().get(id_tr).getId_resultado()+" ---->");
+		//Aplicamos los cambios en la bbdd y en el array
+		Webservice ws = new Webservice();
+		ws.updateResultado(clientes.get(p).getResultados().get(id_tr).getId_resultado()+"", "id_foro", foros.get(pArrayF).getId_foro()+"" , "updateResultado.php");
+		clientes.get(p).getForos().add(foros.get(pArrayF));
+		clientes.get(p).getResultados().get(id_tr).setId_foro(foros.get(pArrayF).getId_foro());
+		clientes.get(p).getResultados().get(id_tr).setWeb_foro(foros.get(pArrayF).getWeb_foro());
+		
+		//si no hay ningun foro anteriormento no hacemos el for, asi nos ahorramos ese proceso
+		if(elemtAnterior!=0) {
+			//Recorremos el array de los foros del cliente para habilitar el foro que se ha desabilitado
+			for (int i = 0, j = clientes.get(p).getForos().size()-1;  i < clientes.get(p).getForos().size();  i++, j--) {
+				if(clientes.get(p).getForos().get(i).getId_foro() == elemtAnterior) {	
+					clientes.get(p).getForos().remove(i);
+					i= clientes.get(p).getForos().size();
+				
+				}else if(clientes.get(p).getForos().get(j).getId_foro() == elemtAnterior) {
+					clientes.get(p).getForos().remove(j);
+					i= clientes.get(p).getForos().size();
+				}
+				
+			}
+		}
+		
+		
+		System.out.println(elemtAnterior);
+		
+		out.println("<span id=\"spWeb_"+id_tr+"\" mweb=\""+foros.get(pArrayF).getId_foro()+"\" class=\"tdCat tdWeb\">"+foros.get(pArrayF).getWeb_foro()+"</span>");
+		System.out.println("Insertado");
+	}
+	
+	private void guardarCategoria(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
+		int id_tr = Integer.parseInt(request.getParameter("id_tr"));
 		int p = Integer.parseInt(request.getParameter("posArryC"));
 		
 		//Aplicamos los cambios en la bbdd y en el array
 		Webservice ws = new Webservice();
-		ws.updateResultado(clientes.get(p).getResultados().get(id_td).getId_resultado()+"", "categoria", idCategoria+"" , "updateResultado.php");
-		clientes.get(p).getResultados().get(id_td).setCategoria(idCategoria);
+		ws.updateResultado(clientes.get(p).getResultados().get(id_tr).getId_resultado()+"", "categoria", idCategoria+"" , "updateResultado.php");
+		clientes.get(p).getResultados().get(id_tr).setCategoria(idCategoria);
+		System.out.println("Insertado");
+	}
+
+	//con este metodo mostramos las web que aun no se ha utilizado por el cliente
+	private void mostrarWebsCat(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
+		int id_tr = Integer.parseInt(request.getParameter("id_tr"));
+		int p = Integer.parseInt(request.getParameter("posArryC"));
 		
-		
-		ArrayList<Foro> forosDisponibles = foros;
-		ArrayList<Foro> forosUsados = clientes.get(p).getForos();
-		
-		
+		ArrayList<Foro> forosDisponibles = (ArrayList<Foro>) foros.clone();
+		ArrayList<Foro> forosUsados = (ArrayList<Foro>) clientes.get(p).getForos().clone();
+
 		for (int i = 0; i < forosDisponibles.size(); i++) {
-			//System.out.println(forosDisponibles.get(i).getCategoria()+" = "+idCategoria);
-			if(forosDisponibles.get(i).getCategoria()!=idCategoria) {
+			if(forosDisponibles.get(i).getCategoria()!=idCategoria) { 
 				forosDisponibles.remove(i);
-				System.out.println("eliminando");
-			}else {
-				System.out.println("id: "+forosDisponibles.get(i).getCategoria()+"          "+forosDisponibles.get(i).getWeb_foro());
-			}
-			
-			/*else {
+				i--;
+			}else{
+				
 				for (int j = 0; j < forosUsados.size(); j++) {
 					if(forosDisponibles.get(i).getId_foro()==forosUsados.get(j).getId_foro()) {
+						System.out.println("Usado: -> id: "+forosDisponibles.get(i).getCategoria()+"          "+forosDisponibles.get(i).getWeb_foro());
 						forosDisponibles.remove(i);
 						forosUsados.remove(j);
+						j=forosUsados.size();
+						i--;
 					}
 				}
-			}*/
-			
-			
-		}
-		
-		
-		System.out.println(forosDisponibles.size());
-		
-		
-		//Lista de todas las webs disponibles de la categoria seleccionada
-		String htmlWebs="		<ul id=\"selWeb_"+id_td+"\" class=\"slCt slWeb effect7\">";
-		for (int j = 0; j < foros.size(); j++) {
-			if(foros.get(j).getCategoria()==idCategoria) {
-				//System.out.println(foros.get(j).getWeb_foro());
-				htmlWebs += "			<li id=\""+foros.get(j).getId_foro()+"\" onclick=\"liSelectWeb(this.id,"+id_td+")\">"+foros.get(j).getWeb_foro()+"</li>";
 			}
 		}
-		htmlWebs += "		</ul>";
+
+		//Lista de todas las webs disponibles de la categoria seleccionada
+		//String htmlWebs="		<ul id=\"selWeb_"+id_tr+"\" class=\"slCt slWeb effect7\">";
+		String htmlWebs="";
+		for (int i = 0; i < forosDisponibles.size(); i++) {
+			System.out.println("Disponible: -> id: "+forosDisponibles.get(i).getCategoria()+"          "+forosDisponibles.get(i).getWeb_foro());
+			htmlWebs += "			<li id=\""+forosDisponibles.get(i).getPosArrayForos()+"\" onclick=\"liSelectWeb(this.id,"+id_tr+")\">"+forosDisponibles.get(i).getWeb_foro()+"</li>";
+		}
+		//htmlWebs += "		</ul>";
 		
-		out.println("		<div class=\"tdCat tdWeb\" id=\"dvWeb_"+id_td+"\" onclick=\"selectWeb("+id_td+")\">");
-		out.println("			<span id=\"spWeb_"+id_td+"\" class=\"tdCat tdWeb\">"+"Selecciona una web"+"</span>");
-		out.println("		</div>");
 		out.println(		htmlWebs);
+		System.out.println();
 	}
 
 	private void morstarResultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
@@ -281,7 +320,7 @@ public class Data extends HttpServlet {
 				
 				//lista de categorias---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 				String htmlCategorias = "		<ul id=\"selCat_"+i+"\" class=\"slCt effect7\">";
-				String opCategoria = "Selecciona una categoria";
+				String opCategoria = "-";
 				int idCategoria = -1;
 				for (int j = 0; j < categorias.size(); j++) {
 					if(cliente.getResultados().get(i).getCategoria() == categorias.get(j).getId() && categorias.get(j).getId()!=0) {
@@ -294,15 +333,13 @@ public class Data extends HttpServlet {
 				}
 				htmlCategorias += "		</ul>";
 				//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				
 				//Lista de todas las webs disponibles de la categoria seleccionada
 				String htmlWebs="		<ul id=\"selWeb_"+i+"\" class=\"slCt slWeb effect7\">";
-				for (int j = 0; j < foros.size(); j++) {
-					if(foros.get(j).getCategoria()==idCategoria) {
-						//System.out.println(foros.get(j).getWeb_foro());
-						htmlWebs += "			<li id=\""+foros.get(j).getId_foro()+"\" onclick=\"liSelectWeb(this.id,"+i+")\">"+foros.get(j).getWeb_foro()+"</li>";
-					}
-				}
-				htmlWebs += "		</ul>";
+				htmlWebs += "		    </ul>";
+				//Foro utilizado para este resultado
+				int mweb = cliente.getResultados().get(i).getId_foro();
+				
 				
 				
 				out.println("<tr id=\""+i+"\">");
@@ -317,13 +354,20 @@ public class Data extends HttpServlet {
 				
 				out.println("	<td id=\"tdWeb_"+i+"\" class=\"tdCat tdWeb\">");
 				out.println("		<div class=\"tdCat tdWeb\" id=\"dvWeb_"+i+"\" onclick=\"selectWeb("+i+")\">");
-				out.println("			<span id=\"spWeb_"+i+"\" class=\"tdCat tdWeb\">"+opCategoria+"</span>");
+				out.println("			<span id=\"spWeb_"+i+"\" mweb=\""+mweb+"\" class=\"tdCat tdWeb\">"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
 				out.println("		</div>");
 				out.println(		htmlWebs);
 				out.println("	</td>");
 				
 				out.println("	<td>"+cliente.getResultados().get(i).getFecha()+"</td>");
-				out.println("	<td>"+cliente.getResultados().get(i).getTipo()+"</td> </tr>");
+				
+				if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("follow")) {
+					out.println("	<td><div><i class=\"material-icons lf\">link</i></div></td>");
+				}else if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("nofollow")) {
+					out.println("	<td><div><i class=\"material-icons lnf\">link</i></div></td>");
+				}
+				
+				
 				out.println("</tr>");
 	
 			}
@@ -423,7 +467,7 @@ public class Data extends HttpServlet {
 		        String estado = (String) row.get("estado");
 		        String anchorR = (String) row.get("anchorR");
 		    	
-		    	clientes.get(posicion).getResultados().add(new Resultado(clientes.get(posicion).getNombre(), id_resultado, clientes.get(posicion).getId_cliente(), id_foro, enlace, dateR, tipo, destino, categoria, estado, anchorR));
+		    	clientes.get(posicion).getResultados().add(new Resultado(clientes.get(posicion).getNombre(), id_resultado, clientes.get(posicion).getId_cliente(), id_foro, enlace, dateR, tipo, destino, categoria, estado, anchorR,""));
 		    }
 		    cliente = clientes.get(posicion);
 		}else {

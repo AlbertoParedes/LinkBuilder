@@ -15,6 +15,9 @@ public class Foro {
 	private int aparece_fecha;
 	private String reutilizable;
 	
+	//con esto guardo la posicion de un foro en especifico en un array no global, para saber en que posicion está en el array global de foros
+	private int posArrayForos;
+	
 	public Foro() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -127,6 +130,16 @@ public class Foro {
 
 	public void setReutilizable(String reutilizable) {
 		this.reutilizable = reutilizable;
+	}
+	
+	
+
+	public int getPosArrayForos() {
+		return posArrayForos;
+	}
+
+	public void setPosArrayForos(int posArrayForos) {
+		this.posArrayForos = posArrayForos;
 	}
 
 	@Override

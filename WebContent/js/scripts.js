@@ -254,52 +254,91 @@ function selectCategory(id){
 	$(".slWeb").removeClass("visible");
 	//-------------------------------
 	$("#selCat_"+id).addClass("visible");
-
+	
 }
-function selectWeb(id){
+function selectWeb(id_tr){
 	//cerrar los anteriores
 	$(".slWeb").removeClass("visible");
 	$(".slCt").removeClass("visible");
 	//-------------------------------
-	$("#selWeb_"+id).addClass("visible");
+	
+	var id_categoria = $("#selCat_"+id_tr+" .liActive").attr('id');;
+	cargarWebs(id_categoria,id_tr);
 }
-
-//Seleccionamos la categoria de cada enlace
-function liSelectCat(id,id_ul){
-	
-	$("#selCat_"+id_ul+" li").removeClass("liActive");
-	$("#selCat_"+id_ul+" > #"+id).addClass("liActive");
-	$("#selCat_"+id_ul).removeClass("visible");
-	
-	//le damos el texto seleccionado a nuestra vista de categorias
-	var op = $("#selCat_"+id_ul+" > #"+id).text();
-	$("#spCat_"+id_ul).text(op);
-	
-	cargarWebs(id,id_ul);
-
-}
-
-function cargarWebs(id,id_td){
+function cargarWebs(id_categoria,id_tr){
 	var posArryC = $("#lstC .item_select").attr('id');
 	
 	$.post('Data', {
 		metodo : 'cwbs',
-		id: id,
-		id_td: id_td,
+		id_categoria: id_categoria,
+		id_tr: id_tr,
 		posArryC : posArryC
 	}, function(responseText) {
-		$('#tdWeb_'+id_td).html(responseText);
+		$('#tdWeb_'+id_tr+" ul").html(responseText);
+		$("#selWeb_"+id_tr).addClass("visible");
 	});
 	
 }
 
-function liSelectWeb(id,id_td){
-	$("#selWeb_"+id_td+" li").removeClass("liActive");
-	$("#selWeb_"+id_td+" > #"+id).addClass("liActive");
-	$("#selWeb_"+id_td).removeClass("visible");
+
+
+
+
+//Seleccionamos la categoria de cada enlace
+function liSelectCat(id_categoria,id_tr){
 	
-	var op = $("#selWeb_"+id_td+" > #"+id).text();
-	$("#spWeb_"+id_td).text(op);
+	$("#selCat_"+id_tr+" li").removeClass("liActive");
+	$("#selCat_"+id_tr+" > #"+id_categoria).addClass("liActive");
+	$("#selCat_"+id_tr).removeClass("visible");
+	
+	//le damos el texto seleccionado a nuestra vista de categorias
+	var op = $("#selCat_"+id_tr+" > #"+id_categoria).text();
+	$("#spCat_"+id_tr).text(op);
+	
+	guardarCategoria(id_categoria, id_tr);
+}
+function guardarCategoria(id_categoria, id_tr){
+	var posArryC = $("#lstC .item_select").attr('id');
+	$.post('Data', {
+		metodo : 'sc',
+		id_categoria: id_categoria,
+		posArryC: posArryC,
+		id_tr: id_tr
+	});
+}
+
+//-------------------------------------------------------------------------
+
+
+
+function liSelectWeb(pArrayF,id_tr){
+	$("#selWeb_"+id_tr+" li").removeClass("liActive");
+	$("#selWeb_"+id_tr+" > #"+pArrayF).addClass("liActive");
+	$("#selWeb_"+id_tr).removeClass("visible");
+	
+	//var op = $("#selWeb_"+id_tr+" > #"+pArrayF).text();
+	//$("#spWeb_"+id_tr).text(op);
+	
+	guardarWeb(pArrayF, id_tr);
+}
+
+//guardamos en la bbdd y en el array la web selecionada
+function guardarWeb(pArrayF, id_tr){
+	var posArryC = $("#lstC .item_select").attr('id');
+	
+	//cogemos el elemento que ya esta seleccionado para proceder a quitarlo de la lista de los foros utilizados para este cliente
+	var elemtAnterior = $("#spWeb_"+id_tr).attr("mweb");
+	
+	$.post('Data', {
+		metodo : 'sw',
+		pArrayF: pArrayF,
+		posArryC: posArryC,
+		id_tr: id_tr,
+		elemtAnterior: elemtAnterior
+	}, function(responseText) {
+		$('#dvWeb_'+id_tr).html(responseText);
+		
+	});
 	
 }
 
