@@ -345,9 +345,10 @@ public class Data extends HttpServlet {
 				out.println("<tr id=\""+i+"\">");
 				out.println("	<td><input class=\"inLink\" type=\"text\" value=\""+cliente.getResultados().get(i).getEnlace()+"\">"+"</td>");
 				
-				out.println("	<td class=\"tdCat\">");
+				out.println("	<td class=\"tdCat cCateg pr\">");
 				out.println("		<div class=\"tdCat\" id=\"dvCat_"+i+"\" onclick=\"selectCategory("+i+")\">");
 				out.println("			<span id=\"spCat_"+i+"\" class=\"tdCat\">"+opCategoria+"</span>");
+				out.println("			<i class=\"material-icons arrow\">arrow_drop_down</i>");
 				out.println("		</div>");
 				out.println(		htmlCategorias);
 				out.println("	</td>");
@@ -362,9 +363,9 @@ public class Data extends HttpServlet {
 				out.println("	<td>"+cliente.getResultados().get(i).getFecha()+"</td>");
 				
 				if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("follow")) {
-					out.println("	<td><div><i class=\"material-icons lf\">link</i></div></td>");
+					out.println("	<td class=\"cTipo\"><i class=\"material-icons lf\">link</i></td>");
 				}else if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("nofollow")) {
-					out.println("	<td><div><i class=\"material-icons lnf\">link</i></div></td>");
+					out.println("	<td class=\"cTipo\"><i class=\"material-icons lnf\">link</i></td>");
 				}
 				
 				
@@ -410,7 +411,7 @@ public class Data extends HttpServlet {
 		out.println("	<div id=\"results_Client\" class=\"contentTable\">");
 		//tabla
 		out.println("		<table class=\"table\">");
-		out.println("			<thead><tr><th class=\"cabeceraTable\">Link</th><th class=\"cabeceraTable\">Categoria</th><th class=\"cabeceraTable\">Web</th><th class=\"cabeceraTable\">Destino</th><th class=\"cabeceraTable\">Tipo</th></tr></thead>");
+		out.println("			<thead><tr><th class=\"cabeceraTable\">Link</th><th class=\"cabeceraTable cCateg\">Categoria</th><th class=\"cabeceraTable\">Web</th><th class=\"cabeceraTable\">Destino</th><th class=\"cabeceraTable cTipo\">Tipo</th></tr></thead>");
 		out.println("			<tbody>");
 		
 		
