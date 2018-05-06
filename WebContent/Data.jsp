@@ -9,6 +9,7 @@
 		
 		<link rel="stylesheet" href="css/morris.css" type="text/css">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 		<link rel="stylesheet" href="css/style.css" type="text/css">
 		
@@ -65,8 +66,8 @@
 					<!-- lkc = listKeywordsClient -->
 					<div id="lstC" class="listItems">
 						<% for (int i = 0; i < clientes.size(); i++){%>
-							<% if (i == 0){%><div id="<%=i%>" onclick="selectClient(this.id, 'lkc')" class="item"><div class="itemChild"><div class="nameItem"><%= clientes.get(i).getNombre() %></div><div class="dominioItem"><%= clientes.get(i).getWeb()%></div></div></div>
-							<% }else {%><div id="<%=i%>" onclick="selectClient(this.id, 'lkc')" class="item"><div class="line"></div><div class="itemChild"><div class="nameItem"><%= clientes.get(i).getNombre() %></div><div class="dominioItem"><%= clientes.get(i).getWeb() %></div></div></div><% }%>
+							<% if (i == 0){%><div id="<%=i%>" onclick="selectClient(this.id, 'lkc')" class="item"><div class="itemChild"><div class="nameItem"><span class="nameItem sName" onmouseover="viewAll(this)" ><%= clientes.get(i).getNombre() %></span></div><div class="dominioItem"><%= clientes.get(i).getWeb()%></div><div class="noti"><%= clientes.get(i).getFollows() - clientes.get(i).getFollows_done() %></div></div></div>
+							<% }else {%><div id="<%=i%>" onclick="selectClient(this.id, 'lkc')" class="item"><div class="line"></div><div class="itemChild"><div class="nameItem"><span class="nameItem sName" onmouseover="viewAll(this)" ><%= clientes.get(i).getNombre() %></span></div><div class="dominioItem"><%= clientes.get(i).getWeb() %></div><div class="noti"><%= clientes.get(i).getFollows() - clientes.get(i).getFollows_done() %></div></div></div><% }%>
 						<% }%>
 						
 					</div>

@@ -201,7 +201,7 @@ function searchC() {
 	var k = $('#searchC').val();
 	
 	$.post('Data', {
-		metodo : 'sc',
+		metodo : 'scs',
 		keyword: k
 	}, function(responseText) {
 		$('#lstC').html(responseText);
@@ -249,21 +249,59 @@ function verify(){
 // funciones de la nueva aplicacion
 
 function selectCategory(id){
-	//cerrar los anteriores
-	$(".slCt").removeClass("visible");
-	$(".slWeb").removeClass("visible");
-	//-------------------------------
-	$("#selCat_"+id).addClass("visible");
+	
+	$(".rotArrow").removeClass("rotArrow");
+	
+	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
+	var clase = $("#selCat_"+id).attr("class");
+	if(clase.includes("visible")){
+		
+		$(".slCt").removeClass("visible");
+		$(".slWeb").removeClass("visible");
+		
+		
+	}else{
+		//cerrar los anteriores
+		$(".slCt").removeClass("visible");
+		$(".slWeb").removeClass("visible");
+		//-------------------------------
+		$("#selCat_"+id).addClass("visible");
+		
+		//modificamos la flecha 
+		$("#dvCat_"+id+" .arrow").addClass("rotArrow");
+	}
+	
+	
+	
 	
 }
 function selectWeb(id_tr){
-	//cerrar los anteriores
-	$(".slWeb").removeClass("visible");
-	$(".slCt").removeClass("visible");
-	//-------------------------------
 	
-	var id_categoria = $("#selCat_"+id_tr+" .liActive").attr('id');;
-	cargarWebs(id_categoria,id_tr);
+	$(".rotArrow").removeClass("rotArrow");
+	
+	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
+	var clase = $("#selWeb_"+id_tr).attr("class");
+	if(clase.includes("visible")){
+		
+		$(".slCt").removeClass("visible");
+		$(".slWeb").removeClass("visible");
+		
+		
+	}else{
+		//cerrar los anteriores
+		$(".slWeb").removeClass("visible");
+		$(".slCt").removeClass("visible");
+		//-------------------------------
+		
+		var id_categoria = $("#selCat_"+id_tr+" .liActive").attr('id');;
+		cargarWebs(id_categoria,id_tr);
+		
+		//modificamos la flecha 
+		$("#dvWeb_"+id_tr+" .arrow").addClass("rotArrow");
+	}
+	
+	
+	
 }
 function cargarWebs(id_categoria,id_tr){
 	var posArryC = $("#lstC .item_select").attr('id');
@@ -276,6 +314,8 @@ function cargarWebs(id_categoria,id_tr){
 	}, function(responseText) {
 		$('#tdWeb_'+id_tr+" ul").html(responseText);
 		$("#selWeb_"+id_tr).addClass("visible");
+		
+		
 	});
 	
 }
@@ -350,7 +390,8 @@ window.addEventListener('click', function(e){
 	if (clase.includes("tdCat")){
 		//si entra en este if significa que hemos hecho click en la categoria
 	}else{
-		 $(".slCt").removeClass("visible");
+		$(".rotArrow").removeClass("rotArrow");
+		$(".slCt").removeClass("visible");
 	}
 });
 
@@ -380,12 +421,52 @@ function changeMonth(){
 	
 }
 
+function sizeHeader(){
+	
+	var wLink = $("#tClientes tbody .cLink").css("width");
+	var wCate = $("#tClientes tbody .cCateg").css("width");
+	var wWeb = $("#tClientes tbody .cWeb").css("width");
+	var wDest = $("#tClientes tbody .cDest").css("width");
+	var wTipo = $("#tClientes tbody .cTipo").css("width");
+	
+	$("#tClientes thead .cLink").css("width", wLink);
+	$("#tClientes thead .cCateg").css("width", wCate);
+	$("#tClientes thead .cWeb").css("width", wWeb);
+	$("#tClientes thead .cDest").css("width", wDest);
+	$("#tClientes thead .cTipo").css("width", wTipo);
+	
+}
+$(document).ready(function(){
+    $(window).resize(function(){
+    	sizeHeader()
+    });
+});
 
 
+function viewAll(x){
+	var w = $(x).css("width").replace("px","");
+	var recorrido = w-246;
+	if(w > 274){
+		$(x).animate({
+			overflow: "visible",
+			marginLeft: "-"+recorrido+"px",
+		  }, 3000, function() {
+			  	$(x).removeAttr("style");
+		  });
+	}
+}
 
-
-
-
+function viewli(x){
+	var w = $(x).css("width").replace("px","");
+	var recorrido = w-370;
+	if(w > 385){
+		$(x).animate({
+			marginLeft: "-"+recorrido+"px",
+		  }, 3000, function() {
+			  	$(x).removeAttr("style");
+		  });
+	}
+}
 
 
 

@@ -210,6 +210,8 @@ public class Data extends HttpServlet {
 			mostrarWebsCat(request, response, out);
 		}else if(metodo.equals("sw")) {
 			guardarWeb(request, response, out);
+		}else if(metodo.equals("scs")) {
+			mostrarClientesInput(request, response, out);
 		}
 
 		//id_tr == id del resultado
@@ -246,7 +248,8 @@ public class Data extends HttpServlet {
 		
 		System.out.println(elemtAnterior);
 		
-		out.println("<span id=\"spWeb_"+id_tr+"\" mweb=\""+foros.get(pArrayF).getId_foro()+"\" class=\"tdCat tdWeb\">"+foros.get(pArrayF).getWeb_foro()+"</span>");
+		out.println("<span id=\"spWeb_"+id_tr+"\" mweb=\""+foros.get(pArrayF).getId_foro()+"\" class=\"tdCat tdWeb spanWeb\">"+foros.get(pArrayF).getWeb_foro()+"</span>");
+		out.println("<i class=\"material-icons arrow\">arrow_drop_down</i>");
 		System.out.println("Insertado");
 	}
 	
@@ -294,7 +297,7 @@ public class Data extends HttpServlet {
 		String htmlWebs="";
 		for (int i = 0; i < forosDisponibles.size(); i++) {
 			System.out.println("Disponible: -> id: "+forosDisponibles.get(i).getCategoria()+"          "+forosDisponibles.get(i).getWeb_foro());
-			htmlWebs += "			<li id=\""+forosDisponibles.get(i).getPosArrayForos()+"\" onclick=\"liSelectWeb(this.id,"+id_tr+")\">"+forosDisponibles.get(i).getWeb_foro()+"</li>";
+			htmlWebs += "			<li id=\""+forosDisponibles.get(i).getPosArrayForos()+"\" onclick=\"liSelectWeb(this.id,"+id_tr+")\"><span onmouseover=\"viewli(this)\">"+forosDisponibles.get(i).getWeb_foro()+"</span></li>";
 		}
 		//htmlWebs += "		</ul>";
 		
@@ -343,7 +346,7 @@ public class Data extends HttpServlet {
 				
 				
 				out.println("<tr id=\""+i+"\">");
-				out.println("	<td><input class=\"inLink\" type=\"text\" value=\""+cliente.getResultados().get(i).getEnlace()+"\">"+"</td>");
+				out.println("	<td class=\"cLink\"><input class=\"inLink\" type=\"text\" value=\""+cliente.getResultados().get(i).getEnlace()+"\">"+"</td>");
 				
 				out.println("	<td class=\"tdCat cCateg pr\">");
 				out.println("		<div class=\"tdCat\" id=\"dvCat_"+i+"\" onclick=\"selectCategory("+i+")\">");
@@ -353,14 +356,15 @@ public class Data extends HttpServlet {
 				out.println(		htmlCategorias);
 				out.println("	</td>");
 				
-				out.println("	<td id=\"tdWeb_"+i+"\" class=\"tdCat tdWeb\">");
+				out.println("	<td id=\"tdWeb_"+i+"\" class=\"tdCat tdWeb cWeb pr\">");
 				out.println("		<div class=\"tdCat tdWeb\" id=\"dvWeb_"+i+"\" onclick=\"selectWeb("+i+")\">");
-				out.println("			<span id=\"spWeb_"+i+"\" mweb=\""+mweb+"\" class=\"tdCat tdWeb\">"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
+				out.println("			<span id=\"spWeb_"+i+"\" mweb=\""+mweb+"\" class=\"tdCat tdWeb spanWeb\">"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
+				out.println("			<i class=\"material-icons arrow\">arrow_drop_down</i>");
 				out.println("		</div>");
 				out.println(		htmlWebs);
 				out.println("	</td>");
 				
-				out.println("	<td>"+cliente.getResultados().get(i).getFecha()+"</td>");
+				out.println("	<td class=\"cDest\">"+cliente.getResultados().get(i).getFecha()+"</td>");
 				
 				if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("follow")) {
 					out.println("	<td class=\"cTipo\"><i class=\"material-icons lf\">link</i></td>");
@@ -370,13 +374,14 @@ public class Data extends HttpServlet {
 				
 				
 				out.println("</tr>");
+				
 	
 			}
 			
 			
 			
 		}
-		
+		out.println("<script>sizeHeader();</script>");
 		
 		
 	}
@@ -410,8 +415,8 @@ public class Data extends HttpServlet {
 		//out.println("	<div class=\"titleTable\">Keywords<div class=\"horDiv\"></div></div>");
 		out.println("	<div id=\"results_Client\" class=\"contentTable\">");
 		//tabla
-		out.println("		<table class=\"table\">");
-		out.println("			<thead><tr><th class=\"cabeceraTable\">Link</th><th class=\"cabeceraTable cCateg\">Categoria</th><th class=\"cabeceraTable\">Web</th><th class=\"cabeceraTable\">Destino</th><th class=\"cabeceraTable cTipo\">Tipo</th></tr></thead>");
+		out.println("		<table id=\"tClientes\" class=\"table\">");
+		out.println("			<thead class=\"pa\"><tr><th class=\"cabeceraTable cLink\">Link</th><th class=\"cabeceraTable cCateg\">Categoria</th><th class=\"cabeceraTable cWeb\">Web</th><th class=\"cabeceraTable cDest\">Destino</th><th class=\"cabeceraTable cTipo\">Tipo</th></tr></thead>");
 		out.println("			<tbody>");
 		
 		
@@ -602,18 +607,19 @@ public class Data extends HttpServlet {
 	}
 
 	private void mostrarClientesInput(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-		/*String k = request.getParameter("keyword");
+		String k = request.getParameter("keyword").toLowerCase();
 
 		System.out.println(k);
 
 
 		int j = 0;
 		for (int i = 0; i < clientes.size(); i++) {
-			String keyword = clientes.get(i).getDominio();
+			String nombre = clientes.get(i).getNombre().toLowerCase();
+			String web = clientes.get(i).getWeb().toLowerCase();
 
-			if(keyword.contains(k)) {
-				if(j==0) {out.println("<div id=\""+i+"\" onclick=\"selectClient(this.id, 'lkc')\" class=\"item\"><div class=\"itemChild\"><div class=\"nameItem\">"+clientes.get(i).getName()+"</div><div class=\"dominioItem\">"+clientes.get(i).getDominio()+"</div></div></div>");j++;
-				}else {out.println(   "<div id=\""+i+"\" onclick=\"selectClient(this.id, 'lkc')\" class=\"item\"><div class=\"line\"></div><div class=\"itemChild\"><div class=\"nameItem\">"+clientes.get(i).getName()+"</div><div class=\"dominioItem\">"+clientes.get(i).getDominio()+"</div></div></div>");}
+			if(nombre.contains(k) || web.contains(k)) {
+				if(j==0) {out.println("<div id=\""+i+"\" onclick=\"selectClient(this.id, 'lkc')\" class=\"item\"><div class=\"itemChild\"><div class=\"nameItem\">"+clientes.get(i).getNombre()+"</div><div class=\"dominioItem\">"+clientes.get(i).getWeb()+"</div></div></div>");j++;
+				}else {out.println(   "<div id=\""+i+"\" onclick=\"selectClient(this.id, 'lkc')\" class=\"item\"><div class=\"line\"></div><div class=\"itemChild\"><div class=\"nameItem\">"+clientes.get(i).getNombre()+"</div><div class=\"dominioItem\">"+clientes.get(i).getWeb()+"</div></div></div>");}
 			}
 
 		}
@@ -621,7 +627,7 @@ public class Data extends HttpServlet {
 		out.println("<script type=\"text/javascript\">setC();</script>");
 
 		System.out.println("Lista clientes cargada");
-*/
+
 	}
 
 
