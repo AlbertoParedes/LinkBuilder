@@ -12,6 +12,7 @@
 		<link href="https://fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 		<link rel="stylesheet" href="css/style.css" type="text/css">
+		<link rel="stylesheet" href="css/pretty-checkbox.min.css" type="text/css">
 		
 		<title>Insert title here</title>
 		<style>::-webkit-scrollbar {display: none;width: 20px;}</style>
@@ -113,12 +114,6 @@
 				
 				<div id="kywData" class="uniqueClient">
 				
-					<div class="containerApp">	
-						<div class="msgSaludo msg2">Si seleccionas una keyword </div>
-						<div class="msgSaludo msg2">verás su histórico, lo cual refleja</div>
-						<div class="msgSaludo msg2">la eficacia de tu trabajo.</div>	
-						<div class="msgSaludo msg2">Suerte!!</div>						
-					</div> 
 					
 				</div> 
 			</div>	

@@ -185,71 +185,51 @@ input:checked + .slider:before {-webkit-transform: translateX(11px);-ms-transfor
     color: #FABB2D}
 
 .slWeb{
-	overflow: hidden;
-    overflow-y: scroll;
-    /* height: auto; */
-    width: 100%;
-    max-width: 470px;
-    max-height: 400px;
-}
-.inLink{
-	    width: 100%;
-    outline: none;
-    border: 0;
-}
+overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width: 470px;    max-height: 400px;}
+.inLink{	    width: 100%;   outline: none;    border: 0;}
 .lf{    color: #4688F1; }
 .lnf{    color: #ea4335;}
-
-.pr{
-	position: relative;
-}
+.pr{	position: relative;}
 .arrow{position: absolute;right: 0;}
 
 .cLink{width: 40%;}
 .cWeb{width: 30%;}
 .cTipo{ width: 50px; min-width: 50px;   text-align: center;}
 .cCateg{width: 210px;max-width: 210px;}
-.pa{position: absolute;background: white;
-    z-index: 1;    top: 0;}
-.noti{border: solid;
-    font-family: 'Lato', sans-serif;
-    border-width: 1px;
-    position: absolute;
-    right: 25px;
-    top: 36px;
-    font-size: 11px;
-    border-color: #ea4335;
-    color: #ea4335;
-    text-align: center;
-    border-radius: 50px;
-    padding: 1px 6px;
-    background: white;}
-    
-.sName{
-}
-.sViewName{
-	
-    overflow: visible;
-    
-    -webkit-transition: all 7s; /* Safari */
-    transition: all 7s;
-}
+.pa{position: absolute;background: white;    z-index: 1;    top: 0;}
+.noti{border: solid;    font-family: 'Lato', sans-serif;    border-width: 1px;    position: absolute;    right: 25px;    top: 36px;    font-size: 11px;    border-color: #ea4335;    color: #ea4335;    text-align: center;    border-radius: 50px;    padding: 1px 6px;background: white;}  
+.sName{}
+.sViewName{overflow: visible;-webkit-transition: all 7s; /* Safari */transition: all 7s;}
+.rotArrow{transform: rotate(180deg);color: #4688F1!important; transition: all 0.7s;}
+.spanWeb{    position: absolute;/* min-width: 50px; */overflow: hidden;overflow-wrap: break-word;text-overflow: ellipsis;white-space: nowrap;width: calc(100% - 40px);}
 
-.rotArrow{transform: rotate(180deg);
-    color: #4688F1!important; transition: all 0.7s;}
-.spanWeb{    position: absolute;
-    /* min-width: 50px; */
+#tClientes{table-layout:fixed}
+#tClientes td{white-space: nowrap;overflow: visible;}
+.tdWeb{    white-space: nowrap;
     overflow: hidden;
+    /* overflow-wrap: break-word; */
+    text-overflow: ellipsis;
+    white-space: nowrap;}
+
+
+.cCWeb{width: 30%;}
+.cCTipo{width: 5%}
+.cCDR{width: 5%;}
+.cCDA{width: 5%;}
+.cCTem{width: 15%;}
+
+.cCDesc{width: 25%;}
+.cCApro{width: 5%;}
+.cCRegi{width: 5%;}
+.cCFecha{width: 5%;}
+
+.divAcortar{
+	overflow: hidden;
     overflow-wrap: break-word;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: calc(100% - 40px);}
-
-
-
-
-
-
+    width: 100%;
+}
 
 
 

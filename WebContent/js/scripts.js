@@ -1,6 +1,4 @@
 
-var c = 0;
-
 function changePanel(id) {
 	
 	
@@ -18,18 +16,11 @@ function changePanel(id) {
 		$("#"+id+" i").addClass("btnSelected");
 	}else{
 		
-		if(c==1){
-			$(".allKeywords").css('display', 'block');
-			$("#"+id).addClass("btnSelected");
-			$("#"+id+" i").addClass("btnSelected");
-		}else{
-			$(".allClients").css('display', "block");
-			$("#btnClientes").addClass("btnSelected");
-			$("#"+"btnClientes"+" i").addClass("btnSelected");
-			cambiarInstruccion();
-		}
-		
-		
+		$(".allKeywords").css('display', 'block');
+		$("#"+id).addClass("btnSelected");
+		$("#"+id+" i").addClass("btnSelected");
+
+		cargarCategorias();
 	} 
 }
 
@@ -105,9 +96,9 @@ function changeThemeK(id){
 	$("#lkk .item .line").removeClass("line_select");
 	$("#lkk .item .nameItem,  #lkk .item .dominioItem").removeClass("nameItem_select");
 	
-	$("#"+id).addClass("item_select");
-	$("#"+id+" .line").addClass("line_select");
-	$("#"+id+" .nameItem, "+"#"+id+" .dominioItem").addClass("nameItem_select");
+	$("#lkk #"+id).addClass("item_select");
+	$("#lkk #"+id+" .line").addClass("line_select");
+	$("#lkk #"+id+" .nameItem, "+"#"+id+" .dominioItem").addClass("nameItem_select");
 
 }
 
@@ -438,6 +429,7 @@ function sizeHeader(){
 }
 $(document).ready(function(){
     $(window).resize(function(){
+    	$("span").stop();
     	sizeHeader()
     });
 });
@@ -456,23 +448,88 @@ function viewAll(x){
 	}
 }
 
-function viewli(x){
-	var w = $(x).css("width").replace("px","");
-	var recorrido = w-370;
-	if(w > 385){
+
+function viewCampo(x){
+	
+	var superw = $(x).parents().width();
+	var w = $(x).width();
+	
+	var recorrido = w-superw+40;
+	
+	if(recorrido>0){
 		$(x).animate({
 			marginLeft: "-"+recorrido+"px",
 		  }, 3000, function() {
 			  	$(x).removeAttr("style");
 		  });
 	}
+	
 }
 
+//Dani------------------
+function cargarCategorias(){
+	$.post('Data', {
+		metodo : 'cats'
+	}, function(responseText) {
+		$('#lkk ').html(responseText);
+	});
+}
 
+function selectCategoria(id) {
+	changeThemeK(id);
+	
+	//pintamos las busquedas de la keyword selecionada
+	
+	$.post('Data', {
+		metodo : 'selectCat', 
+		id : id
+	}, function(responseText) {
+		$('#kywData').html(responseText);
+	});
+	
+}
 
+function selectTematica(id){
 
+	//cerrar los anteriores
+	$(".slCt").removeClass("visible");
+	
+	//-------------------------------
+	$("#selTem_"+id).addClass("visible");
+	
+	$(".pr").removeClass("pr");
+	$("#td_"+id).addClass("pr");
+	
+}
 
+//para que funcione el checkbox de "seleccionar todas" en las tematicas
+function selectAll(source,id_sp) {
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i] != source){
+        	checkboxes[i].checked = source.checked;
+        	$("#spTem_"+id_sp).text("Todas");  
+        }
+            
+    }
+      
+}
 
+//para seleccionar la tematica del foro
+function liSelectTem(id,id_ul){
+	//alert("DENTROv");
+	var t = "";
+	$("#selTem_"+id_ul+" li input:checked").each(function(){t += ($(this).attr("id"))+" "});
+	
+	if (t == ""){
+		t = "Selecciona tematica";
+	}
+	$("#spTem_"+id_ul).text(t);
+	//$("#selTem_21 li input:checked").each(function(){console.log($(this).attr("id"))})
+	//alert("BIEN");
+}
+
+//---------------------------
 
 
 
