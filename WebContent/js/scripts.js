@@ -466,6 +466,20 @@ function viewCampo(x){
 	
 }
 
+function openUrl(x, event){
+	
+	event.stopPropagation();
+	var url = $(x).text();
+	
+	if(!url.startsWith("http"))
+		url = "http://"+url;
+	
+	var win = window.open(url, '_blank');
+	win.focus();
+	
+}
+
+
 //Dani------------------
 function cargarCategorias(){
 	$.post('Data', {

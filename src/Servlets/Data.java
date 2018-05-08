@@ -317,7 +317,7 @@ public class Data extends HttpServlet {
 		String htmlWebs="";
 		for (int i = 0; i < forosDisponibles.size(); i++) {
 			System.out.println("Disponible: -> id: "+forosDisponibles.get(i).getCategoria()+"          "+forosDisponibles.get(i).getWeb_foro());
-			htmlWebs += "			<li id=\""+forosDisponibles.get(i).getPosArrayForos()+"\" onclick=\"liSelectWeb(this.id,"+id_tr+")\"><span onmouseover=\"viewCampo(this)\">"+forosDisponibles.get(i).getWeb_foro()+"</span></li>";
+			htmlWebs += "			<li id=\""+forosDisponibles.get(i).getPosArrayForos()+"\" onclick=\"liSelectWeb(this.id,"+id_tr+")\"><span onmouseover=\"viewCampo(this)\" onclick=\"openUrl(this, event)\">"+forosDisponibles.get(i).getWeb_foro()+"</span></li>";
 		}
 		//htmlWebs += "		</ul>";
 		
@@ -378,7 +378,7 @@ public class Data extends HttpServlet {
 				
 				out.println("	<td id=\"tdWeb_"+i+"\" class=\"tdCat tdWeb cWeb pr\">");
 				out.println("		<div class=\"tdCat tdWeb\" id=\"dvWeb_"+i+"\" onclick=\"selectWeb("+i+")\">");
-				out.println("			<span id=\"spWeb_"+i+"\" mweb=\""+mweb+"\" onmouseover=\"viewCampo(this)\" class=\"tdCat tdWeb\">"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
+				out.println("			<span id=\"spWeb_"+i+"\" mweb=\""+mweb+"\" onmouseover=\"viewCampo(this)\" onclick=\"openUrl(this, event)\" class=\"tdCat tdWeb\">"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
 				out.println("			<i class=\"material-icons arrow\">arrow_drop_down</i>");
 				out.println("		</div>");
 				out.println(		htmlWebs);
