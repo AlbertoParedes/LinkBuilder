@@ -518,14 +518,27 @@ function selectTematica(id){
 
 //para que funcione el checkbox de "seleccionar todas" en las tematicas
 function selectAll(source,id_sp) {
-    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    for (var i = 0; i < checkboxes.length; i++) {
-        if (checkboxes[i] != source){
-        	checkboxes[i].checked = source.checked;
-        	$("#spTem_"+id_sp).text("Todas");  
-        }
-            
-    }
+	
+	var thisInput = $(source).is(":checked")
+	var checkboxes = $('#selTem_'+id_sp+' li input[type="checkbox"]');
+	if(thisInput){
+	    for (var i = 0; i < checkboxes.length; i++) {
+	        if (checkboxes[i] != source){
+	        	checkboxes[i].checked = source.checked;
+	        	$("#spTem_"+id_sp).text("Todas");  
+	        }
+	            
+	    }
+	}else{
+		//vaciar
+	    for (var i = 0; i < checkboxes.length; i++) {
+	        checkboxes[i].checked = source.checked;
+	        $("#spTem_"+id_sp).text("Selecciona temática");  
+	            
+	    }
+	}
+	
+    
       
 }
 
