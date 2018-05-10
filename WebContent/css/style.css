@@ -54,7 +54,7 @@
 .dominioItem{-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;font-family: Roboto, helvetica, arial, sans-serif;font-size: 13px;font-weight: 400;letter-spacing: 1px; margin-top: 7px;color: #878787;overflow-wrap: break-word;    word-wrap: break-word;}
 
 .line{width: calc(100% - 40px);position: absolute;height: 1px;background: #ececec;margin-left: 20px;}
-.item{    cursor: pointer;border: solid;border-width: 0;border-left-width: 3px;border-right-width: 3px;border-color: transparent;}
+.item{position: relative; cursor: pointer;border: solid;border-width: 0;border-left-width: 3px;border-right-width: 3px;border-color: transparent;}
 
 /*------------------------------------------*/
 
@@ -207,9 +207,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 #tClientes td{white-space: nowrap;overflow: visible;}
 .tdWeb{    white-space: nowrap;
     overflow: hidden;
-    /* overflow-wrap: break-word; */
-    text-overflow: ellipsis;
-    white-space: nowrap;}
+    text-overflow: ellipsis;padding-right: 25px;}
 
 
 .cCWeb{width: 30%;}
@@ -232,10 +230,19 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 }
 
 
+.blur{    -webkit-filter: blur(1px);
+    -moz-filter: blur(1px);
+    -o-filter: blur(1px);
+    -ms-filter: blur(1px);
+    filter: blur(1px);}
+
+.blockClient{ display:none;   position: absolute;top: 0;width: 100%;height: 100%;background: transparent;}
+.lockDiv{    position: absolute;
+    right: 23px;
+    bottom: 28px;}
 
 
-
-
+.visible{display: block;}
 
 
 

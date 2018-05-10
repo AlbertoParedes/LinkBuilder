@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="Objects.Cliente"%>
+<%@page import="Objects.Gson.ClienteGson"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
@@ -37,7 +37,7 @@
 	<body>
 		
 		<%	
-			ArrayList<Cliente> clientes = (ArrayList<Cliente>) request.getAttribute("clientes");
+			ArrayList<ClienteGson> clientes = (ArrayList<ClienteGson>) request.getAttribute("clientes");
 			String nameUser = (String) request.getAttribute("name_user");	
 			
 		%>
@@ -67,8 +67,17 @@
 					<!-- lkc = listKeywordsClient -->
 					<div id="lstC" class="listItems">
 						<% for (int i = 0; i < clientes.size(); i++){%>
-							<% if (i == 0){%><div id="<%=i%>" onclick="selectClient(this.id, 'lkc')" class="item"><div class="itemChild"><div class="nameItem"><span class="nameItem sName" onmouseover="viewAll(this)" ><%= clientes.get(i).getNombre() %></span></div><div class="dominioItem"><%= clientes.get(i).getWeb()%></div><div class="noti"><%= clientes.get(i).getFollows() - clientes.get(i).getFollows_done() %></div></div></div>
-							<% }else {%><div id="<%=i%>" onclick="selectClient(this.id, 'lkc')" class="item"><div class="line"></div><div class="itemChild"><div class="nameItem"><span class="nameItem sName" onmouseover="viewAll(this)" ><%= clientes.get(i).getNombre() %></span></div><div class="dominioItem"><%= clientes.get(i).getWeb() %></div><div class="noti"><%= clientes.get(i).getFollows() - clientes.get(i).getFollows_done() %></div></div></div><% }%>
+							<div id="<%=clientes.get(i).getIdCliente()%>" onclick="selectClient(this.id)" class="item">
+								<%if(i!=0){ %><div class="line"></div><%}%>
+								<div class="itemChild <%if(clientes.get(i).getEditando()==1){%>blur<%}%>">
+									<div class="nameItem">
+										<span class="nameItem sName" onmouseover="viewAll(this)" ><%= clientes.get(i).getNombre() %></span>
+									</div>
+									<div class="dominioItem"><%= clientes.get(i).getWeb() %></div>
+									<%if(clientes.get(i).getEditando()==0){%><div class="noti"><%= clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() %></div><%}%>
+								</div>
+								<div class="blockClient <%if(clientes.get(i).getEditando()==1){%>visible<%}%>"><div class="lockDiv"><i class="material-icons lf blur"> lock </i></div></div>
+							</div>
 						<% }%>
 						
 					</div>
@@ -80,7 +89,7 @@
 					
 					<div class="containerApp">	
 						<div class="msgSaludo">Hola <%= nameUser %>, </div>
-						<div><span class="msg"></span></div>							
+						<div><span class="msg">Selecciona un cliente.</span></div>							
 					</div>
 					
 					<!-- tag element -->
@@ -123,11 +132,11 @@
 		<script type="text/javascript" src="js/scripts.js"></script>
 		<script type="text/javascript">
 			
-			window.ityped.init(document.querySelector('.msg'),{
+			/*window.ityped.init(document.querySelector('.msg'),{
 				strings : ['Selecciona un cliente.'],
 				disableBackTyping: true,
 				loop : false
-			})
+			})*/
 			
 			
 							

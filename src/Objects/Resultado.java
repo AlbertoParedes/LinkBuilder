@@ -17,12 +17,34 @@ public class Resultado {
 	private String anchor;
 	
 	//Nombre del foro al que se hace referencia con su id_foro
-	String web_foro;
+	private String web_foro;
 	
 	public Resultado() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+	
+	
+	public Resultado(int id_resultado, int id_foro, String enlace, Date fecha, String tipo, String destino,
+			int categoria, String estado, String anchor, String web_foro) {
+		super();
+		this.id_resultado = id_resultado;
+		this.id_foro = id_foro;
+		this.enlace = enlace;
+		this.fecha = fecha;
+		this.tipo = tipo;
+		this.destino = destino;
+		this.categoria = categoria;
+		this.estado = estado;
+		this.anchor = anchor;
+		this.web_foro = web_foro;
+	}
+
+
+
+
 	public Resultado(String nombre, int id_resultado, int id_cliente, int id_foro, String enlace, Date fecha,
 			String tipo, String destino, int categoria, String estado, String anchor, String web_foro) {
 		super();

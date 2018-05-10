@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -24,17 +25,26 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import Classes.Webservice;
 import Objects.Categoria;
 import Objects.Cliente;
 import Objects.Foro;
 import Objects.Resultado;
 import Objects.Tematica;
+import Objects.Gson.ClienteGson;
+import Objects.Gson.ResultadoGson;
 
 
 @WebServlet("/Data")
 public class Data extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	Webservice ws = new Webservice();
+	
 	private ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 	private Cliente cliente = new Cliente();
 	private ArrayList<Foro> foros = new ArrayList<Foro>();
@@ -60,10 +70,27 @@ public class Data extends HttpServlet {
 
 	private void cargarPage(HttpServletRequest request, HttpServletResponse response, int id_user, String name_user) throws ServletException, IOException, ParseException {
 		System.out.println(id_user+" "+name_user+"############################");
-		Webservice ws = new Webservice();
+		
+		 //Obtenemos los clientes del usuario ------------------------------------------------------------------------
+		String json = ws.getClientsByUser(id_user, "getClientsByUser.php");
+	    Gson gson = new Gson();
+	    ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
+	    //-----------------------------------------------------------------------------------------------------------
+		
+	    
+	    
+	    
+	    
+	    
+		
+	    
+	    
+	    
+	    
+		
 
 		//obtenemos todas las categorias
-		String json = ws.getJSON("getCategorias.php");
+		json = ws.getJSON("getCategorias.php");
 		Object jsonObject =JSONValue.parse(json.toString());
 	    JSONArray arrayData = (JSONArray)jsonObject;
 	    ArrayList<Categoria> categorias = new ArrayList<Categoria>();
@@ -118,6 +145,9 @@ public class Data extends HttpServlet {
 	    }
 	    this.foros = foros;
 		
+	    
+	    
+	    
 		//obtenemos todos los clientes con sus resultados
 		json = ws.getJSON("getCliRes.php");
 		//System.out.println(json);
@@ -173,7 +203,7 @@ public class Data extends HttpServlet {
 	        if(id_c != id_cliente) {
 	        	Resultado r = new Resultado(nombre, id_resultado, id_cliente, id_foro, enlace, date, tipoRes, destino, categoria, estado, anchorR,web_foro);
 	        	Foro f = new Foro(id_foro, web_foro, tipoF, dr, da, tematica, descripcion, categoria, req_aprobacion, req_registro, aparece_fecha, reutilizable);
-	        	Cliente c = new Cliente(id_cliente, web_cliente, nombre, servicio, follows, nofollows, anchorC, blog, idioma, follows_done, nofollows_done, linkbuilder, new ArrayList<Resultado>(), new ArrayList<Foro>());
+	        	Cliente c = new Cliente(id_cliente, web_cliente, nombre, servicio, follows, nofollows, anchorC, blog, idioma, follows_done, nofollows_done, linkbuilder,0, new ArrayList<Resultado>(), new ArrayList<Foro>());
 	        	c.getResultados().add(r);
 	        	c.getForos().add(f);
 	        	clientes.add(c);
@@ -194,15 +224,17 @@ public class Data extends HttpServlet {
 		String f = name_user.substring(0, 1).toUpperCase();
 		name_user = f + name_user.substring(1,name_user.length()).toLowerCase();
 
-		request.setAttribute("clientes", clientes);//pasamos la lista de clientes
+		request.setAttribute("clientes", clientesGson);//pasamos la lista de clientes
 		request.setAttribute("name_user", name_user);
 		
 		request.getRequestDispatcher("Data.jsp").forward(request, response);
 
 		
-		
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		HttpSession session = request.getSession();
+		int id_user = Integer.parseInt(session.getAttribute("id_user").toString());
 		
 		String metodo = request.getParameter("metodo");
 
@@ -232,10 +264,89 @@ public class Data extends HttpServlet {
 			mostrarCategorias(request, response, out);
 		}else if(metodo.equals("selectCat")) {
 			mostrarForos(request, response, out);
+		
+		
+		}else if(metodo.equals("ckc")) { 
+			try {checkClientEdition(request, response, out,id_user);} catch (ParseException e) {}
+		}else if(metodo.equals("ckcs")) {
+			try {checkClients(request, response, out,id_user);} catch (ParseException e) {}
 		}
 
 		//id_tr == id del resultado
 	}
+	private void checkClientEdition(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user) throws IOException, ParseException {
+		int id_client = Integer.parseInt(request.getParameter("id_client"));
+		System.out.println(id_client);
+		
+		//obtenemos la disponibilidad del cliente clickado
+		String json = ws.getClientById(id_client, "getClientById.php");
+		System.out.println(json);
+		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+		ArrayList<ResultadoGson> resultadosGson = gson.fromJson(json, new TypeToken<List<ResultadoGson>>(){}.getType());
+		
+		Cliente cliente = null;
+		
+		int x = 0;
+		for (ResultadoGson r : resultadosGson) {
+			if(x==0 && r.getEditando() == 0) {
+				cliente = new Cliente(r.getIdCliente(), r.getWeb(), r.getNombre(), r.getServicio(), r.getFollows(), r.getNofollows(), r.getAnchorCliente(), r.getBlog(), r.getIdioma(), r.getFollowsDone(), r.getNofollowsDone(), r.getLinkbuilder(), r.getEditando(), new ArrayList<Resultado>(), new ArrayList<Foro>());
+				//crear peticion para poner el cliente en edicion = 1
+				json = ws.actualizarEditando(1, id_user, r.getIdCliente(), "actualizarEditando.php");
+				System.out.println(json);
+				x=1;
+			}
+			if(r.getEditando() == 0) {
+				cliente.getResultados().add(new Resultado(r.getIdResultado(), r.getIdForo(), r.getEnlace(), r.getFecha(), r.getTipoRes(), r.getDescripcion(), r.getCategoriaResultado(), r.getEstado(), r.getAnchorR(), r.getWebForo()));
+				cliente.getForos().add(new Foro(r.getIdForo(), r.getWebForo(), r.getTipoForo(), r.getDR(), r.getDA(), r.getTematica(), r.getDescripcion(), r.getCategoriaResultado(), r.getReqAprobacion(), r.getReqRegistro(), r.getApareceFecha(), r.getReutilizable()));
+				System.out.println(r.getIdCliente()+" "+r.getNombre()+" "+r.getEditando());	
+			}else {
+				break;
+			}
+			
+		}
+		//si es null es que un usuario ya esta editando este cliente
+		if(cliente!=null) {
+			this.cliente = cliente;
+			mostrarResultados(request, response, out);
+		}
+	    
+	}
+	
+	private void checkClients(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user) throws IOException, ParseException {
+		
+		int id_client = Integer.parseInt(request.getParameter("id_client"));
+		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
+		String json = ws.getClientsByUser(id_user, "getClientsByUser.php");
+	    Gson gson = new Gson();
+	    ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
+	    //-----------------------------------------------------------------------------------------------------------
+		
+	    int inicio = 0;
+	    String clases = "",clases2="";
+	    
+	    for (ClienteGson c : clientesGson) {
+	    	if(c.getEditando()==1 && c.getIdCliente()!=id_client) {clases="itemChild blur";clases2="blockClient visible";}
+	    	else {clases ="itemChild";clases2="blockClient";}
+	    	
+	    	out.println("<div id=\""+c.getIdCliente()+"\" onclick=\"selectClient(this.id)\" class=\"item\">");
+	    	if(inicio!=0)
+	    	out.println(	"<div class=\"line\"></div>");
+	    	out.println(		"<div class=\""+clases+"\">");
+	    	out.println(			"<div class=\"nameItem\">");
+	    	out.println(				"<span class=\"nameItem sName\" onmouseover=\"viewAll(this)\" >"+c.getNombre()+"</span>");
+	    	out.println(			"</div>");
+	    	out.println(			"<div class=\"dominioItem\">"+c.getWeb()+"</div>");
+	    	if(c.getEditando()==0 || c.getIdCliente() == id_client)
+	    	out.println(			"<div class=\"noti\">"+ (c.getFollows() - c.getFollowsDone())+"</div>");
+	    	out.println(		"</div>");
+	    	out.println("	<div class=\""+clases2+"\"><div class=\"lockDiv\"><i class=\"material-icons lf blur\"> lock </i></div></div>");
+	    	out.println("</div>");
+	    	
+		}
+	    
+	    System.out.println("Holaaaaaaa");
+	}
+
 	private void guardarWeb(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		int pArrayF = Integer.parseInt(request.getParameter("pArrayF"));
 		int id_tr = Integer.parseInt(request.getParameter("id_tr"));
@@ -326,12 +437,12 @@ public class Data extends HttpServlet {
 	}
 
 	private void morstarResultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
-		int posicion = Integer.parseInt(request.getParameter("id"));
+		//int posicion = Integer.parseInt(request.getParameter("id"));
 		int mes = Integer.parseInt(request.getParameter("mes"));
 		int year = Integer.parseInt(request.getParameter("year"));
 		out = response.getWriter();
 
-		cliente = clientes.get(posicion);
+		//cliente = clientes.get(posicion);
 		
 		for (int i = 0; i < cliente.getResultados().size(); i++) {
 			
@@ -366,7 +477,10 @@ public class Data extends HttpServlet {
 				 
 				
 				out.println("<tr id=\""+i+"\">");
-				out.println("	<td class=\"cLink\"><input class=\"inLink\" type=\"text\" value=\""+cliente.getResultados().get(i).getEnlace()+"\">"+"</td>");
+				out.println("	<td class=\"cLink\">");
+				out.println("		<input class=\"inLink\" onchange=\"updateLink(this)\" type=\"text\" value=\""+cliente.getResultados().get(i).getEnlace()+"\">");
+				out.println("	</td>");
+				
 				
 				out.println("	<td class=\"tdCat cCateg pr\">");
 				out.println("		<div class=\"tdCat\" id=\"dvCat_"+i+"\" onclick=\"selectCategory("+i+")\">");
@@ -406,7 +520,7 @@ public class Data extends HttpServlet {
 		
 	}
 	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ParseException {
-		int posicion = Integer.parseInt(request.getParameter("posicion"));
+		//int posicion = Integer.parseInt(request.getParameter("posicion"));
 		
 		
 		Date date= new Date();Calendar cal = Calendar.getInstance();cal.setTime(date);
@@ -421,8 +535,6 @@ public class Data extends HttpServlet {
 		*/
 		
 		out = response.getWriter();
-
-		cliente = clientes.get(posicion);
 		
 		out.println("<div class=\"infoClient\">");
 		out.println("	<div class=\"nameClient\">"+cliente.getNombre()+"</div>");
@@ -493,9 +605,9 @@ public class Data extends HttpServlet {
 		        String estado = (String) row.get("estado");
 		        String anchorR = (String) row.get("anchorR");
 		    	
-		    	clientes.get(posicion).getResultados().add(new Resultado(clientes.get(posicion).getNombre(), id_resultado, clientes.get(posicion).getId_cliente(), id_foro, enlace, dateR, tipo, destino, categoria, estado, anchorR,""));
+		    	//clientes.get(posicion).getResultados().add(new Resultado(clientes.get(posicion).getNombre(), id_resultado, clientes.get(posicion).getId_cliente(), id_foro, enlace, dateR, tipo, destino, categoria, estado, anchorR,""));
 		    }
-		    cliente = clientes.get(posicion);
+		    //cliente = clientes.get(posicion);
 		}else {
 			System.out.println("curso del programa normal");
 		}

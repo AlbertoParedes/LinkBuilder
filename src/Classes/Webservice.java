@@ -70,6 +70,50 @@ public class Webservice {
 		return response.toString();
 	}
 	
+	public String getClientsByUser(int id_user, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("id_user", id_user);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
+	public String getClientById(int id_client, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("id_client", id_client);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
+	public String actualizarEditando(int editando,int userEditando,int id_cliente, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("editando", editando);
+		jsonObj.put("userEditando", userEditando);
+		jsonObj.put("id_cliente", id_cliente);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
 	public String getResultVacios(int id,String fecha, String fichero) {
 		StringBuffer response = new StringBuffer();
 		JSONObject jsonObj = new JSONObject();
@@ -84,6 +128,8 @@ public class Webservice {
 
 		return response.toString();
 	}
+	
+	
 	
 	public String insertResultadoVacio(int id,String tipo, String fichero) {
 		StringBuffer response = new StringBuffer();

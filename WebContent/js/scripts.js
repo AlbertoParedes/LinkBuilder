@@ -56,7 +56,49 @@ function abrirBox(id) {
 	$( ".box" ).css('margin-left', "-15px");
 });*/
 
-function selectClient(id, metodo) {
+/*function checkClients(id_client){
+	$.post('Data', {
+		metodo : ckc, 
+		id_client : id_client,
+	}, function(responseText) {
+		$('#lstC').html(responseText);
+	});
+}*/
+
+function selectClient(id_client) {
+	
+	var id_cliente_anterior = $("#lstC .item_select").attr("id");
+	if(id_cliente_anterior == undefined){id_cliente_anterior = -1;}
+	alert(id_cliente_anterior);
+	
+	//revisamos si el cliente seleccionado esta disponible
+	$.post('Data', {
+		metodo : "ckc",
+		id_client : id_client,
+		id_cliente_anterior : id_cliente_anterior
+	}, function(responseText) {
+		
+		var r = responseText.length;
+		if(r == 0){
+			alert("Esta bloqueado");
+		}else{
+			//si el cliente selecionado esta disponible 
+			$('#uniqueClient').html(responseText);
+		}
+		
+		//Comprobamos otra vez la disponibiladad de todos los clientes
+		$.post('Data', {
+			metodo : "ckcs",
+			id_client : id_client,
+		}, function(responseText) {
+			//actualizamos la lsita de clientes 
+			$('#lstC').html(responseText);
+			changeThemeC(id_client);
+		});
+		
+	});
+	
+	/*
 	changeThemeC(id);
 	var mes = $(".picker .pick-m .pick-sl").val();
 	var year = $(".picker .pick-y .pick-sl").val();
@@ -75,7 +117,7 @@ function selectClient(id, metodo) {
 
 	
 	c = 1;
-	
+	*/
 }
 
 function changeThemeC(id){
@@ -279,6 +321,7 @@ function selectWeb(id_tr){
 		
 		
 	}else{
+		
 		//cerrar los anteriores
 		$(".slWeb").removeClass("visible");
 		$(".slCt").removeClass("visible");
@@ -287,8 +330,7 @@ function selectWeb(id_tr){
 		var id_categoria = $("#selCat_"+id_tr+" .liActive").attr('id');;
 		cargarWebs(id_categoria,id_tr);
 		
-		//modificamos la flecha 
-		$("#dvWeb_"+id_tr+" .arrow").addClass("rotArrow");
+		
 	}
 	
 	
@@ -305,7 +347,8 @@ function cargarWebs(id_categoria,id_tr){
 	}, function(responseText) {
 		$('#tdWeb_'+id_tr+" ul").html(responseText);
 		$("#selWeb_"+id_tr).addClass("visible");
-		
+		//modificamos la flecha 
+		$("#dvWeb_"+id_tr+" .arrow").addClass("rotArrow");
 		
 	});
 	
@@ -477,6 +520,10 @@ function openUrl(x, event){
 	var win = window.open(url, '_blank');
 	win.focus();
 	
+}
+
+function updateLink(x){
+	alert("Modificando link..")
 }
 
 
