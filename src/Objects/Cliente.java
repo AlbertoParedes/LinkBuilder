@@ -2,6 +2,8 @@ package Objects;
 
 import java.util.ArrayList;
 
+import Objects.Gson.ForoGson;
+
 public class Cliente {
 	
 	private int id_cliente;
@@ -19,7 +21,7 @@ public class Cliente {
 	private int editando;
 	
 	private ArrayList <Resultado> resultados;
-	private ArrayList <Foro> foros;
+	private ArrayList <ForoGson> foros;
 	
 	
 	public Cliente() {
@@ -27,7 +29,7 @@ public class Cliente {
 	}
 	public Cliente(int id_cliente, String web, String nombre, String servicio, int follows, int nofollows,
 			String anchor, int blog, String idioma, int follows_done, int nofollows_done, String linkbuilder,
-			int editando, ArrayList<Resultado> resultados, ArrayList<Foro> foros) {
+			int editando, ArrayList<Resultado> resultados, ArrayList<ForoGson> foros) {
 		super();
 		this.id_cliente = id_cliente;
 		this.web = web;
@@ -129,10 +131,10 @@ public class Cliente {
 	public void setResultados(ArrayList<Resultado> resultados) {
 		this.resultados = resultados;
 	}
-	public ArrayList<Foro> getForos() {
+	public ArrayList<ForoGson> getForos() {
 		return foros;
 	}
-	public void setForos(ArrayList<Foro> foros) {
+	public void setForos(ArrayList<ForoGson> foros) {
 		this.foros = foros;
 	}
 	

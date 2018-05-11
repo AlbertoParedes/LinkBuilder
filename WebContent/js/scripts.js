@@ -67,15 +67,11 @@ function abrirBox(id) {
 
 function selectClient(id_client) {
 	
-	var id_cliente_anterior = $("#lstC .item_select").attr("id");
-	if(id_cliente_anterior == undefined){id_cliente_anterior = -1;}
-	alert(id_cliente_anterior);
 	
 	//revisamos si el cliente seleccionado esta disponible
 	$.post('Data', {
 		metodo : "ckc",
-		id_client : id_client,
-		id_cliente_anterior : id_cliente_anterior
+		id_client : id_client
 	}, function(responseText) {
 		
 		var r = responseText.length;
@@ -84,6 +80,7 @@ function selectClient(id_client) {
 		}else{
 			//si el cliente selecionado esta disponible 
 			$('#uniqueClient').html(responseText);
+			changeThemeC(id_client);
 		}
 		
 		//Comprobamos otra vez la disponibiladad de todos los clientes
@@ -308,12 +305,12 @@ function selectCategory(id){
 	
 	
 }
-function selectWeb(id_tr){
+function selectWeb(id_resultado){
 	
 	$(".rotArrow").removeClass("rotArrow");
 	
 	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
-	var clase = $("#selWeb_"+id_tr).attr("class");
+	var clase = $("#selWeb_"+id_resultado).attr("class");
 	if(clase.includes("visible")){
 		
 		$(".slCt").removeClass("visible");
@@ -327,8 +324,8 @@ function selectWeb(id_tr){
 		$(".slCt").removeClass("visible");
 		//-------------------------------
 		
-		var id_categoria = $("#selCat_"+id_tr+" .liActive").attr('id');;
-		cargarWebs(id_categoria,id_tr);
+		var id_categoria = $("#selCat_"+id_resultado+" .liActive").attr('id');;
+		cargarWebs(id_categoria,id_resultado);
 		
 		
 	}
@@ -336,19 +333,17 @@ function selectWeb(id_tr){
 	
 	
 }
-function cargarWebs(id_categoria,id_tr){
-	var posArryC = $("#lstC .item_select").attr('id');
+function cargarWebs(id_categoria,id_resultado){
 	
 	$.post('Data', {
 		metodo : 'cwbs',
 		id_categoria: id_categoria,
-		id_tr: id_tr,
-		posArryC : posArryC
+		id_resultado: id_resultado
 	}, function(responseText) {
-		$('#tdWeb_'+id_tr+" ul").html(responseText);
-		$("#selWeb_"+id_tr).addClass("visible");
+		$('#tdWeb_'+id_resultado+" ul").html(responseText);
+		$("#selWeb_"+id_resultado).addClass("visible");
 		//modificamos la flecha 
-		$("#dvWeb_"+id_tr+" .arrow").addClass("rotArrow");
+		$("#dvWeb_"+id_resultado+" .arrow").addClass("rotArrow");
 		
 	});
 	
@@ -359,25 +354,27 @@ function cargarWebs(id_categoria,id_tr){
 
 
 //Seleccionamos la categoria de cada enlace
-function liSelectCat(id_categoria,id_tr){
+function liSelectCat(x){
+	var id_resultado = $(x).parent().parent().parent().attr("id");
+	var id_categoria = $(x).attr("id");
 	
-	$("#selCat_"+id_tr+" li").removeClass("liActive");
-	$("#selCat_"+id_tr+" > #"+id_categoria).addClass("liActive");
-	$("#selCat_"+id_tr).removeClass("visible");
+	$("#selCat_"+id_resultado+" li").removeClass("liActive");
+	$("#selCat_"+id_resultado+" > #"+id_categoria).addClass("liActive");
+	$("#selCat_"+id_resultado).removeClass("visible");
 	
 	//le damos el texto seleccionado a nuestra vista de categorias
-	var op = $("#selCat_"+id_tr+" > #"+id_categoria).text();
-	$("#spCat_"+id_tr).text(op);
+	var op = $("#selCat_"+id_resultado+" > #"+id_categoria).text();
+	$("#spCat_"+id_resultado).text(op);
 	
-	guardarCategoria(id_categoria, id_tr);
+	guardarCategoria(id_categoria, id_resultado);
 }
-function guardarCategoria(id_categoria, id_tr){
-	var posArryC = $("#lstC .item_select").attr('id');
+function guardarCategoria(id_categoria, id_resultado){
+	var id_cliente = $("#lstC .item_select").attr('id');
 	$.post('Data', {
 		metodo : 'sc',
 		id_categoria: id_categoria,
-		posArryC: posArryC,
-		id_tr: id_tr
+		id_cliente: id_cliente,
+		id_resultado: id_resultado
 	});
 }
 
@@ -385,32 +382,28 @@ function guardarCategoria(id_categoria, id_tr){
 
 
 
-function liSelectWeb(pArrayF,id_tr){
-	$("#selWeb_"+id_tr+" li").removeClass("liActive");
-	$("#selWeb_"+id_tr+" > #"+pArrayF).addClass("liActive");
-	$("#selWeb_"+id_tr).removeClass("visible");
+function liSelectWeb(id_foro,id_resultado){
+	$("#selWeb_"+id_resultado+" li").removeClass("liActive");
+	$("#selWeb_"+id_resultado+" > #"+id_foro).addClass("liActive");
+	$("#selWeb_"+id_resultado).removeClass("visible");
 	
 	//var op = $("#selWeb_"+id_tr+" > #"+pArrayF).text();
 	//$("#spWeb_"+id_tr).text(op);
 	
-	guardarWeb(pArrayF, id_tr);
+	guardarWeb(id_foro, id_resultado);
 }
 
 //guardamos en la bbdd y en el array la web selecionada
-function guardarWeb(pArrayF, id_tr){
-	var posArryC = $("#lstC .item_select").attr('id');
-	
+function guardarWeb(id_foro, id_resultado){
 	//cogemos el elemento que ya esta seleccionado para proceder a quitarlo de la lista de los foros utilizados para este cliente
-	var elemtAnterior = $("#spWeb_"+id_tr).attr("mweb");
-	
+	var elemtAnterior = $("#spWeb_"+id_resultado).attr("mweb");
 	$.post('Data', {
 		metodo : 'sw',
-		pArrayF: pArrayF,
-		posArryC: posArryC,
-		id_tr: id_tr,
+		id_foro: id_foro,
+		id_resultado: id_resultado,
 		elemtAnterior: elemtAnterior
 	}, function(responseText) {
-		$('#dvWeb_'+id_tr).html(responseText);
+		$('#dvWeb_'+id_resultado).html(responseText);
 		
 	});
 	
@@ -436,7 +429,6 @@ function changeMonth(){
 	
 	var mes = $(".picker .pick-m .pick-sl").val();
 	var year = $(".picker .pick-y .pick-sl").val();
-	var id = $("#lstC .item_select").attr('id');
 	
 	//limpiar cajas categoria
 	//$(".slCt").html("");
@@ -448,7 +440,6 @@ function changeMonth(){
 		metodo : 'chv',
 		mes: mes,
 		year: year,
-		id: id
 	}, function(responseText) {
 		$('#results_Client table tbody').html(responseText);
 	});
@@ -523,7 +514,18 @@ function openUrl(x, event){
 }
 
 function updateLink(x){
-	alert("Modificando link..")
+	var id_resultado = $(x).parent().parent().attr("id");
+	var link = $(x).val();
+	var tipo = $("tr#"+id_resultado+" .cTipo").attr("tipo");
+
+	$.post('Data', {
+		metodo : 'chl',
+		id_resultado: id_resultado,
+		link: link,
+		tipo: tipo
+	}, function(responseText) {
+		$('#lstC .item_select .itemChild').html(responseText);
+	});
 }
 
 

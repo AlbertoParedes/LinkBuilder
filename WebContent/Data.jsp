@@ -74,7 +74,14 @@
 										<span class="nameItem sName" onmouseover="viewAll(this)" ><%= clientes.get(i).getNombre() %></span>
 									</div>
 									<div class="dominioItem"><%= clientes.get(i).getWeb() %></div>
-									<%if(clientes.get(i).getEditando()==0){%><div class="noti"><%= clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() %></div><%}%>
+									<%if(clientes.get(i).getEditando()==0){%>
+										<%if(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() == 0){%>
+											<div class="noti notiPos"><i class="material-icons lf">done</i></div>
+										<%}else{%>
+											<div class="noti"><%= clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() %></div>
+										<%}%>
+										
+									<%}%>
 								</div>
 								<div class="blockClient <%if(clientes.get(i).getEditando()==1){%>visible<%}%>"><div class="lockDiv"><i class="material-icons lf blur"> lock </i></div></div>
 							</div>
