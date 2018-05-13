@@ -142,9 +142,7 @@ public class Webservice {
 		sendPost(fichero, response, jsonString);
 
 		return response.toString();
-	}
-	
-	
+	}	
 	
 	public String insertResultadoVacio(int id,String tipo, String fichero) {
 		StringBuffer response = new StringBuffer();
@@ -233,6 +231,27 @@ public class Webservice {
 			e.printStackTrace();
 		}
 	}
+	
+	public String updateForo(String id_foro,String campo,String valor, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("id_foro", id_foro);
+		System.out.println("id_foro--->"+id_foro);
+		jsonObj.put("campo", campo);
+		System.out.println("campo--->"+campo);
+		jsonObj.put("valor", valor);
+		System.out.println("valor--->"+valor);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+		String jsonString = JSONValue.toJSONString(l);
+		System.out.println(jsonString);
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+
+
+
 }
 
 //update `Keywords` set `keyword` = convert(binary convert(`keyword` using latin1) using utf8);

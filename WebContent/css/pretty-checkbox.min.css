@@ -49,8 +49,8 @@
 
 .pretty .state label:after, .pretty .state label:before {
 	content: '';
-	width: calc(1em + 2px);
-	height: calc(1em + 2px);
+	width: 10px;
+    height: 10px;
 	display: block;
 	box-sizing: border-box;
 	border-radius: 0;
@@ -605,9 +605,9 @@ rgba
 }
 
 .pretty.p-default .state label:after {
-	-webkit-transform: scale(.6);
-	-ms-transform: scale(.6);
-	transform: scale(.6)
+	-webkit-transform: scale(1);
+	-ms-transform: scale(1);
+	transform: scale(1)
 }
 
 .pretty.p-default input:checked ~.state label:after {
@@ -616,7 +616,7 @@ rgba
 
 .pretty.p-defaultALL input:checked ~.state label:after {
 	background-color: #4a8de6 !important;
-	transform: scale(.8)
+	transform: scale(1);
 }
 
 .pretty.p-default.p-thick .state label:after, .pretty.p-default.p-thick .state label:before
