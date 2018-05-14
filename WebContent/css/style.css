@@ -213,17 +213,6 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
     text-overflow: ellipsis;padding-right: 25px;}
 
 
-.cCWeb{width: 30%;}
-.cCTipo{width: 5%}
-.cCDR{width: 5%;}
-.cCDA{width: 5%;}
-.cCTem{width: 15%;}
-
-.cCDesc{width: 25%;}
-.cCApro{width: 5%;}
-.cCRegi{width: 5%;}
-.cCFecha{width: 5%;}
-
 .divAcortar{
 	overflow: hidden;
     overflow-wrap: break-word;
@@ -248,8 +237,20 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 .visible{display: block;}
 
 
+/*DANI*/
+.material-icons.rositaGuay { color: #e64a89; }
+#tCategorias{table-layout:fixed}
+#tCategorias td{white-space: nowrap;overflow: visible;}
+.cCWeb{width: 20%;}
+.cCTipo{width: 70px;}
+.cCDR{width: 40px;}
+.cCDA{width: 40px;}
+.cCTem{width: 13%;}
 
-
+.cCDesc{width: 37%;}
+.cCReu{width: 10%;}
+.cCReq{width: 10%;}
+.cCFecha{width: 5%;}
 
 
 

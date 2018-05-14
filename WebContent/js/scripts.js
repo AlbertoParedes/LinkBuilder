@@ -240,7 +240,6 @@ function selectCategory(id){
 		//-------------------------------
 		$("#selCat_"+id).addClass("visible");
 		
-		//modificamos la flecha 
 		$("#dvCat_"+id+" .arrow").addClass("rotArrow");
 	}
 	
@@ -357,7 +356,7 @@ function guardarWeb(id_foro, id_resultado){
 window.addEventListener('click', function(e){  
 	var clase = e.target.className;
 	
-	if (clase.includes("tdCat")){
+	if (clase.includes("tdCat") || clase.includes("arrow")){
 		//si entra en este if significa que hemos hecho click en la categoria
 	}else if(clase.includes("rositaGuay")){
 		//ignorar click require

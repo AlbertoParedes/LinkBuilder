@@ -148,6 +148,24 @@ public class Data extends HttpServlet {
 		}else if(metodo.equals("selectCat")) {
 			mostrarForos(request, response, out);
 		}
+		
+		else if(metodo.equals("guardarDescripcion")) {
+			guardarDescripcion(request, response, out);
+		}else if(metodo.equals("guardarReutilizable")) {
+			guardarReutilizable(request, response, out);
+		}else if(metodo.equals("guardarTematica")) {
+			guardarTematica(request, response, out);
+		}else if(metodo.equals("guardarRequiere")) {
+			guardarRequiere(request, response, out);
+		}else if(metodo.equals("guardarWeb")) {
+			guardarWebForo(request, response, out);
+		}else if(metodo.equals("guardarDR")) {
+			guardarDR(request, response, out);
+		}else if(metodo.equals("guardarDA")) {
+			guardarDA(request, response, out);
+		}else if(metodo.equals("guardarTipo")) {
+			guardarTipo(request, response, out);
+		}
 
 	}
 
@@ -566,21 +584,21 @@ public class Data extends HttpServlet {
 
 
 	//--------------Dani----------------------------
-		private void mostrarCategorias(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
-			
-			out = response.getWriter();
-			out.println("	<div class=\"titleCategory\"><div class=\"titleInner\">Keywords<div class=\"horDiv wa\"><div id=\"addK\" class=\"addK\"><i class=\"material-icons addKi\">add</i></div><div onclick=\"searchKey(event)\"><div id=\"ipkey\" class=\"srchI\"><i class=\"material-icons addKi\">search</i><input id=\"searchK\" class=\"searchI\" type=\"text\" oninput=\"searchK()\"></div></div></div></div></div>");
-			out.println("	<div class=\"infoCategory\"><div class=\"info\">"+categorias.size()+" Categorias</div></div>");
-			out.println("		<div id=\"lkkI\" class=\"listItems\">");
+	private void mostrarCategorias(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
 
-			for (int i = 1; i < categorias.size(); i++) {
-				if(i==0) {out.println("<div id=\""+categorias.get(i).getIdCategoria()+"\" onclick=\"selectCategoria(this.id)\" class=\"item\"><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+categorias.get(i).getEnlace()+"</div></div></div>");
-				}else {out.println("<div id=\""+categorias.get(i).getIdCategoria()+"\" onclick=\"selectCategoria(this.id)\" class=\"item\"><div class=\"line\"></div><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+categorias.get(i).getEnlace()+"</div></div></div>");}
-			}
-			
-			out.println("		</div>");
+		out = response.getWriter();
+		out.println("	<div class=\"titleCategory\"><div class=\"titleInner\">Keywords<div class=\"horDiv wa\"><div id=\"addK\" class=\"addK\"><i class=\"material-icons addKi\">add</i></div><div onclick=\"searchKey(event)\"><div id=\"ipkey\" class=\"srchI\"><i class=\"material-icons addKi\">search</i><input id=\"searchK\" class=\"searchI\" type=\"text\" oninput=\"searchK()\"></div></div></div></div></div>");
+		out.println("	<div class=\"infoCategory\"><div class=\"info\">"+categorias.size()+" Categorias</div></div>");
+		out.println("		<div id=\"lkkI\" class=\"listItems\">");
+
+		for (int i = 1; i < categorias.size(); i++) {
+			if(i==0) {out.println("<div id=\""+categorias.get(i).getIdCategoria()+"\" onclick=\"selectCategoria(this.id)\" class=\"item\"><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+categorias.get(i).getEnlace()+"</div></div></div>");
+			}else {out.println("<div id=\""+categorias.get(i).getIdCategoria()+"\" onclick=\"selectCategoria(this.id)\" class=\"item\"><div class=\"line\"></div><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+categorias.get(i).getEnlace()+"</div></div></div>");}
 		}
-		
+
+		out.println("		</div>");
+	}
+
 		private void mostrarForos(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
 			//String k = request.getParameter("keyword");
 			int posicion = -1;
