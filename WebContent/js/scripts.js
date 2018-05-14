@@ -471,9 +471,58 @@ function updateLink(x){
 		tipo: tipo
 	}, function(responseText) {
 		$('#lstC .item_select .itemChild').html(responseText);
+		
+		//quitamos la clase para que parezca que guardamos los datos
+		$("#cGuardar").removeClass('cSave');
+		
+		var d = $(x).parent().parent().children().children('.divStatus');
+		d.removeClass("sOK").removeClass("sPendiente");
+		if(link.trim()!=""){
+			d.addClass("sOK");
+		}else{
+			d.addClass("sPendiente");
+		}
 	});
 }
 
+function updateDestino(x){
+	var id_resultado = $(x).parent().parent().attr("id");
+	var destino = $(x).val();
+	
+	$.post('Data', {
+		metodo : 'chd',
+		id_resultado: id_resultado,
+		destino: destino,
+	}, function (){
+		//quitamos la clase para que parezca que guardamos los datos
+		$("#cGuardar").removeClass('cSave');
+	});
+}
+
+function updateAnchor(x){
+	var id_resultado = $(x).parent().parent().attr("id");
+	var anchor = $(x).val();
+	
+	$.post('Data', {
+		metodo : 'cha',
+		id_resultado: id_resultado,
+		anchor: anchor,
+	}, function (){
+		//quitamos la clase para que parezca que guardamos los datos
+		$("#cGuardar").removeClass('cSave');
+	});
+}
+
+
+function saveClient(){
+	var clase_btn_guardar = $("#cGuardar").attr('class');
+	
+	if(!clase_btn_guardar.includes("cSave")){
+		$("#cGuardar").addClass('cSave');
+		
+	}
+	
+}
 
 //*****************  DANI  ********************
 
@@ -500,6 +549,10 @@ function selectCategoria(id) {
 		$('#kywData').html(responseText);
 	});	
 }
+
+
+
+
 
 //--CAMPO WEB--------------------------------------------
 

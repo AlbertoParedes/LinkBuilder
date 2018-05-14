@@ -186,14 +186,17 @@ input:checked + .slider:before {-webkit-transform: translateX(11px);-ms-transfor
 
 .slWeb{
 overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width: 470px;    max-height: 400px;}
-.inLink{	    width: 100%;   outline: none;    border: 0;}
+.inLink{	    width: 100%;   outline: none;    border: 0;color: #878787;}
 .lf{    color: #4688F1; }
 .lnf{    color: #ea4335;}
 .pr{	position: relative;}
 .arrow{position: absolute;right: 0;}
 
-.cLink{width: 40%;}
-.cWeb{width: 30%;}
+.cStatus{ width: 35px;}
+.cLink{ width: 33%;}
+.cDest{width: 8%;}
+.cAnchor{width: 12%;}
+.cWeb{width: 27%;}
 .cTipo{ width: 50px; min-width: 50px;   text-align: center;}
 .cCateg{width: 210px;max-width: 210px;}
 .pa{position: absolute;background: white;    z-index: 1;    top: 0;}
@@ -236,6 +239,61 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 .pzero{ padding-top: 0px!important;height: 17px;}
 .visible{display: block;}
 
+.divStatus{height: 11px;width: 11px;border-radius: 50%;margin-left: 5px;}
+.sOK{background-color: #0f9d58;}
+.sPendiente{background-color: #9e9e9e;}
+.sEliminado{background-color: red;}
+.ctoolbar{
+    width: 100%;
+    left: 0px;
+    height: 40px;
+    position: absolute;
+    top: 115px;
+    padding-right: 50px;
+    padding-left: 50px;}
+    
+.cSave{
+	color: red;
+	display: block!important;
+}
+
+@keyframes zoom {
+
+   0% { transform: rotate(0deg); }
+   80% { transform: rotate(0deg); }
+   85% { transform: rotate(25deg); }
+   95% { transform: rotate(-25deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.zoom {
+  display: inline-block;
+  animation: zoom 1.2s infinite;
+}
+
+
+#cGuardar{
+	position: absolute;
+    right: 100px;
+    display: none;
+    border: solid;
+    border-width: 1px;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-variant: small-caps;
+    color: #e64a89;
+    border-color: #e64a89;
+    cursor: pointer;
+}
+    
+    
+    
+    
+    
 
 /*DANI*/
 .material-icons.rositaGuay { color: #e64a89; }

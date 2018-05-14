@@ -138,6 +138,10 @@ public class Data extends HttpServlet {
 			guardarWeb(request, response, out);
 		}else if(metodo.equals("chl")) {
 			guardarLink(request, response, out);
+		}else if(metodo.equals("chd")) {
+			guardarDestino(request, response, out);
+		}else if(metodo.equals("cha")) {
+			guardarAnchor(request, response, out);
 		}
 
 
@@ -227,8 +231,8 @@ public class Data extends HttpServlet {
 				x=1;
 			}
 			if(r.getEditando() == 0) {
-				cliente.getResultados().add(new Resultado(r.getIdResultado(), r.getIdForo(), r.getEnlace(), r.getFecha(), r.getTipoRes(), r.getDescripcion(), r.getCategoriaResultado(), r.getEstado(), r.getAnchorR(), r.getWebForo()));
-				cliente.getForos().add(new ForoGson(r.getIdForo(), r.getWebForo(), r.getTipoForo(), r.getDR(), r.getDA(), r.getTematica(), r.getDescripcion(), r.getCategoriaResultado(), r.getReqAprobacion(), r.getReqRegistro(), r.getApareceFecha(), r.getReutilizable()));
+				cliente.getResultados().add(new Resultado(r.getIdResultado(), r.getIdForo(), r.getEnlace(), r.getFecha(), r.getTipoRes(), r.getDestino(), r.getCategoriaResultado(), r.getEstado(), r.getAnchorR(), r.getWebForo()));
+				cliente.getForos().add(new ForoGson(r.getIdForo(), r.getWebForo(), r.getTipoForo(), r.getDR(), r.getDA(), r.getTematica(), r.getDestino(), r.getCategoriaResultado(), r.getReqAprobacion(), r.getReqRegistro(), r.getApareceFecha(), r.getReutilizable()));
 			}else {
 				break;
 			}
@@ -261,15 +265,18 @@ public class Data extends HttpServlet {
 		out.println("	<input id=\"dateSelected\" onchange=\"changeMonth()\" class=\"inCal\" data-lock=\"to\" type=\"text\" data-lang=\"es\" data-min-year=\"2017\"  data-large-mode=\"false\" data-format=\"F\" data-theme=\"calendar\"/>");
 		out.println("	<script>$(\".datedropper\").remove();$('#dateSelected').dateDropper();</script>");
 		out.println("</div>");
+		
+		//barra de herramientas
+		out.println("<div class=\"ctoolbar\"><div id=\"cGuardar\" class=\"zoom\">guardar</div></div>");
+		
 		out.println("<div class=\"keywordsClient\">");
 		//out.println("	<div class=\"titleTable\">Keywords<div class=\"horDiv\"></div></div>");
 		out.println("	<div id=\"results_Client\" class=\"contentTable\">");
 		//tabla
 		out.println("		<table id=\"tClientes\" class=\"table\">");
-		out.println("			<thead><tr><th class=\"cabeceraTable cLink\">Link</th><th class=\"cabeceraTable cCateg\">Categoria</th><th class=\"cabeceraTable cWeb\">Web</th><th class=\"cabeceraTable cDest\">Destino</th><th class=\"cabeceraTable cTipo\">Tipo</th></tr></thead>");
+		out.println("			<thead><tr><th class=\"cabeceraTable cStatus\"><div class=\"divStatus sPendiente\"></th><th class=\"cabeceraTable cLink\">Link</th><th class=\"cabeceraTable cCateg\">Categoria</th><th class=\"cabeceraTable cWeb\">Web</th><th class=\"cabeceraTable cDest\">Destino</th><th class=\"cabeceraTable cAnchor\">Anchor</th><th class=\"cabeceraTable cTipo\">Tipo</th></tr></thead>");
 		out.println("			<tbody>");
-		int follows = cliente.getFollows();
-		int followsDone = cliente.getFollows_done();
+		
 		//solo seleccionamos los resultados de la fecha deseada
 		ArrayList<Resultado> resultados = new ArrayList<Resultado>();
 		for (int i = 0; i < cliente.getResultados().size(); i++) {
@@ -365,11 +372,16 @@ public class Data extends HttpServlet {
 				//Foro utilizado para este resultado
 				int mweb = cliente.getResultados().get(i).getId_foro();
 
-
-
 				out.println("<tr id=\""+id_resultado+"\">");
+				
+				if(!cliente.getResultados().get(i).getEnlace().equalsIgnoreCase("")) {
+					out.println("	<td class=\"cStatus\"><div class=\"divStatus sOK\"></div></td>");
+				}else {
+					out.println("	<td class=\"cStatus\"><div class=\"divStatus sPendiente\"></div></td>");
+				}
+				
 				out.println("	<td class=\"cLink\">");
-				out.println("		<input class=\"inLink\" onchange=\"updateLink(this)\" type=\"text\" value=\""+cliente.getResultados().get(i).getEnlace()+"\">");
+				out.println("		<input class=\"inLink\" onchange=\"updateLink(this)\" oninput=\"saveClient()\" type=\"text\" value=\""+cliente.getResultados().get(i).getEnlace()+"\">");
 				out.println("	</td>");
 				out.println("	<td class=\"tdCat cCateg pr\" onclick=\"selectCategory("+id_resultado+")\">");
 				out.println("		<div class=\"tdCat\" id=\"dvCat_"+id_resultado+"\">");
@@ -385,7 +397,8 @@ public class Data extends HttpServlet {
 				out.println("		</div>");
 				out.println(		htmlWebs);
 				out.println("	</td>");
-				out.println("	<td class=\"cDest\">"+cliente.getResultados().get(i).getFecha()+"</td>");
+				out.println("	<td class=\"cDest\"><input class=\"inLink\" onchange=\"updateDestino(this)\" oninput=\"saveClient()\" type=\"text\" value=\""+cliente.getResultados().get(i).getDestino()+"\"></td>");
+				out.println("	<td class=\"cAnchor\"><input class=\"inLink\" onchange=\"updateAnchor(this)\" oninput=\"saveClient()\" type=\"text\" value=\""+cliente.getResultados().get(i).getAnchor()+"\"></td>");
 
 				if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("follow")) {
 					out.println("	<td tipo=\"follow\" class=\"cTipo\"><i class=\"material-icons lf\">link</i></td>");
@@ -542,7 +555,34 @@ public class Data extends HttpServlet {
 		}
 		
 	}
+	private void guardarDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String destino = request.getParameter("destino");
+		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
 
+		ws.updateResultado(id_resultado+"", "destino", destino+"" , "updateResultado.php");
+		for (int i = 0,j = cliente.getResultados().size()-1; i < cliente.getResultados().size(); i++, j--) {
+			if(cliente.getResultados().get(i).getId_resultado() == id_resultado) {
+				cliente.getResultados().get(i).setDestino(destino); i = cliente.getResultados().size();
+			}else if(cliente.getResultados().get(j).getId_resultado() == id_resultado) {
+				cliente.getResultados().get(j).setDestino(destino); i = cliente.getResultados().size();
+			}
+		}
+		
+	}
+	private void guardarAnchor(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String anchor = request.getParameter("anchor");
+		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
+
+		ws.updateResultado(id_resultado+"", "anchor", anchor+"" , "updateResultado.php");
+		for (int i = 0,j = cliente.getResultados().size()-1; i < cliente.getResultados().size(); i++, j--) {
+			if(cliente.getResultados().get(i).getId_resultado() == id_resultado) {
+				cliente.getResultados().get(i).setAnchor(anchor); i = cliente.getResultados().size();
+			}else if(cliente.getResultados().get(j).getId_resultado() == id_resultado) {
+				cliente.getResultados().get(j).setAnchor(anchor); i = cliente.getResultados().size();
+			}
+		}
+		
+	}
 
 
 

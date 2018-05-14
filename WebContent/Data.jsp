@@ -7,6 +7,8 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		
+		<link rel="stylesheet" href="css/fontawesome-all.css">
+		
 		<link rel="stylesheet" href="css/morris.css" type="text/css">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">
