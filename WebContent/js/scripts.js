@@ -538,13 +538,16 @@ function cargarCategorias(){
 }
 
 //para cargar los foros al pinchar sobre una categoria
-function selectCategoria(id) {
-	changeThemeK(id);
+function selectCategoria(x) {
+	var id_categoria = $(x).attr('id');
+	var posicion = $(x).attr('posicion');
+	changeThemeK(id_categoria);
 	
 	//pintamos las busquedas de la categoria selecionada	
 	$.post('Data', {
 		metodo : 'selectCat', 
-		id : id
+		id_categoria : id_categoria,
+		posicion: posicion
 	}, function(responseText) {
 		$('#kywData').html(responseText);
 	});	

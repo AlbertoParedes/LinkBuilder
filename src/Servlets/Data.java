@@ -80,10 +80,7 @@ public class Data extends HttpServlet {
 		//-----------------------------------------------------------------------------------------------------------
 
 		//ontenemos todas las categorias
-		json = ws.getJSON("getCategorias.php");
-		gson = new Gson();
-		ArrayList<CategoriaGson> categoriasGson = gson.fromJson(json, new TypeToken<List<CategoriaGson>>(){}.getType());
-		this.categorias = categoriasGson;
+		obtenemosCategorias();
 
 		//obtenemos las tematicas de los foros
 		json = ws.getJSON("getTematica.php");
@@ -144,15 +141,23 @@ public class Data extends HttpServlet {
 			guardarAnchor(request, response, out);
 		}
 
-
-		else if(metodo.equals("scs")) {
-			mostrarClientesInput(request, response, out);
-		}else if(metodo.equals("cats")) {
+		//daniii
+		else if(metodo.equals("cats")) {
 			mostrarCategorias(request, response, out);
 		}else if(metodo.equals("selectCat")) {
 			mostrarForos(request, response, out);
 		}
-		
+
+
+
+
+
+
+
+		else if(metodo.equals("scs")) {
+			mostrarClientesInput(request, response, out);
+		}
+
 		else if(metodo.equals("guardarDescripcion")) {
 			guardarDescripcion(request, response, out);
 		}else if(metodo.equals("guardarReutilizable")) {
@@ -265,10 +270,10 @@ public class Data extends HttpServlet {
 		out.println("	<input id=\"dateSelected\" onchange=\"changeMonth()\" class=\"inCal\" data-lock=\"to\" type=\"text\" data-lang=\"es\" data-min-year=\"2017\"  data-large-mode=\"false\" data-format=\"F\" data-theme=\"calendar\"/>");
 		out.println("	<script>$(\".datedropper\").remove();$('#dateSelected').dateDropper();</script>");
 		out.println("</div>");
-		
+
 		//barra de herramientas
 		out.println("<div class=\"ctoolbar\"><div id=\"cGuardar\" class=\"zoom\">guardar</div></div>");
-		
+
 		out.println("<div class=\"keywordsClient\">");
 		//out.println("	<div class=\"titleTable\">Keywords<div class=\"horDiv\"></div></div>");
 		out.println("	<div id=\"results_Client\" class=\"contentTable\">");
@@ -276,7 +281,7 @@ public class Data extends HttpServlet {
 		out.println("		<table id=\"tClientes\" class=\"table\">");
 		out.println("			<thead><tr><th class=\"cabeceraTable cStatus\"><div class=\"divStatus sPendiente\"></th><th class=\"cabeceraTable cLink\">Link</th><th class=\"cabeceraTable cCateg\">Categoria</th><th class=\"cabeceraTable cWeb\">Web</th><th class=\"cabeceraTable cDest\">Destino</th><th class=\"cabeceraTable cAnchor\">Anchor</th><th class=\"cabeceraTable cTipo\">Tipo</th></tr></thead>");
 		out.println("			<tbody>");
-		
+
 		//solo seleccionamos los resultados de la fecha deseada
 		ArrayList<Resultado> resultados = new ArrayList<Resultado>();
 		for (int i = 0; i < cliente.getResultados().size(); i++) {
@@ -373,13 +378,13 @@ public class Data extends HttpServlet {
 				int mweb = cliente.getResultados().get(i).getId_foro();
 
 				out.println("<tr id=\""+id_resultado+"\">");
-				
+
 				if(!cliente.getResultados().get(i).getEnlace().equalsIgnoreCase("")) {
 					out.println("	<td class=\"cStatus\"><div class=\"divStatus sOK\"></div></td>");
 				}else {
 					out.println("	<td class=\"cStatus\"><div class=\"divStatus sPendiente\"></div></td>");
 				}
-				
+
 				out.println("	<td class=\"cLink\">");
 				out.println("		<input class=\"inLink\" onchange=\"updateLink(this)\" oninput=\"saveClient()\" type=\"text\" value=\""+cliente.getResultados().get(i).getEnlace()+"\">");
 				out.println("	</td>");
@@ -547,13 +552,13 @@ public class Data extends HttpServlet {
 		out.println(	"<span class=\"nameItem sName nameItem_select\" onmouseover=\"viewAll(this)\">"+cliente.getNombre()+"</span>");
 		out.println("</div>");
 		out.println("<div class=\"dominioItem nameItem_select\">"+cliente.getWeb()+"</div>");
-		
+
 		if(cliente.getFollows()-cliente.getFollows_done()==0) {
 			out.println("<div class=\"noti notiPos\"><i class=\"material-icons lf\">done</i></div>");
 		}else {
 			out.println("<div class=\"noti\">"+(cliente.getFollows()-cliente.getFollows_done())+"</div>");
 		}
-		
+
 	}
 	private void guardarDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String destino = request.getParameter("destino");
@@ -567,7 +572,7 @@ public class Data extends HttpServlet {
 				cliente.getResultados().get(j).setDestino(destino); i = cliente.getResultados().size();
 			}
 		}
-		
+
 	}
 	private void guardarAnchor(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String anchor = request.getParameter("anchor");
@@ -581,13 +586,246 @@ public class Data extends HttpServlet {
 				cliente.getResultados().get(j).setAnchor(anchor); i = cliente.getResultados().size();
 			}
 		}
-		
+
 	}
 
 
+	//Dani
+	private void mostrarCategorias(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+
+		obtenemosCategorias();
+
+		out = response.getWriter();
+		out.println("	<div class=\"titleCategory\"><div class=\"titleInner\">Keywords<div class=\"horDiv wa\"><div id=\"addK\" class=\"addK\"><i class=\"material-icons addKi\">add</i></div><div onclick=\"searchKey(event)\"><div id=\"ipkey\" class=\"srchI\"><i class=\"material-icons addKi\">search</i><input id=\"searchK\" class=\"searchI\" type=\"text\" oninput=\"searchK()\"></div></div></div></div></div>");
+		out.println("	<div class=\"infoCategory\"><div class=\"info\">"+categorias.size()+" Categorias</div></div>");
+		out.println("		<div id=\"lkkI\" class=\"listItems\">");
+
+		for (int i = 1; i < categorias.size(); i++) {
+			if(i==1) {out.println("<div id=\""+categorias.get(i).getIdCategoria()+"\" posicion='"+i+"' onclick=\"selectCategoria(this)\" class=\"item\"><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+categorias.get(i).getEnlace()+"</div></div></div>");
+			}else {out.println("<div id=\""+categorias.get(i).getIdCategoria()+"\" posicion='"+i+"' onclick=\"selectCategoria(this)\" class=\"item\"><div class=\"line\"></div><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+categorias.get(i).getEnlace()+"</div></div></div>");}
+		}
+		out.println("		</div>");
+	}
+	private void mostrarForos(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+
+		int id_categoria = Integer.parseInt(request.getParameter("id_categoria"));
+		int posicion = Integer.parseInt(request.getParameter("posicion"));
+
+		//comprobamos que estamos en la categoria correcta
+		if(categorias.get(posicion).getIdCategoria() == id_categoria) {
+			
+			out.println("<div class=\"infoClient\">");
+			out.println("	<div class=\"nameClient\">"+categorias.get(posicion).getEnlace()+"</div>");
+			out.println("	<div class=\"addK\" style=\"position: absolute; margin-left: 1250px; width: 110px; cursor: pointer;\">+ Nuevo Foro</div>");
+			out.println("</div>");		
+			out.println("<div class=\"keywordsClient\">");
+			out.println("	<div id=\"results_Client\" class=\"contentTable\">");
+
+			//COMIENZA LA TABLA
+			out.println("		<table id=\"tCategorias\" class=\"table\">");
+			out.println("			<thead><tr><th class=\"cabeceraTable cCWeb\">Web</th><th class=\"cabeceraTable cCTipo\">Tipo</th><th class=\"cabeceraTable cCDR\">DR</th><th class=\"cabeceraTable cCDA\">DA</th><th class=\"cabeceraTable cCTem\">Tematica</th><th class=\"cabeceraTable cCDesc\">Descripcion</th><th class=\"cabeceraTable cCApro\">Reutilizable</th><th class=\"cabeceraTable cCRegi\">Requiere</th></tr></thead>");
+			out.println("			<tbody>");
+
+			for(int i = 0; i < foros.size(); i++) {
+				
+				if(foros.get(i).getCategoria()==posicion) {
+					
+					//LISTA DESPLEGABLE TEMATICA------------------------------------			
+					String htmlTematica = "		<ul id=\"selTem_"+i+"\" class=\"slCt slT effect7\">";
+					String opTematica = foros.get(i).getTematica();
+					//Esta linea de abajo cuenta el numero de palabras que hay en 'opTematica'
+					StringTokenizer st = new StringTokenizer(opTematica);
+					boolean all = false;
+					if (opTematica.equals("")) { opTematica = "Selecciona tematica";					
+					}else if(st.countTokens() == tematicas.size()) {
+						opTematica = "Todas";
+					}
+
+					htmlTematica += "			<li class=\"pretty p-default p-defaultALL p-round p-smooth p-plain pzero\" id=0 >";		
+					if(opTematica.contains("Todas")) {
+						htmlTematica += "				<input class=\"slT\" id=\"input_"+i+"\" type=\"checkbox\" onclick=\"selectAll(this,"+i+")\" checked>";
+						all = true;
+					}else
+						htmlTematica += "				<input class=\"slT\" id=\"input_"+i+"\" type=\"checkbox\" onclick=\"selectAll(this,"+i+")\">";
+					htmlTematica += "				<div class=\"state stateALL p-success-o\">";
+					htmlTematica += "					<label>Seleccionar todas</label>";
+					htmlTematica += "				</div>";
+					htmlTematica += "			</li><br>";
+
+					for (int j = 0; j < tematicas.size(); j++) {
+						//htmlTematica += "			";
+						htmlTematica += "			<li class=\"pretty p-default p-round p-smooth p-plain pzero\" id=\""+tematicas.get(j).getIdTematica()+"\" >";
+
+						if(opTematica.contains(tematicas.get(j).getNombre())||all==true)
+							htmlTematica += "				<input class=\"slT\" id=\""+tematicas.get(j).getNombre()+"\" type=\"checkbox\" onclick=\"liSelectTem("+i+")\" checked>";
+						else
+							htmlTematica += "				<input class=\"slT\" id=\""+tematicas.get(j).getNombre()+"\" type=\"checkbox\" onclick=\"liSelectTem("+i+")\">";
+
+						htmlTematica += "				<div class=\"state p-success-o\">";
+						htmlTematica += "					<label>"+tematicas.get(j).getNombre()+"</label>";
+						htmlTematica += "				</div>";
+						htmlTematica += "			</li><br>";
+					}
+					htmlTematica += "		</ul>";
+					//---------------------------------------
+
+
+					//-----------DESPLEGABLE REQUIERE--------------------------------------
+					String htmlRequiere = "		<ul id=\"selReq_"+i+"\" class=\"slCt slT effect7\" style=\"width: 140px;\">";
+					/*				Esto es el boton de Alberto
+					<div class=\"itemStatus\">
+						    <label class=\"switch\">
+						        <input type=\"checkbox\"  checked>
+						        <span class=\"slider round\"></span>
+						    </label>
+						</div>*/
+					for (int k = 0; k < 3; k++) {
+						htmlRequiere += "			<li class=\"pretty p-switch\" style=\"line-height: 1.4\" id=\""+k+"\" >";
+						if(k==0&&foros.get(i).getReqAprobacion()==1) {
+							htmlRequiere += "				<input class=\"slT\" id=\"R"+k+"\" type=\"checkbox\" onchange=\"cambiarRequiere(this.id,"+i+")\" checked>";
+						}else if(k==1&&foros.get(i).getReqRegistro()==1) {
+							htmlRequiere += "				<input class=\"slT\" id=\"R"+k+"\" type=\"checkbox\" onchange=\"cambiarRequiere(this.id,"+i+")\" checked>";
+						}else if(k==2&&foros.get(i).getApareceFecha()==1) {
+							htmlRequiere += "				<input class=\"slT\" id=\"R"+k+"\" type=\"checkbox\" onchange=\"cambiarRequiere(this.id,"+i+")\" checked>";
+						}else
+							htmlRequiere += "				<input class=\"slT\" id=\"R"+k+"\" type=\"checkbox\" onchange=\"cambiarRequiere(this.id,"+i+")\">";
+						htmlRequiere += "				<div class=\"state\">";
+						if(k==0) {
+							htmlRequiere += "					<label>Aprobacion</label>";
+						}else if(k==1) {
+							htmlRequiere += "					<label>Registro</label>";
+						}else if (k==2) {
+							htmlRequiere += "					<label>Aparece Fecha</label>";
+						}			
+						htmlRequiere += "				</div>";
+						htmlRequiere += "			</li><br>";
+					}
+					htmlTematica += "		</ul>";		
+					//---------------------------------------------
+
+					//------------DESPLEGABLE COLUMNA REUTILIZABLE---------
+					String htmlReutilizable = "		<ul id=\"selReu_"+i+"\" class=\"slCt effect7\"  style=\"width: 20%; line-height: 1.2\">";
+					String opReutilizable = foros.get(i).getReutilizable();
+					if(opReutilizable.equals("")) {
+						opReutilizable = "Selecciona";
+					}
+					htmlReutilizable += "			<li id=\"Reu1\" onclick=\"liSelectReu(this.id,"+i+")\">Para enlazar a UN cliente UNA sola vez</li><br>";		
+					htmlReutilizable += "			<li id=\"Reu2\" onclick=\"liSelectReu(this.id,"+i+")\">Para enlazar a UN cliente VARIAS veces</li><br>";
+					htmlReutilizable += "			<li id=\"Reu3\" onclick=\"liSelectReu(this.id,"+i+")\">Para enlazar a VARIOS clientes UNA sola vez</li><br>";
+					htmlReutilizable += "			<li id=\"Reu4\" onclick=\"liSelectReu(this.id,"+i+")\">Para enlazar a VARIOS clientes VARIAS veces</li><br>";	
+					htmlReutilizable += "		</ul>";
+					//-----------------------------------------------------
+
+					//------------DESPLEGABLE COLUMNA TIPO-----------------
+					String htmlTipo = "		<ul id=\"selTipo_"+i+"\" class=\"slCt effect7\"  style=\"width: auto; line-height: 0.8\">";
+					String opTipo = foros.get(i).getTipo();
+					if(opTipo.equals("")) {
+						opReutilizable = "Selecciona";
+					}
+					htmlTipo += "			<li id=\"Tipo1\" onclick=\"liSelectTipo(this.id,"+i+")\">follow</li><br>";
+					htmlTipo += "			<li id=\"Tipo2\" onclick=\"liSelectTipo(this.id,"+i+")\">nofollow</li><br>";
+					htmlTipo += "		</ul>";
+					//-----------------------------------------------------
+
+					//-----------DESPLEGABLE PARA EDITAR LA DESCRIPCION---
+					String htmlDescripcion = "      <div class=\"tdWeb\" id=\"divDescripcion_"+i+"\" style=\"display:inline-block\">";	
+					htmlDescripcion += "            <textarea id=\"desc_"+i+"\" onchange=\"cambiarDescripcion("+i+", spDesc_"+i+")\"  class=\"slCt slT effect7\" style=\"border-radius: 10px\" cols=\"40\" rows=\"3\">"+foros.get(i).getDescripcion()+"</textarea>";
+					htmlDescripcion += "        </div>";
+					String opDescripcion = foros.get(i).getDescripcion();
+					//----------------------------------------------------
+
+					//------------------------Insertamos las filas de la tabla de foros----------------------------------------------------------
+					out.println("<tr id=\""+i+"\">");			
+
+
+					//Columna WEB con animacion
+					out.println("	<td class=\"cCWeb\">");
+					out.println("		<div class=\"tdCat tdWeb\" id=\"dvWeb_"+i+"\" onclick=\"selectWeb("+i+")\">");
+					out.println("			<input class=\"inLink\" type=\"text\" id=\"inputWeb_"+i+"\" onclick=\"openUrl(this, event)\" onchange=\"guardarWeb("+i+")\" value=\""+foros.get(i).getWebForo()+"\">");
+					out.println("		</div>");
+					out.println("	</td>");
+					//Columna TIPO con el desplegable
+					out.println("	<td class=\"tdCat cCTipo\" id=\"td_Tipo"+i+"\">");
+					out.println("		<div class=\"tdCat tdWeb\" id=\"dvTipo_"+i+"\" onclick=\"selectTipo("+i+")\">");
+					out.println("			<span id=\"spTipo_"+i+"\" class=\"tdCat\">"+opTipo+"</span>");
+					out.println("		</div>");
+					out.println(		htmlTipo);
+					out.println("   </td>");
+					//Columna DR
+					out.println("	<td class=\"cCDR\" >");
+					out.println("			<input class=\"inLink\" type=\"text\" id=\"inputDR_"+i+"\" onchange=\"guardarDR("+i+")\" value=\""+foros.get(i).getDR()+"\">");				
+					out.println("   </td>");
+					//Columna DA
+					out.println("	<td class=\"cCDA\" >");
+					out.println("			<input class=\"inLink\" type=\"text\" id=\"inputDA_"+i+"\" onchange=\"guardarDA("+i+")\" value=\""+foros.get(i).getDA()+"\">");				
+					out.println("   </td>");
+
+					//Columna TEMATICA con el desplegable-----------------
+					out.println("   <td class=\"tdCat cCTem\" id=\"td_"+i+"\">");
+					out.println("		<div class=\"tdCat tdWeb\" id=\"dvCat_"+i+"\" onclick=\"selectTematica("+i+")\">");
+					out.println("			<span id=\"spTem_"+i+"\" onmouseover=\"viewCampo(this)\" class=\"tdCat\">"+opTematica+"</span>");
+					out.println("		</div>");
+					out.println(		htmlTematica);
+					out.println("	</td>");
+					//Fin columna tematica--------------------------------
+					//Columna DESCRIPCION
+					out.println("	<td class=\"cCDesc\" id=\"td_Desc"+i+"\" >");
+					out.println("		<div class=\"tdCat tdWeb\" id=\"dvDesc_"+i+"\" onclick=\"editDescripcion("+i+")\">");
+					out.println("			<span id=\"spDesc_"+i+"\" class=\"tdCat tdWeb\">"+opDescripcion+"</span>");
+					out.println("		</div>");
+					out.println(        htmlDescripcion);
+					out.println("	</td>");
+
+					//Columna REUTILIZABLE
+					out.println("	<td class=\"tdCat cCReu pr\" id=\"td_Reu"+i+"\">");
+					out.println("		<div class=\"tdCat tdWeb\" id=\"dvReu_"+i+"\" onclick=\"selectReutilizable("+i+")\">");
+					out.println("			<span id=\"spReu_"+i+"\" onmouseover=\"viewCampo(this)\" class=\"tdCat\">"+opReutilizable+"</span>");
+					out.println("		</div>");
+					out.println(		htmlReutilizable);
+					out.println("	</td>");
+					//BORRAR
+					//BORRAR
+
+					//Columna REQUIERE
+					out.println("	<td class=\"tdCat cCReq\" id=\"td_R"+i+"\">");
+					out.println("		<div class=\"tdCat tdWeb\" id=\"dvReq_"+i+"\" style=\"margin-left: 20px;\">");
+					out.println("			<i class=\"material-icons md-24 rositaGuay\" onclick=\"selectRequiere("+i+")\">settings</i>");
+					out.println("		</div>");
+					out.println(		htmlRequiere);
+					out.println("	</td>");
+
+					/*out.println("	<td class\"cCRegi\" >"+foros.get(i).getReq_registro()+"</td>");
+					out.println("	<td class=\"cCFecha\">"+foros.get(i).getAparece_fecha()+"</td>");*/
+
+					out.println("</tr>");		
+
+
+				}
 
 
 
+				/*	if(keyword.contains(k)) {
+					if(j==0) {out.println("<div id=\""+posicion+"_"+i+"\" onclick=\"selectKeyword(this.id)\" class=\"item\"><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+keyword+"</div></div></div>");j++;
+					}else {out.println("<div id=\""+posicion+"_"+i+"\" onclick=\"selectKeyword(this.id)\" class=\"item\"><div class=\"line\"></div><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+keyword+"</div></div></div>");}
+				}*/
+
+			}
+
+			out.println("			</tbody>");
+			out.println("		</table>");
+			out.println("	</div>");
+			out.println("</div>");
+
+			//out.println("<script type=\"text/javascript\">setK();</script>");
+
+			System.out.println("Lista cargada");
+		}
+		
+		
+		
+
+
+	}
 
 
 
@@ -624,376 +862,154 @@ public class Data extends HttpServlet {
 
 
 	//--------------Dani----------------------------
-	private void mostrarCategorias(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
 
-		out = response.getWriter();
-		out.println("	<div class=\"titleCategory\"><div class=\"titleInner\">Keywords<div class=\"horDiv wa\"><div id=\"addK\" class=\"addK\"><i class=\"material-icons addKi\">add</i></div><div onclick=\"searchKey(event)\"><div id=\"ipkey\" class=\"srchI\"><i class=\"material-icons addKi\">search</i><input id=\"searchK\" class=\"searchI\" type=\"text\" oninput=\"searchK()\"></div></div></div></div></div>");
-		out.println("	<div class=\"infoCategory\"><div class=\"info\">"+categorias.size()+" Categorias</div></div>");
-		out.println("		<div id=\"lkkI\" class=\"listItems\">");
 
-		for (int i = 1; i < categorias.size(); i++) {
-			if(i==0) {out.println("<div id=\""+categorias.get(i).getIdCategoria()+"\" onclick=\"selectCategoria(this.id)\" class=\"item\"><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+categorias.get(i).getEnlace()+"</div></div></div>");
-			}else {out.println("<div id=\""+categorias.get(i).getIdCategoria()+"\" onclick=\"selectCategoria(this.id)\" class=\"item\"><div class=\"line\"></div><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+categorias.get(i).getEnlace()+"</div></div></div>");}
-		}
 
-		out.println("		</div>");
+
+	private void guardarDescripcion(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String descripcion = request.getParameter("cosa");
+		int id_tr = Integer.parseInt(request.getParameter("id_tr"));
+
+		//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+		Webservice ws = new Webservice();
+		ws.updateForo(id_tr+"", "descripcion", descripcion, "updateForo.php");
+		foros.get(id_tr).setDescripcion(descripcion);
+		System.out.println("Insertado descripcion --> "+descripcion);
+	}	
+
+	private void guardarReutilizable(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String reutilizable = request.getParameter("cosa");
+		int id_tr = Integer.parseInt(request.getParameter("id_tr"));		
+		//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+		Webservice ws = new Webservice();
+		ws.updateForo(id_tr+"", "reutilizable", reutilizable, "updateForo.php");
+		foros.get(id_tr).setReutilizable(reutilizable);
+		System.out.println("Insertado reutiliable --> "+reutilizable);
 	}
 
-		private void mostrarForos(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
-			//String k = request.getParameter("keyword");
-			int posicion = -1;
-			try {
-				posicion = Integer.parseInt(request.getParameter("id"));
-				System.out.println("Categoria: "+categorias.get(posicion).getEnlace());
-			}catch (NumberFormatException e) {
-				System.out.println("ALGO NO FUE BIEN JODER");
-			}
-			
-			System.out.println(posicion);
-			out.println("<div class=\"infoClient\">");
-			out.println("	<div class=\"nameClient\">"+categorias.get(posicion).getEnlace()+"</div>");
-			out.println("	<div class=\"addK\" style=\"position: absolute; margin-left: 1250px; width: 110px; cursor: pointer;\">+ Nuevo Foro</div>");
-			out.println("</div>");		
-			out.println("<div class=\"keywordsClient\">");
-			out.println("	<div id=\"results_Client\" class=\"contentTable\">");
-			
-			//COMIENZA LA TABLA
-			out.println("		<table id=\"tCategorias\" class=\"table\">");
-			out.println("			<thead><tr><th class=\"cabeceraTable cCWeb\">Web</th><th class=\"cabeceraTable cCTipo\">Tipo</th><th class=\"cabeceraTable cCDR\">DR</th><th class=\"cabeceraTable cCDA\">DA</th><th class=\"cabeceraTable cCTem\">Tematica</th><th class=\"cabeceraTable cCDesc\">Descripcion</th><th class=\"cabeceraTable cCApro\">Reutilizable</th><th class=\"cabeceraTable cCRegi\">Requiere</th></tr></thead>");
-			out.println("			<tbody>");
-			//System.out.println(k);
-			
-			for (int i = 0; i < foros.size(); i++) {
-				if(foros.get(i).getCategoria()==posicion) {
-					System.out.println(foros.get(i));
-					
-					//LISTA DESPLEGABLE TEMATICA------------------------------------			
-					String htmlTematica = "		<ul id=\"selTem_"+i+"\" class=\"slCt slT effect7\">";
-					String opTematica = foros.get(i).getTematica();
-					//Esta linea de abajo cuenta el numero de palabras que hay en 'opTematica'
-				    StringTokenizer st = new StringTokenizer(opTematica);
-				    
-				    boolean all = false;
-				    System.out.println("N�mero de palabras->" + st.countTokens());	
-					if (opTematica.equals("")) {
-						opTematica = "Selecciona tematica";					
-					}else if(st.countTokens() == tematicas.size()) {
-						opTematica = "Todas";
-					}
-					
-					htmlTematica += "			<li class=\"pretty p-default p-defaultALL p-round p-smooth p-plain pzero\" id=0 >";		
-					if(opTematica.contains("Todas")) {
-						htmlTematica += "				<input class=\"slT\" id=\"input_"+i+"\" type=\"checkbox\" onclick=\"selectAll(this,"+i+")\" checked>";
-						all = true;
-					}else
-						htmlTematica += "				<input class=\"slT\" id=\"input_"+i+"\" type=\"checkbox\" onclick=\"selectAll(this,"+i+")\">";
-					htmlTematica += "				<div class=\"state stateALL p-success-o\">";
-					htmlTematica += "					<label>Seleccionar todas</label>";
-					htmlTematica += "				</div>";
-					htmlTematica += "			</li><br>";
-					
-					for (int j = 0; j < tematicas.size(); j++) {
-							//htmlTematica += "			";
-						htmlTematica += "			<li class=\"pretty p-default p-round p-smooth p-plain pzero\" id=\""+tematicas.get(j).getIdTematica()+"\" >";
-						
-						if(opTematica.contains(tematicas.get(j).getNombre())||all==true)
-							htmlTematica += "				<input class=\"slT\" id=\""+tematicas.get(j).getNombre()+"\" type=\"checkbox\" onclick=\"liSelectTem("+i+")\" checked>";
-						else
-						htmlTematica += "				<input class=\"slT\" id=\""+tematicas.get(j).getNombre()+"\" type=\"checkbox\" onclick=\"liSelectTem("+i+")\">";
-						
-						htmlTematica += "				<div class=\"state p-success-o\">";
-						htmlTematica += "					<label>"+tematicas.get(j).getNombre()+"</label>";
-						htmlTematica += "				</div>";
-						htmlTematica += "			</li><br>";
-					}
-					htmlTematica += "		</ul>";
-					//---------------------------------------
-					
-					
-					//-----------DESPLEGABLE REQUIERE--------------------------------------
-					String htmlRequiere = "		<ul id=\"selReq_"+i+"\" class=\"slCt slT effect7\" style=\"width: 140px;\">";
-					/*				Esto es el boton de Alberto
-					<div class=\"itemStatus\">
-						    <label class=\"switch\">
-						        <input type=\"checkbox\"  checked>
-						        <span class=\"slider round\"></span>
-						    </label>
-						</div>*/
-					for (int k = 0; k < 3; k++) {
-						htmlRequiere += "			<li class=\"pretty p-switch\" style=\"line-height: 1.4\" id=\""+k+"\" >";
-						if(k==0&&foros.get(i).getReqAprobacion()==1) {
-							htmlRequiere += "				<input class=\"slT\" id=\"R"+k+"\" type=\"checkbox\" onchange=\"cambiarRequiere(this.id,"+i+")\" checked>";
-						}else if(k==1&&foros.get(i).getReqRegistro()==1) {
-							htmlRequiere += "				<input class=\"slT\" id=\"R"+k+"\" type=\"checkbox\" onchange=\"cambiarRequiere(this.id,"+i+")\" checked>";
-						}else if(k==2&&foros.get(i).getApareceFecha()==1) {
-							htmlRequiere += "				<input class=\"slT\" id=\"R"+k+"\" type=\"checkbox\" onchange=\"cambiarRequiere(this.id,"+i+")\" checked>";
-						}else
-							htmlRequiere += "				<input class=\"slT\" id=\"R"+k+"\" type=\"checkbox\" onchange=\"cambiarRequiere(this.id,"+i+")\">";
-						htmlRequiere += "				<div class=\"state\">";
-						if(k==0) {
-							htmlRequiere += "					<label>Aprobacion</label>";
-						}else if(k==1) {
-							htmlRequiere += "					<label>Registro</label>";
-						}else if (k==2) {
-							htmlRequiere += "					<label>Aparece Fecha</label>";
-						}			
-						htmlRequiere += "				</div>";
-						htmlRequiere += "			</li><br>";
-					}
-					htmlTematica += "		</ul>";		
-					//---------------------------------------------
-					
-					//------------DESPLEGABLE COLUMNA REUTILIZABLE---------
-					String htmlReutilizable = "		<ul id=\"selReu_"+i+"\" class=\"slCt effect7\"  style=\"width: 20%; line-height: 1.2\">";
-					String opReutilizable = foros.get(i).getReutilizable();
-					if(opReutilizable.equals("")) {
-						opReutilizable = "Selecciona";
-					}
-						htmlReutilizable += "			<li id=\"Reu1\" onclick=\"liSelectReu(this.id,"+i+")\">Para enlazar a UN cliente UNA sola vez</li><br>";		
-						htmlReutilizable += "			<li id=\"Reu2\" onclick=\"liSelectReu(this.id,"+i+")\">Para enlazar a UN cliente VARIAS veces</li><br>";
-						htmlReutilizable += "			<li id=\"Reu3\" onclick=\"liSelectReu(this.id,"+i+")\">Para enlazar a VARIOS clientes UNA sola vez</li><br>";
-						htmlReutilizable += "			<li id=\"Reu4\" onclick=\"liSelectReu(this.id,"+i+")\">Para enlazar a VARIOS clientes VARIAS veces</li><br>";	
-						htmlReutilizable += "		</ul>";
-					//-----------------------------------------------------
-					
-					//------------DESPLEGABLE COLUMNA TIPO-----------------
-					String htmlTipo = "		<ul id=\"selTipo_"+i+"\" class=\"slCt effect7\"  style=\"width: auto; line-height: 0.8\">";
-					String opTipo = foros.get(i).getTipo();
-					if(opTipo.equals("")) {
-						opReutilizable = "Selecciona";
-					}
-						htmlTipo += "			<li id=\"Tipo1\" onclick=\"liSelectTipo(this.id,"+i+")\">follow</li><br>";
-						htmlTipo += "			<li id=\"Tipo2\" onclick=\"liSelectTipo(this.id,"+i+")\">nofollow</li><br>";
-						htmlTipo += "		</ul>";
-					//-----------------------------------------------------
-						
-					//-----------DESPLEGABLE PARA EDITAR LA DESCRIPCION---
-					String htmlDescripcion = "      <div class=\"tdWeb\" id=\"divDescripcion_"+i+"\" style=\"display:inline-block\">";	
-						htmlDescripcion += "            <textarea id=\"desc_"+i+"\" onchange=\"cambiarDescripcion("+i+", spDesc_"+i+")\"  class=\"slCt slT effect7\" style=\"border-radius: 10px\" cols=\"40\" rows=\"3\">"+foros.get(i).getDescripcion()+"</textarea>";
-						htmlDescripcion += "        </div>";
-					String opDescripcion = foros.get(i).getDescripcion();
-					//----------------------------------------------------
-						
-					//------------------------Insertamos las filas de la tabla de foros----------------------------------------------------------
-					out.println("<tr id=\""+i+"\">");			
-
-		
-					//Columna WEB con animacion
-					out.println("	<td class=\"cCWeb\">");
-					out.println("		<div class=\"tdCat tdWeb\" id=\"dvWeb_"+i+"\" onclick=\"selectWeb("+i+")\">");
-					out.println("			<input class=\"inLink\" type=\"text\" id=\"inputWeb_"+i+"\" onclick=\"openUrl(this, event)\" onchange=\"guardarWeb("+i+")\" value=\""+foros.get(i).getWebForo()+"\">");
-					out.println("		</div>");
-					out.println("	</td>");
-					//Columna TIPO con el desplegable
-					out.println("	<td class=\"tdCat cCTipo\" id=\"td_Tipo"+i+"\">");
-					out.println("		<div class=\"tdCat tdWeb\" id=\"dvTipo_"+i+"\" onclick=\"selectTipo("+i+")\">");
-					out.println("			<span id=\"spTipo_"+i+"\" class=\"tdCat\">"+opTipo+"</span>");
-					out.println("		</div>");
-					out.println(		htmlTipo);
-					out.println("   </td>");
-					//Columna DR
-					out.println("	<td class=\"cCDR\" >");
-					out.println("			<input class=\"inLink\" type=\"text\" id=\"inputDR_"+i+"\" onchange=\"guardarDR("+i+")\" value=\""+foros.get(i).getDR()+"\">");				
-					out.println("   </td>");
-					//Columna DA
-					out.println("	<td class=\"cCDA\" >");
-					out.println("			<input class=\"inLink\" type=\"text\" id=\"inputDA_"+i+"\" onchange=\"guardarDA("+i+")\" value=\""+foros.get(i).getDA()+"\">");				
-					out.println("   </td>");
-					
-					//Columna TEMATICA con el desplegable-----------------
-					out.println("   <td class=\"tdCat cCTem\" id=\"td_"+i+"\">");
-					out.println("		<div class=\"tdCat tdWeb\" id=\"dvCat_"+i+"\" onclick=\"selectTematica("+i+")\">");
-					out.println("			<span id=\"spTem_"+i+"\" onmouseover=\"viewCampo(this)\" class=\"tdCat\">"+opTematica+"</span>");
-					out.println("		</div>");
-					out.println(		htmlTematica);
-					out.println("	</td>");
-					//Fin columna tematica--------------------------------
-					//Columna DESCRIPCION
-					out.println("	<td class=\"cCDesc\" id=\"td_Desc"+i+"\" >");
-					out.println("		<div class=\"tdCat tdWeb\" id=\"dvDesc_"+i+"\" onclick=\"editDescripcion("+i+")\">");
-					out.println("			<span id=\"spDesc_"+i+"\" class=\"tdCat tdWeb\">"+opDescripcion+"</span>");
-					out.println("		</div>");
-					out.println(        htmlDescripcion);
-					out.println("	</td>");
-					
-					//Columna REUTILIZABLE
-					out.println("	<td class=\"tdCat cCReu pr\" id=\"td_Reu"+i+"\">");
-					out.println("		<div class=\"tdCat tdWeb\" id=\"dvReu_"+i+"\" onclick=\"selectReutilizable("+i+")\">");
-					out.println("			<span id=\"spReu_"+i+"\" onmouseover=\"viewCampo(this)\" class=\"tdCat\">"+opReutilizable+"</span>");
-					out.println("		</div>");
-					out.println(		htmlReutilizable);
-					out.println("	</td>");
-					//BORRAR
-					//BORRAR
-					
-					//Columna REQUIERE
-					out.println("	<td class=\"tdCat cCReq\" id=\"td_R"+i+"\">");
-					out.println("		<div class=\"tdCat tdWeb\" id=\"dvReq_"+i+"\" style=\"margin-left: 20px;\">");
-					out.println("			<i class=\"material-icons md-24 rositaGuay\" onclick=\"selectRequiere("+i+")\">settings</i>");
-					out.println("		</div>");
-					out.println(		htmlRequiere);
-					out.println("	</td>");
-					
-					/*out.println("	<td class\"cCRegi\" >"+foros.get(i).getReq_registro()+"</td>");
-					out.println("	<td class=\"cCFecha\">"+foros.get(i).getAparece_fecha()+"</td>");*/
-		
-					out.println("</tr>");		
-					
-					
-				}
-			
-
-		        
-			/*	if(keyword.contains(k)) {
-					if(j==0) {out.println("<div id=\""+posicion+"_"+i+"\" onclick=\"selectKeyword(this.id)\" class=\"item\"><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+keyword+"</div></div></div>");j++;
-					}else {out.println("<div id=\""+posicion+"_"+i+"\" onclick=\"selectKeyword(this.id)\" class=\"item\"><div class=\"line\"></div><div class=\"itemChild childKey\"><div class=\"nameItem nameKey\">"+keyword+"</div></div></div>");}
-				}*/
-
-			}
-			
-			out.println("			</tbody>");
-			out.println("		</table>");
-			out.println("	</div>");
-			out.println("</div>");
-
-			//out.println("<script type=\"text/javascript\">setK();</script>");
-
-			System.out.println("Lista cargada");
-
-
-		}
-		
-		private void guardarDescripcion(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-			String descripcion = request.getParameter("cosa");
-			int id_tr = Integer.parseInt(request.getParameter("id_tr"));
-			
-			//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-			Webservice ws = new Webservice();
-			ws.updateForo(id_tr+"", "descripcion", descripcion, "updateForo.php");
-			foros.get(id_tr).setDescripcion(descripcion);
-			System.out.println("Insertado descripcion --> "+descripcion);
-		}	
-		
-		private void guardarReutilizable(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-			String reutilizable = request.getParameter("cosa");
-			int id_tr = Integer.parseInt(request.getParameter("id_tr"));		
-			//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-			Webservice ws = new Webservice();
-			ws.updateForo(id_tr+"", "reutilizable", reutilizable, "updateForo.php");
-			foros.get(id_tr).setReutilizable(reutilizable);
-			System.out.println("Insertado reutiliable --> "+reutilizable);
-		}
-		
-		private void guardarTematica(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-			System.out.println(tematicas.size());
-			String tematica = request.getParameter("cosa");
-			int id_tr = Integer.parseInt(request.getParameter("id"));		
-			//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-			Webservice ws = new Webservice();
-			ws.updateForo(id_tr+"", "tematica", tematica, "updateForo.php");
-			foros.get(id_tr).setTematica(tematica);
-			System.out.println("Insertado tematica --> "+tematica);
-			
-		}
-		
-		private void guardarRequiere(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-			int id_tr = Integer.parseInt(request.getParameter("id_tr"));
-			String id = request.getParameter("id");
-			String state = request.getParameter("state");
-			
-			if(id.equals("R0")) {
-				if(state.equals("true")) {
-					//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-					Webservice ws = new Webservice();
-					ws.updateForo(id_tr+"", "req_aprobacion", "1", "updateForo.php");
-					foros.get(id_tr).setReqAprobacion(1);
-					System.out.println("Insertado req_aprobacion --> "+state);
-				}else {
-					//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-					Webservice ws = new Webservice();
-					ws.updateForo(id_tr+"", "req_aprobacion", "0", "updateForo.php");
-					foros.get(id_tr).setReqAprobacion(0);
-					System.out.println("Insertado req_aprobacion --> "+state);
-				}
-				
-			}else if(id.equals("R1")) {
-				if(state.equals("true")) {
-					//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-					Webservice ws = new Webservice();
-					ws.updateForo(id_tr+"", "req_registro", "1", "updateForo.php");
-					foros.get(id_tr).setReqRegistro(1);
-					System.out.println("Insertado req_registro --> "+state);
-				}else {
-					//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-					Webservice ws = new Webservice();
-					ws.updateForo(id_tr+"", "req_registro", "0", "updateForo.php");
-					foros.get(id_tr).setReqRegistro(0);
-					System.out.println("Insertado req_registro --> "+state);
-				}
-			}else if(id.equals("R2")) {
-				if(state.equals("true")) {
-					//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-					Webservice ws = new Webservice();
-					ws.updateForo(id_tr+"", "aparece_fecha", "1", "updateForo.php");
-					foros.get(id_tr).setApareceFecha(1);
-					System.out.println("Insertado aparece_fecha --> "+state);
-				}else {
-					//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-					Webservice ws = new Webservice();
-					ws.updateForo(id_tr+"", "aparece_fecha", "0", "updateForo.php");
-					foros.get(id_tr).setApareceFecha(0);
-					System.out.println("Insertado aparece_fecha --> "+state);
-				}
-			}
-		}
-		
-		private void guardarWebForo(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-			String url = request.getParameter("cosa");
-			int id_tr = Integer.parseInt(request.getParameter("id"));
-			
-			//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-			Webservice ws = new Webservice();
-			ws.updateForo(id_tr+"", "web_foro", url, "updateForo.php");
-			foros.get(id_tr).setWebForo(url);
-			System.out.println("Insertado urlWebForo --> "+url);
-		}
-		
-		private void guardarDA(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-			int da = Integer.parseInt(request.getParameter("cosa"));
-			int id_tr = Integer.parseInt(request.getParameter("id"));
-
-			
-			//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-			Webservice ws = new Webservice();
-			ws.updateForo(id_tr+"", "DA", da+"", "updateForo.php");
-			foros.get(id_tr).setDA(da);
-			System.out.println("Insertado DA --> "+da);
-			
-		}
-
-		private void guardarDR(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-			int dr = Integer.parseInt(request.getParameter("cosa"));
-			int id_tr = Integer.parseInt(request.getParameter("id"));
-			
-			//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-			Webservice ws = new Webservice();
-			ws.updateForo(id_tr+"", "DR", dr+"", "updateForo.php");
-			foros.get(id_tr).setDR(dr);
-			System.out.println("Insertado DR --> "+dr);
-			
-		}
-		
-		private void guardarTipo(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-			String tipo = request.getParameter("cosa");
-			int id_tr = Integer.parseInt(request.getParameter("id_tr"));		
-			//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-			Webservice ws = new Webservice();
-			ws.updateForo(id_tr+"", "tipo", tipo, "updateForo.php");
-			foros.get(id_tr).setTipo(tipo);
-			System.out.println("Insertado tipo --> "+tipo);	
-		}
+	private void guardarTematica(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		System.out.println(tematicas.size());
+		String tematica = request.getParameter("cosa");
+		int id_tr = Integer.parseInt(request.getParameter("id"));		
+		//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+		Webservice ws = new Webservice();
+		ws.updateForo(id_tr+"", "tematica", tematica, "updateForo.php");
+		foros.get(id_tr).setTematica(tematica);
+		System.out.println("Insertado tematica --> "+tematica);
 
 	}
+
+	private void guardarRequiere(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		int id_tr = Integer.parseInt(request.getParameter("id_tr"));
+		String id = request.getParameter("id");
+		String state = request.getParameter("state");
+
+		if(id.equals("R0")) {
+			if(state.equals("true")) {
+				//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+				Webservice ws = new Webservice();
+				ws.updateForo(id_tr+"", "req_aprobacion", "1", "updateForo.php");
+				foros.get(id_tr).setReqAprobacion(1);
+				System.out.println("Insertado req_aprobacion --> "+state);
+			}else {
+				//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+				Webservice ws = new Webservice();
+				ws.updateForo(id_tr+"", "req_aprobacion", "0", "updateForo.php");
+				foros.get(id_tr).setReqAprobacion(0);
+				System.out.println("Insertado req_aprobacion --> "+state);
+			}
+
+		}else if(id.equals("R1")) {
+			if(state.equals("true")) {
+				//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+				Webservice ws = new Webservice();
+				ws.updateForo(id_tr+"", "req_registro", "1", "updateForo.php");
+				foros.get(id_tr).setReqRegistro(1);
+				System.out.println("Insertado req_registro --> "+state);
+			}else {
+				//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+				Webservice ws = new Webservice();
+				ws.updateForo(id_tr+"", "req_registro", "0", "updateForo.php");
+				foros.get(id_tr).setReqRegistro(0);
+				System.out.println("Insertado req_registro --> "+state);
+			}
+		}else if(id.equals("R2")) {
+			if(state.equals("true")) {
+				//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+				Webservice ws = new Webservice();
+				ws.updateForo(id_tr+"", "aparece_fecha", "1", "updateForo.php");
+				foros.get(id_tr).setApareceFecha(1);
+				System.out.println("Insertado aparece_fecha --> "+state);
+			}else {
+				//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+				Webservice ws = new Webservice();
+				ws.updateForo(id_tr+"", "aparece_fecha", "0", "updateForo.php");
+				foros.get(id_tr).setApareceFecha(0);
+				System.out.println("Insertado aparece_fecha --> "+state);
+			}
+		}
+	}
+
+	private void guardarWebForo(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String url = request.getParameter("cosa");
+		int id_tr = Integer.parseInt(request.getParameter("id"));
+
+		//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+		Webservice ws = new Webservice();
+		ws.updateForo(id_tr+"", "web_foro", url, "updateForo.php");
+		foros.get(id_tr).setWebForo(url);
+		System.out.println("Insertado urlWebForo --> "+url);
+	}
+
+	private void guardarDA(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		int da = Integer.parseInt(request.getParameter("cosa"));
+		int id_tr = Integer.parseInt(request.getParameter("id"));
+
+
+		//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+		Webservice ws = new Webservice();
+		ws.updateForo(id_tr+"", "DA", da+"", "updateForo.php");
+		foros.get(id_tr).setDA(da);
+		System.out.println("Insertado DA --> "+da);
+
+	}
+
+	private void guardarDR(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		int dr = Integer.parseInt(request.getParameter("cosa"));
+		int id_tr = Integer.parseInt(request.getParameter("id"));
+
+		//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+		Webservice ws = new Webservice();
+		ws.updateForo(id_tr+"", "DR", dr+"", "updateForo.php");
+		foros.get(id_tr).setDR(dr);
+		System.out.println("Insertado DR --> "+dr);
+
+	}
+
+	private void guardarTipo(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String tipo = request.getParameter("cosa");
+		int id_tr = Integer.parseInt(request.getParameter("id_tr"));		
+		//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
+		Webservice ws = new Webservice();
+		ws.updateForo(id_tr+"", "tipo", tipo, "updateForo.php");
+		foros.get(id_tr).setTipo(tipo);
+		System.out.println("Insertado tipo --> "+tipo);	
+	}
+
+
+
+
+	private void obtenemosCategorias() {
+		//ontenemos todas las categorias
+		String json = ws.getJSON("getCategorias.php");
+		Gson gson = new Gson();
+		ArrayList<CategoriaGson> categoriasGson = gson.fromJson(json, new TypeToken<List<CategoriaGson>>(){}.getType());
+		this.categorias.clear();
+		this.categorias = categoriasGson;
+	}
+
+
+}
 
 
 
