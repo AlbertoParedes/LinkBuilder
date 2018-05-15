@@ -753,17 +753,14 @@ function guardarReutilizable(id_tr, cosa){
 //--CAMPO DESCRIPCION:---------------------------------
 
 //para abrir la ventanita y poder ver y editar la descripcion 
-function editDescripcion(id){
+function editDescripcion(x){
+	
+	var ul = $(x).children('.divDesc');
 
 	//cerrar las ventanitas que esten abiertas
-	$(".slCt").removeClass("visible");	
-	$(".icon").removeClass("visible");
-	//-------------------------------
-	$("#desc_"+id).addClass("visible");
-	$("#icon_"+id).addClass("visible");
+	$(".slCt").removeClass("visible");
+	$(ul).addClass("visible");
 	
-	$(".pr").removeClass("pr");
-	$("#td_Desc"+id).addClass("pr");
 	
 }
 //para actualizar el <span> con la nueva descripcion y llamar a la funcion que la guarda en BBDD
@@ -788,43 +785,25 @@ function guardarDescripcion(id_tr, cosa){
 //--CAMPO REQUIERE---------------------------
 
 //para abrir el desplegable con las tres opciones de requerimiento
-function selectRequiere(id){
-	//alert("DENTROo");
+function selectRequiere(x){
+	var ul = $(x).children('ul');
 	//cerrar las ventanitas que esten abiertas
 	$(".slCt").removeClass("visible");
-	$("#selReq_"+id).addClass("visible");
-	
-	//esto saca el id de los checkbox que YA ESTAN MARCADOS
-	var t = "";
-	$("#selReq_"+id+" li input:checked").each(function(){t += ($(this).attr("id"))+" "});
-	//alert("Esta pulsado -> "+t);
-	//-----------
-	
-	$(".pr").removeClass("pr");
-	$("#tdR_"+id).addClass("pr");
+	$(ul).addClass("visible");
 	
 }
 	
 function cambiarRequiere(x){
-		
-	//var t = "";
-	//$("#selReq_"+id_tr+" li input:checked").each(function(){t += ($(this).attr("id"))+" "});	
-	//alert("Pulsando -> "+t);
 	
-	//var x = $("#"+id).is(':checked');
-	//alert(x+" "+id);
+	var campo = $(x).attr('id');
+	var id_foro = $(x).closest( "tr" ).attr('id');
+	var valor = $(x).is(':checked');
 	
-	//guardarRequiere(id_tr, id, x);
-}
-
-//para guardar los reuqerimientos en la BBDD
-function guardarRequiere(id_tr, id, state){
-	//alert("Funcion Guarda -> "+id_tr+" "+id+" "+state);
 	$.post('Data', {
 		metodo : 'guardarRequiere',
-		id_tr: id_tr,
-		id: id,
-		state: state
+		campo: campo,
+		id_foro: id_foro,
+		valor: valor
 	});
 }
 
@@ -834,11 +813,14 @@ function guardarRequiere(id_tr, id, state){
 //Hide the menus if visible
 window.addEventListener('click', function(e){  
 	var clase = e.target.className;
-	
+
+	//alert(clase);
 	if (clase.includes("tdCat") || clase.includes("arrow")){
 		//si entra en este if significa que hemos hecho click en la categoria
 	}else if(clase.includes("slT")){
 		//ignorar click tematica
+	}else if(clase.includes("req")){
+		//ignorar click dentro de requerimientos
 	}else {
 		$(".rotArrow").removeClass("rotArrow");
 		$(".slCt").removeClass("visible");

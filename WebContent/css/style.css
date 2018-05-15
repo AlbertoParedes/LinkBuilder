@@ -295,16 +295,16 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 }
     
 .spanRequiere{padding-left: 35px;}
-    
+.divDesc{display: none;
+  border: solid 10px #000;}   
     
     
     
 
 /*DANI*/
-.material-icons.rositaGuay { color: #e64a89; }
 #tCategorias{table-layout:fixed}
 #tCategorias td{white-space: nowrap;overflow: visible;}
-.cCWeb{width: 20%;}
+.cCWeb{width: 0%;}/*20%*/
 .cCTipo{width: 70px;}
 .cCDR{width: 40px;}
 .cCDA{width: 40px;}
