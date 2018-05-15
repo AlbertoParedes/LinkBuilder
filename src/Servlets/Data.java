@@ -112,11 +112,6 @@ public class Data extends HttpServlet {
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 
-		if(request.getParameter("posicion")!=null) {
-			int posicion = Integer.parseInt(request.getParameter("posicion"));
-			cliente = clientes.get(posicion);
-		}
-
 		out = response.getWriter();
 
 		if(metodo.equals("ckcs")) {
@@ -616,11 +611,10 @@ public class Data extends HttpServlet {
 			
 			out.println("<div class=\"infoClient\">");
 			out.println("	<div class=\"nameClient\">"+categorias.get(posicion).getEnlace()+"</div>");
-			out.println("	<div class=\"addK\" style=\"position: absolute; margin-left: 1250px; width: 110px; cursor: pointer;\">+ Nuevo Foro</div>");
+			out.println("	<div class=\"addK\">nuevo foro</div>");
 			out.println("</div>");		
 			out.println("<div class=\"keywordsClient\">");
 			out.println("	<div id=\"results_Client\" class=\"contentTable\">");
-
 			//COMIENZA LA TABLA
 			out.println("		<table id=\"tCategorias\" class=\"table\">");
 			out.println("			<thead><tr><th class=\"cabeceraTable cCWeb\">Web</th><th class=\"cabeceraTable cCTipo\">Tipo</th><th class=\"cabeceraTable cCDR\">DR</th><th class=\"cabeceraTable cCDA\">DA</th><th class=\"cabeceraTable cCTem\">Tematica</th><th class=\"cabeceraTable cCDesc\">Descripcion</th><th class=\"cabeceraTable cCApro\">Reutilizable</th><th class=\"cabeceraTable cCRegi\">Requiere</th></tr></thead>");
@@ -628,10 +622,10 @@ public class Data extends HttpServlet {
 
 			for(int i = 0; i < foros.size(); i++) {
 				
-				if(foros.get(i).getCategoria()==posicion) {
+				if(foros.get(i).getCategoria()==id_categoria) {
 					
 					//LISTA DESPLEGABLE TEMATICA------------------------------------			
-					String htmlTematica = "		<ul id=\"selTem_"+i+"\" class=\"slCt slT effect7\">";
+					
 					String opTematica = foros.get(i).getTematica();
 					//Esta linea de abajo cuenta el numero de palabras que hay en 'opTematica'
 					StringTokenizer st = new StringTokenizer(opTematica);
@@ -641,45 +635,51 @@ public class Data extends HttpServlet {
 						opTematica = "Todas";
 					}
 
-					htmlTematica += "			<li class=\"pretty p-default p-defaultALL p-round p-smooth p-plain pzero\" id=0 >";		
-					if(opTematica.contains("Todas")) {
+					String htmlTematica = "<ul id=\"selTem_"+i+"\" class=\"slCt slT effect7\">";
+					htmlTematica += 	  	"<li class=\"pretty p-default p-defaultALL p-round p-smooth p-plain pzero\" id=0 >";		
+					htmlTematica += 			"<input class=\"slT\" id=\"input_"+i+"\" type=\"checkbox\" onclick=\"selectAll(this,"+i+")\">";
+					htmlTematica += 			"<div class=\"state stateALL p-success-o\"><label>Seleccionar todas</label></div>";
+					htmlTematica += 		"</li><br>";
+					
+					/*if(opTematica.contains("Todas")) {
 						htmlTematica += "				<input class=\"slT\" id=\"input_"+i+"\" type=\"checkbox\" onclick=\"selectAll(this,"+i+")\" checked>";
 						all = true;
 					}else
 						htmlTematica += "				<input class=\"slT\" id=\"input_"+i+"\" type=\"checkbox\" onclick=\"selectAll(this,"+i+")\">";
-					htmlTematica += "				<div class=\"state stateALL p-success-o\">";
-					htmlTematica += "					<label>Seleccionar todas</label>";
-					htmlTematica += "				</div>";
-					htmlTematica += "			</li><br>";
-
+					*/
 					for (int j = 0; j < tematicas.size(); j++) {
-						//htmlTematica += "			";
-						htmlTematica += "			<li class=\"pretty p-default p-round p-smooth p-plain pzero\" id=\""+tematicas.get(j).getIdTematica()+"\" >";
-
-						if(opTematica.contains(tematicas.get(j).getNombre())||all==true)
-							htmlTematica += "				<input class=\"slT\" id=\""+tematicas.get(j).getNombre()+"\" type=\"checkbox\" onclick=\"liSelectTem("+i+")\" checked>";
-						else
-							htmlTematica += "				<input class=\"slT\" id=\""+tematicas.get(j).getNombre()+"\" type=\"checkbox\" onclick=\"liSelectTem("+i+")\">";
-
-						htmlTematica += "				<div class=\"state p-success-o\">";
-						htmlTematica += "					<label>"+tematicas.get(j).getNombre()+"</label>";
-						htmlTematica += "				</div>";
-						htmlTematica += "			</li><br>";
+						String status="";
+						if(opTematica.contains(tematicas.get(j).getNombre())) status = "checked" ;
+						
+						htmlTematica += 			"<li class=\"pretty p-default p-round p-smooth p-plain pzero\" id=\""+tematicas.get(j).getIdTematica()+"\" >";
+						htmlTematica += 				"<input class=\"slT\" id=\""+tematicas.get(j).getNombre()+"\" type=\"checkbox\" onclick=\"liSelectTem("+i+")\" "+status+">";
+						htmlTematica += 				"<div class=\"state p-success-o\"><label>"+tematicas.get(j).getNombre()+"</label></div>";
+						htmlTematica += 			"</li><br>";
 					}
-					htmlTematica += "		</ul>";
+					htmlTematica += 			"</ul>";
 					//---------------------------------------
 
 
 					//-----------DESPLEGABLE REQUIERE--------------------------------------
-					String htmlRequiere = "		<ul id=\"selReq_"+i+"\" class=\"slCt slT effect7\" style=\"width: 140px;\">";
-					/*				Esto es el boton de Alberto
-					<div class=\"itemStatus\">
-						    <label class=\"switch\">
-						        <input type=\"checkbox\"  checked>
-						        <span class=\"slider round\"></span>
-						    </label>
-						</div>*/
-					for (int k = 0; k < 3; k++) {
+					String statusAprobacion="",statusRegistro="",statusFecha="";
+					if(foros.get(i).getReqAprobacion()==1) statusAprobacion="checked";
+					if(foros.get(i).getReqRegistro()==1) statusRegistro="checked";
+					if(foros.get(i).getApareceFecha()==1) statusFecha="checked";
+						
+					String htmlRequiere="<ul id=\"selReq_"+i+"\" class=\"slCt slT effect7\">";
+					htmlRequiere += 	  	"<li class='req'>";
+					htmlRequiere += 			"<div class='req'><label class='switch req'><input onchange='cambiarRequiere(this)' type='checkbox' "+statusAprobacion+"><span class='slider round req'></span><span class='spanRequiere req'>Aprobacion</span></label></div>";
+					htmlRequiere += 		"</li>";
+					
+					htmlRequiere += 		"<li class='req'>";
+					htmlRequiere += 			"<div class='req'><label class='switch req'><input onchange='cambiarRequiere(this)' type='checkbox' "+statusRegistro+"><span class='slider round req'></span><span class='spanRequiere req'>Registro</span></label></div>";
+					htmlRequiere += 		"</li>";
+					
+					htmlRequiere += 		"<li class='req'>";
+					htmlRequiere += 			"<div class='req'><label class='switch req'><input onchange='cambiarRequiere(this)' type='checkbox' "+statusFecha+"><span class='slider round req'></span><span class='spanRequiere req'>Fecha</span></label></div>";
+					htmlRequiere += 		"</li>";
+					htmlTematica += 	"</ul>";	
+					/*for (int k = 0; k < 3; k++) {
 						htmlRequiere += "			<li class=\"pretty p-switch\" style=\"line-height: 1.4\" id=\""+k+"\" >";
 						if(k==0&&foros.get(i).getReqAprobacion()==1) {
 							htmlRequiere += "				<input class=\"slT\" id=\"R"+k+"\" type=\"checkbox\" onchange=\"cambiarRequiere(this.id,"+i+")\" checked>";
@@ -698,9 +698,17 @@ public class Data extends HttpServlet {
 							htmlRequiere += "					<label>Aparece Fecha</label>";
 						}			
 						htmlRequiere += "				</div>";
-						htmlRequiere += "			</li><br>";
-					}
-					htmlTematica += "		</ul>";		
+						
+						
+						htmlRequiere += "<li>"; 
+						//Alberto
+						htmlRequiere += "<div><label class=\"switch\"><input type=\"checkbox\"  checked><span class=\"slider round\"></span></label></div>";
+						htmlRequiere += "<span>Holaa</span>";
+						
+						
+						htmlRequiere += "			</li>";
+					}*/
+						
 					//---------------------------------------------
 
 					//------------DESPLEGABLE COLUMNA REUTILIZABLE---------

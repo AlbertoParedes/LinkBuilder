@@ -352,23 +352,6 @@ function guardarWeb(id_foro, id_resultado){
 	
 }
 
-//Hide the menus if visible
-window.addEventListener('click', function(e){  
-	var clase = e.target.className;
-	
-	if (clase.includes("tdCat") || clase.includes("arrow")){
-		//si entra en este if significa que hemos hecho click en la categoria
-	}else if(clase.includes("rositaGuay")){
-		//ignorar click require
-	}else if(clase.includes("slT")){
-		//ignorar click tematica
-	}else {
-		$(".rotArrow").removeClass("rotArrow");
-		$(".slCt").removeClass("visible");
-	}
-});
-
-
 //caundo cambiamos el mes se cambiará la tabla
 function changeMonth(){
 	
@@ -822,16 +805,16 @@ function selectRequiere(id){
 	
 }
 	
-function cambiarRequiere(id, id_tr){
+function cambiarRequiere(x){
 		
 	//var t = "";
 	//$("#selReq_"+id_tr+" li input:checked").each(function(){t += ($(this).attr("id"))+" "});	
 	//alert("Pulsando -> "+t);
 	
-	var x = $("#"+id).is(':checked');
+	//var x = $("#"+id).is(':checked');
 	//alert(x+" "+id);
 	
-	guardarRequiere(id_tr, id, x);
+	//guardarRequiere(id_tr, id, x);
 }
 
 //para guardar los reuqerimientos en la BBDD
@@ -848,7 +831,19 @@ function guardarRequiere(id_tr, id, state){
 
 //---------------------------
 
-
+//Hide the menus if visible
+window.addEventListener('click', function(e){  
+	var clase = e.target.className;
+	
+	if (clase.includes("tdCat") || clase.includes("arrow")){
+		//si entra en este if significa que hemos hecho click en la categoria
+	}else if(clase.includes("slT")){
+		//ignorar click tematica
+	}else {
+		$(".rotArrow").removeClass("rotArrow");
+		$(".slCt").removeClass("visible");
+	}
+});
 
 
 
