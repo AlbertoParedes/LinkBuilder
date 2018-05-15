@@ -621,7 +621,10 @@ public class Data extends HttpServlet {
 			out.println("<div class='infoClient'>");
 			out.println("	<div class='nameClient'>"+categorias.get(posicion).getEnlace()+"</div>");
 			out.println("	<div class='addK'>nuevo foro</div>");
-			out.println("</div>");		
+			out.println("</div>");
+			
+			out.println("<div class='ctoolbar'><div id='websGuardar' class='zoom'>guardar</div></div>");
+			
 			out.println("<div class='keywordsClient'>");
 			out.println("	<div id='results_Client' class='contentTable'>");
 			//COMIENZA LA TABLA
@@ -717,9 +720,7 @@ public class Data extends HttpServlet {
 					//-----------------------------------------------------
 
 					//-----------DESPLEGABLE PARA EDITAR LA DESCRIPCION---
-					String htmlDescripcion=	"<div class='tdWeb divDesc'>";	
-					//htmlDescripcion += 		"            <textarea id='desc_"+i+"' onchange='cambiarDescripcion("+i+", spDesc_"+i+")'  class='slCt slT effect7' style='border-radius: 10px' cols='40' rows='3'>"+foros.get(i).getDescripcion()+"</textarea>";
-					htmlDescripcion += 		"</div>";
+					String htmlDescripcion=	"<div contenteditable='true' class='slCt effect7 divDesc' oninput='guardarDescripcion(this)'>"+foros.get(i).getDescripcion()+"</div>";
 					String opDescripcion = foros.get(i).getDescripcion();
 					//----------------------------------------------------
 
@@ -758,7 +759,7 @@ public class Data extends HttpServlet {
 					out.println("	</td>");
 					//Fin columna tematica--------------------------------
 					//Columna DESCRIPCION
-					out.println("	<td class='cCDesc' onclick='editDescripcion(this)'>");
+					out.println("	<td class='cCDesc pr' onclick='editDescripcion(this)'>");
 					out.println("		<div class='tdCat tdWeb'>");
 					out.println("			<span class='tdCat tdWeb'>"+opDescripcion+"</span>");
 					out.println("		</div>");

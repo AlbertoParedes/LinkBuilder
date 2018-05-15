@@ -773,13 +773,9 @@ function cambiarDescripcion(id, span){
 	guardarDescripcion(id_tr, cosa);
 }
 //para actualizar la descripcion en la BBDD
-function guardarDescripcion(id_tr, cosa){
-	
-	$.post('Data', {
-		metodo : 'guardarDescripcion',
-		id_tr: id_tr,
-		cosa: cosa
-	});
+function guardarDescripcion(x){
+	var texto = $(x).text();
+	$("#websGuardar").addClass('cSave');
 }
 
 //--CAMPO REQUIERE---------------------------
@@ -812,15 +808,16 @@ function cambiarRequiere(x){
 
 //Hide the menus if visible
 window.addEventListener('click', function(e){  
-	var clase = e.target.className;
+	var clase = $(e.target).attr("class");
+	
+	var parentClase = $(e.target).parent('div').attr("class")
 
-	//alert(clase);
 	if (clase.includes("tdCat") || clase.includes("arrow")){
 		//si entra en este if significa que hemos hecho click en la categoria
-	}else if(clase.includes("slT")){
-		//ignorar click tematica
 	}else if(clase.includes("req")){
 		//ignorar click dentro de requerimientos
+	}else if(clase.includes("divDesc") || clase.includes("parentClase")){
+		//ignorar click dentro descripcion
 	}else {
 		$(".rotArrow").removeClass("rotArrow");
 		$(".slCt").removeClass("visible");

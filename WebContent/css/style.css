@@ -241,7 +241,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
     bottom: 28px;}
 
 .pzero{ padding-top: 0px!important;height: 17px;}
-.visible{display: block;}
+
 
 .divStatus{height: 11px;width: 11px;border-radius: 50%;margin-left: 5px;}
 .sOK{background-color: #0f9d58;}
@@ -276,7 +276,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 }
 
 
-#cGuardar{
+#cGuardar, #websGuardar{
 	position: absolute;
     right: 100px;
     display: none;
@@ -295,8 +295,14 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 }
     
 .spanRequiere{padding-left: 35px;}
-.divDesc{display: none;
-  border: solid 10px #000;}   
+.divDesc{    display: none;
+    position: absolute;
+    height: auto;
+    background: white;
+    width: 100%;
+    overflow: auto;
+    white-space: normal;
+    max-height: 200px;outline: none;}   
     
     
     
@@ -304,7 +310,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 /*DANI*/
 #tCategorias{table-layout:fixed}
 #tCategorias td{white-space: nowrap;overflow: visible;}
-.cCWeb{width: 0%;}/*20%*/
+.cCWeb{width: 20%;}/*20%*/
 .cCTipo{width: 70px;}
 .cCDR{width: 40px;}
 .cCDA{width: 40px;}
@@ -316,7 +322,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 .cCFecha{width: 5%;}
 
 
-
+.visible{display: block;}
 
 
 
