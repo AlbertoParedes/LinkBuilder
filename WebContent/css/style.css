@@ -194,6 +194,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 .lf{    color: #4688F1; }
 .lnf{    color: #ea4335;}
 .pr{	position: relative;}
+
 .arrow{position: absolute;right: 0;}
 
 .cStatus{ width: 35px;}
@@ -293,6 +294,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
     border-color: #e64a89;
     cursor: pointer;
 }
+.cp{cursor: pointer;}
     
 .spanRequiere{padding-left: 35px;}
 .divDesc{    display: none;
@@ -302,22 +304,40 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
     width: 100%;
     overflow: auto;
     white-space: normal;
-    max-height: 200px;outline: none;}   
-    
-    
-    
+    max-height: 200px;outline: none;}  
+
+.taWeb{display:none; width: 100%; max-height: 200px;outline: none;}
+.ulReq{    margin-top: 4px;
+    width: 133px;}    
+.ulTipoForo{padding: 0px; margin-top: 4px;}
+.divSeparar{padding-bottom: 6px;
+    border-bottom: 1px solid #ececec;}
+textarea{color: #878787;}
+.divTemSele{height: 19px;width: 100%}
+.divTodo{padding-bottom: 25px;
+    border-bottom: 1px solid #ececec;
+    margin-bottom: 12px;
+    position: sticky!important;
+    top: 0px;
+    background: white;
+    z-index: 3;
+    margin-top: 0;
+    padding-top: 14px;}
+.ulTem{    max-height: 270px;
+    overflow: hidden;
+    overflow-y: scroll;padding-top: 0;}
+.paTem{    position: absolute!important;}
 
 /*DANI*/
 #tCategorias{table-layout:fixed}
 #tCategorias td{white-space: nowrap;overflow: visible;}
-.cCWeb{width: 20%;}/*20%*/
-.cCTipo{width: 70px;}
+.cCWeb{width: 25%;}/*20%*/
 .cCDR{width: 40px;}
 .cCDA{width: 40px;}
 .cCTem{width: 13%;}
 
-.cCDesc{width: 37%;}
-.cCReu{width: 10%;}
+.cCDesc{ width: 27%;}
+.cCReut{width: 15%;}
 .cCReq{width: 10%;}
 .cCFecha{width: 5%;}
 

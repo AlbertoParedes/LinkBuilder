@@ -525,7 +525,6 @@ function selectCategoria(x) {
 	var id_categoria = $(x).attr('id');
 	var posicion = $(x).attr('posicion');
 	changeThemeK(id_categoria);
-	
 	//pintamos las busquedas de la categoria selecionada	
 	$.post('Data', {
 		metodo : 'selectCat', 
@@ -536,291 +535,180 @@ function selectCategoria(x) {
 	});	
 }
 
-
-
-
-
 //--CAMPO WEB--------------------------------------------
-
-//para detectar los cambios en la url dela columna WEB y enviarlos a la funcion que lo guarda
-/*function guardarWeb(id){
-	var cosa = $ ("#inputWeb_"+id).val();
-	//alert(cosa);
-	$.post('Data', {
-		metodo : 'guardarWeb',
-		id: id,
-		cosa: cosa
-	});
-}*/
+function guardarWebForo(x){
+	var campo = "web_foro";
+	var id_foro = $(x).closest( "tr" ).attr('id');
+	var valor = $ (x).val();
+	guardarForo(campo,id_foro,valor);
+}
 
 //--CAMPO TIPO-------------------------------------------
 
 //para desplegar el ul don los dos tipos de foro y que pinte en azul el que esta actualmente seleccionado en la BBDD
-function selectTipo(id){
-	//cerrar las ventanitas que esten abiertas
-	$(".slCt").removeClass("visible");
+function openTipo(x){
+	var ul = $(x).children('ul');
+	$(ul).addClass('visible');	
+}
+function guardarTipo(x){
+	var campo = "tipo";
+	var id_foro = $(x).closest( "tr" ).attr('id');
+	var valor = $ (x).attr('tipo');
+	guardarForo(campo,id_foro,valor);
 	
-	//esto pinta de azul el Reu que esta actualmente almacenado en la BBDD
-	$("#selTipo_"+id+" li").removeClass("liActive");
+	var clase = "";
+	if(valor=="follow") clase = "lf";
+	else if(valor=="nofollow")clase ="lnf";
 	
-	var span = $("#spTipo_"+id).text()
-
-	if (span == $("#Tipo1").text()){
-		$("#selTipo_"+id+" > #Tipo1").addClass("liActive");
-	}else if (span == $("#Tipo2").text()){
-		$("#selTipo_"+id+" > #Tipo2").addClass("liActive");
-	}	 
-	
-	$("#selTipo_"+id).addClass("visible");
-
-	$(".pr").removeClass("pr");
-	$("#td_Tipo"+id).addClass("pr");
+	var i = $(x).closest( "td" ).children("i");
+	$(i).removeClass("lf").removeClass("lnf").addClass(clase);
 	
 }
-//Para seleccionar el Tipo, y que se cambie en el span
-function liSelectTipo(id_tipo, id_tr){
-	//alert("dentro");
-	$("#selTipo_"+id_tr+" li").removeClass("liActive");
-	$("#selTipo_"+id_tr+" > #"+id_tipo).addClass("liActive");
-	$("#selTipo_"+id_tr).removeClass("visible");
-	var texto = $("#"+id_tipo).text();
-	$("#spTipo_"+id_tr).text(texto);
-	
-	cosa = texto;
-	//alert (id_tr+"|"+cosa)
-	
-	guardarTipo(id_tr, cosa);
-}
-
-function guardarTipo(id_tr, cosa){
-	$.post('Data', {
-		metodo : 'guardarTipo',
-		id_tr: id_tr,
-		cosa: cosa
-	});
-}
-
 //--CAMPO DR----------------------------------------------
-function guardarDR(id){
-	var cosa = $ ("#inputDR_"+id).val();
-	//alert(cosa);
-	$.post('Data', {
-		metodo : 'guardarDR',
-		id: id,
-		cosa: cosa
-	});
+function guardarDR(x){
+	var campo = "DR";
+	var id_foro = $(x).closest( "tr" ).attr('id');
+	var valor = $ (x).val();
+	guardarForo(campo,id_foro,valor);
 }
 //--CAMPO DA----------------------------------------------
-function guardarDA(id){
-	var cosa = $ ("#inputDA_"+id).val();
-	//alert(cosa);
-	$.post('Data', {
-		metodo : 'guardarDA',
-		id: id,
-		cosa: cosa
-	});
+function guardarDA(x){
+	var campo = "DA";
+	var id_foro = $(x).closest( "tr" ).attr('id');
+	var valor = $ (x).val();
+	guardarForo(campo,id_foro,valor);
 }
 //--CAMPO TEMATICA----------------------------------------
-
-//para abrir le desplegable con la lista de tematicas al pulsar en el campo tematica
-function selectTematica(id){
+function openTematica(x){
 	//cerrar las ventanitas que esten abiertas
 	$(".slCt").removeClass("visible");
+	var ul = $(x).children('ul');
+	$(ul).addClass("visible");
+	//
+	var elementos = $(ul).children('div.nameTem').children('input:checked').length;
+	var longitud = $(ul).attr('size');
 	
-	$("#selTem_"+id).addClass("visible");
-	
-	//$('#spTem'+id+':contains("Todas")')
-	
-	$(".pr").removeClass("pr");
-	$("#td_"+id).addClass("pr");
-}
-
-//para que funcione el checkbox de "seleccionar todas" en las tematicas
-function selectAll(source,id_sp) {
-
-	var thisInput = $(source).is(":checked")
-	var checkboxes = $('#selTem_'+id_sp+' li input[type="checkbox"]');
-	
-	if(thisInput){		
-	    for (var i = 0; i < checkboxes.length; i++) {
-	        if (checkboxes[i] != source){
-	        	checkboxes[i].checked = source.checked; 
-	        }            
-	    }
-	    //escribimos "todas" en el span
-	    $("#spTem_"+id_sp).text("Todas");    
-	    
-	    //cogemos todas la tematicas y borramos "input_'id'" que es el id del checkbox "seleccionar todas"
-	    //para que no se lo pase a la BBDD como si fuese una tematica mas, y llamamos a la funcion que lo guarda
-	    var cosa = "";
-	    $("#selTem_"+id_sp+" li input:checked").each(function(){cosa += ($(this).attr("id"))+" "});
-	    //borramos "input_'id'"
-	    cosa = cosa.replace("input_"+id_sp,"").trim();
-	    guardarTematica(id_sp, cosa);
-	    
-	}else{
-		//vaciar todos los checkboxes
-	    for (var i = 0; i < checkboxes.length; i++) {
-	        checkboxes[i].checked = source.checked;  	            
-	    }
-	    $("#spTem_"+id_sp).text("Selecciona tematica");
-	    cosa = "";
-	    guardarTematica(id_sp, cosa);
-	}      
-}
-
-//para seleccionar los checkbox de la tematica del foro(menos el de select all)
-function liSelectTem(id_ul){
-	
-	var t = "";
-	$("#selTem_"+id_ul+" li input:checked").each(function(){t += ($(this).attr("id"))+" "});
-	
-	if (t == ""){
-		t = "Selecciona tematica";
+	if(longitud==elementos){
+		$(ul).children('div').children('input#all').prop('checked', true);
+	}else if(elementos<longitud){
+		$(ul).children('div').children('input#all').prop('checked', false);
 	}
-	//esto escribe todo lo seleccionado en el span(no añade uno por uno)
-	t = t.replace("input_"+id_ul,"").trim();
-	$("#spTem_"+id_ul).text(t);
-	//$("#selTem_21 li input:checked").each(function(){console.log($(this).attr("id"))})
-	
-	guardarTematica(id_ul, t);
 }
-
-//para guardar la tematica en la BBDD
-function guardarTematica(id, cosa){
-	if(cosa=="Selecciona tematica"){
-		cosa = "";
+function guardarTematica(x){
+	
+	var ul = $(x).closest('ul');
+	if($(x).attr('id')=="all"){
+		//seleccionamos o deseleccionamos todas
+		$(ul).children('div.nameTem').children('input').each(function(){
+			$(this).prop('checked', $(x).is(':checked'));
+		});
 	}
-	$.post('Data', {
-		metodo : 'guardarTematica',
-		id: id,
-		cosa: cosa
+	
+	var campo = "tematica";
+	var id_foro = $(x).closest( "tr" ).attr('id');
+	var valor = "";
+
+	//recorremos todos los inputs checked
+	var elementos = 0;
+	var longitud = $(ul).attr('size');
+	$(ul).children('div.nameTem').children('input:checked').each(function(){
+		elementos+=1;
+		valor = valor + $(this).attr('tematica')+", ";
 	});
+	
+	if(elementos==longitud){$(x).closest('td').children('div').children('span').text('Todas');}
+	else $(x).closest('td').children('div').children('span').text(valor);
+	
+	guardarForo(campo,id_foro,valor);
 }
 
 
 //--CAMPO REUTILIZABLE----------------------------------
-
-//para abrir el desplegable al pulsar en el campo reutilizable
-function selectReutilizable(id){
+function openReutilizable(x){
 	//cerrar las ventanitas que esten abiertas
 	$(".slCt").removeClass("visible");
-	
-	//esto pinta de azul el Reu que esta actualmente almacenado en la BBDD
-	$("#selReu_"+id+" li").removeClass("liActive");
-	
-	var span = $("#spReu_"+id).text()
-
-	if (span == $("#Reu1").text()){
-		$("#selReu_"+id+" > #Reu1").addClass("liActive");
-	}else if (span == $("#Reu2").text()){
-		$("#selReu_"+id+" > #Reu2").addClass("liActive");
-	}else if (span == $("#Reu3").text()){
-		$("#selReu_"+id+" > #Reu3").addClass("liActive");
-	}else if (span == $("#Reu4").text()){
-		$("#selReu_"+id+" > #Reu4").addClass("liActive");
-	}	 
-	//-------------------------------
-	
-	$("#selReu_"+id).addClass("visible");
-
-	$(".pr").removeClass("pr");
-	$("#td_"+id).addClass("pr");
-	
-}
-//Seleccionamos la usabilidad del foro en el desplegable del campo reutilizable
-function liSelectReu(id_reu,id_tr){
-	
-	$("#selReu_"+id_tr+" li").removeClass("liActive");
-	$("#selReu_"+id_tr+" > #"+id_reu).addClass("liActive");
-	$("#selReu_"+id_tr).removeClass("visible");
-
-	var texto = $("#"+id_reu).text();
-	$("#spReu_"+id_tr).text(texto);
-	
-	cosa = texto;
-	guardarReutilizable(id_tr, cosa);
-}
-//para actualizar el campo reutilizable en la BBDD
-function guardarReutilizable(id_tr, cosa){
-	$.post('Data', {
-		metodo : 'guardarReutilizable',
-		id_tr: id_tr,
-		cosa: cosa
+	var ul = $(x).children('ul');
+	$(ul).addClass('visible');
+	$(ul).children('li').removeClass('liActive');
+	var spanText =  $(x).children('div').children('span').text();
+	var opcion="null";
+	$(ul).children('li').each(function(){
+		if($(this).text()==spanText)opcion = $(this);
 	});
+	$(opcion).addClass('liActive');
+}
+function guardarReutilizable(x){
+	var campo = "reutilizable";
+	var id_foro = $(x).closest( "tr" ).attr('id');
+	var valor =  $(x).attr('contenido');
+	$(x).closest('td').children('div').children('span').text($(x).text());
+	guardarForo(campo,id_foro,valor);
 }
 
 //--CAMPO DESCRIPCION:---------------------------------
-
-//para abrir la ventanita y poder ver y editar la descripcion 
-function editDescripcion(x){
-	
-	var ul = $(x).children('.divDesc');
-
+function openDescripcion(x){
+	$("#websGuardar").removeClass('cSave');
+	var textarea = $(x).children('.taWeb');
 	//cerrar las ventanitas que esten abiertas
 	$(".slCt").removeClass("visible");
-	$(ul).addClass("visible");
-	
-	
+	$(textarea).addClass("visible");
+	resizeta(textarea,1)
 }
-//para actualizar el <span> con la nueva descripcion y llamar a la funcion que la guarda en BBDD
-function cambiarDescripcion(id, span){
-	var cosa = $ ("#desc_"+id).val(); 
-	$("#spDesc_"+id).text(cosa);
-	
-	id_tr = id;
-	
-	guardarDescripcion(id_tr, cosa);
-}
-//para actualizar la descripcion en la BBDD
 function guardarDescripcion(x){
-	var texto = $(x).text();
-	$("#websGuardar").addClass('cSave');
+	var campo = "descripcion";
+	var id_foro = $(x).closest( "tr" ).attr('id');
+	var valor =  $(x).val();
+	$(x).closest('td').children('div').children('span').text(valor);
+	guardarForo(campo,id_foro,valor);
 }
-
+function resizeta(x,e){
+	var u = $(x).prop("scrollHeight");
+	$(x).css("height", u+"px");
+	if(e==0)showGuardar();
+}
 //--CAMPO REQUIERE---------------------------
-
-//para abrir el desplegable con las tres opciones de requerimiento
-function selectRequiere(x){
+function openRequiere(x){
 	var ul = $(x).children('ul');
 	//cerrar las ventanitas que esten abiertas
 	$(".slCt").removeClass("visible");
 	$(ul).addClass("visible");
-	
 }
-	
-function cambiarRequiere(x){
-	
+function guardarRequiere(x){
 	var campo = $(x).attr('id');
 	var id_foro = $(x).closest( "tr" ).attr('id');
 	var valor = $(x).is(':checked');
-	
+	guardarForo(campo,id_foro,valor);
+}
+
+//actualizar los campos editables de los foros-------------------
+function guardarForo(campo,id_foro,valor){
 	$.post('Data', {
-		metodo : 'guardarRequiere',
+		metodo : 'guardarForo',
 		campo: campo,
 		id_foro: id_foro,
 		valor: valor
+	}, function(){
+		$("#websGuardar").removeClass('cSave');
 	});
 }
 
-
 //---------------------------
-
+function showGuardar(){$("#websGuardar").addClass('cSave');}
 //Hide the menus if visible
 window.addEventListener('click', function(e){  
 	var clase = $(e.target).attr("class");
-	
-	var parentClase = $(e.target).parent('div').attr("class")
 
 	if (clase.includes("tdCat") || clase.includes("arrow")){
 		//si entra en este if significa que hemos hecho click en la categoria
 	}else if(clase.includes("req")){
 		//ignorar click dentro de requerimientos
-	}else if(clase.includes("divDesc") || clase.includes("parentClase")){
+	}else if(clase.includes("taWeb")){
+		//ignorar click dentro descripcion
+	}else if(clase.includes("slT")){
 		//ignorar click dentro descripcion
 	}else {
 		$(".rotArrow").removeClass("rotArrow");
-		$(".slCt").removeClass("visible");
+		$(".slCt").removeClass("visible");	
 	}
 });
 

@@ -236,15 +236,11 @@ public class Webservice {
 		StringBuffer response = new StringBuffer();
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("id_foro", id_foro);
-		System.out.println("id_foro--->"+id_foro);
 		jsonObj.put("campo", campo);
-		System.out.println("campo--->"+campo);
 		jsonObj.put("valor", valor);
-		System.out.println("valor--->"+valor);
 		List<JSONObject>  l = new LinkedList<JSONObject>();
 		l.addAll(Arrays.asList(jsonObj));
 		String jsonString = JSONValue.toJSONString(l);
-		System.out.println(jsonString);
 		sendPost(fichero, response, jsonString);
 
 		return response.toString();

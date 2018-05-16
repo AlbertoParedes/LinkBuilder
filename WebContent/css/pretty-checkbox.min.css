@@ -43,27 +43,28 @@
 	display: inline-block;
 	font-weight: 400;
 	margin: 0;
-	text-indent: 1.5em;
+	text-indent: 22px;
 	min-width: calc(1em + 2px)
 }
 
 .pretty .state label:after, .pretty .state label:before {
-	content: '';
-	width: 10px;
-    height: 10px;
-	display: block;
-	box-sizing: border-box;
-	border-radius: 0;
-	border: 1px solid transparent;
-	z-index: 0;
-	position: absolute;
-	left: 0;
-	top: 0;
-	background-color: transparent
+    content: '';
+    width: 11px;
+    height: 11px;
+    display: block;
+    box-sizing: border-box;
+    border-radius: 0;
+    border: 1px solid transparent;
+    z-index: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: transparent;
+    border-radius: 3px;
 }
 
 .pretty .state label:before {
-	border-color: #e64a89
+	border-color: #878787;
 }
 
 .pretty .stateALL label:before {
@@ -632,14 +633,12 @@ rgba
 
 .pretty.p-icon .state .icon {
 	position: absolute;
-	font-size: 1em;
-	width: calc(1em + 2px);
-	height: calc(1em + 2px);
+	font-size: 11px;
+    top: 0;
 	left: 0;
 	z-index: 1;
 	text-align: center;
 	line-height: normal;
-	top: calc(( 0% - ( 100% - 1em))- 8%);
 	border: 1px solid transparent;
 	opacity: 0
 }
@@ -1079,7 +1078,7 @@ rgba
 
 .pretty input:checked ~.state.p-success label:after, .pretty.p-toggle .state.p-success label:after
 	{
-	background-color: #5cb85c !important
+	background-color: #4688F1 !important;
 }
 
 .pretty input:checked ~.state.p-success .icon, .pretty input:checked ~.state.p-success .svg,
