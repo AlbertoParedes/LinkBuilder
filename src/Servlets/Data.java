@@ -134,7 +134,10 @@ public class Data extends HttpServlet {
 			guardarDestino(request, response, out);
 		}else if(metodo.equals("cha")) {
 			guardarAnchor(request, response, out);
+		}else if(metodo.equals("guardarForoCompleto")) {
+			guardarForoCompleto(request, response, out);
 		}
+		
 
 		//daniii
 		else if(metodo.equals("cats")) {
@@ -174,7 +177,7 @@ public class Data extends HttpServlet {
 			}
 			out.println(		"<div class='"+clases+"'>");
 			out.println(			"<div class='nameItem'>");
-			out.println(				"<span class='nameItem sName' onmouseover='viewAll(this)' >"+c.getNombre()+"</span>");
+			out.println(				"<span class='nameItem sName' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  >"+c.getNombre()+"</span>");
 			out.println(			"</div>");
 			out.println(			"<div class='dominioItem'>"+c.getWeb()+"</div>");
 			if(c.getEditando()==0 || c.getIdCliente() == id_client) {
@@ -371,7 +374,7 @@ public class Data extends HttpServlet {
 				out.println("	</td>");
 				out.println("	<td id='tdWeb_"+id_resultado+"' class='tdCat tdWeb cWeb pr' onclick='selectWeb("+id_resultado+")'>");
 				out.println("		<div class='tdCat tdWeb' id='dvWeb_"+id_resultado+"'>");
-				out.println("			<span id='spWeb_"+id_resultado+"' mweb='"+mweb+"' onmouseover='viewCampo(this)' onclick='openUrl(this, event)' class='tdCat tdWeb'>"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
+				out.println("			<span id='spWeb_"+id_resultado+"' mweb='"+mweb+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
 				out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
 				out.println("		</div>");
 				out.println(		htmlWebs);
@@ -438,7 +441,7 @@ public class Data extends HttpServlet {
 		String htmlWebs="";
 		for (int i = 0; i < forosDisponibles.size(); i++) {
 			System.out.println("Disponible: -> id: "+forosDisponibles.get(i).getCategoria()+"          "+forosDisponibles.get(i).getWebForo());
-			htmlWebs += "			<li id='"+forosDisponibles.get(i).getIdForo()+"' onclick='liSelectWeb(this.id,"+id_resultado+")'><span onmouseover='viewCampo(this)'>"+forosDisponibles.get(i).getWebForo()+"</span></li>";
+			htmlWebs += "			<li id='"+forosDisponibles.get(i).getIdForo()+"' onclick='liSelectWeb(this.id,"+id_resultado+")'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+forosDisponibles.get(i).getWebForo()+"</span></li>";
 		}
 		//htmlWebs += "		</ul>";
 
@@ -523,7 +526,7 @@ public class Data extends HttpServlet {
 		}
 
 		out.println("<div class='nameItem nameItem_select'>");
-		out.println(	"<span class='nameItem sName nameItem_select' onmouseover='viewAll(this)'>"+cliente.getNombre()+"</span>");
+		out.println(	"<span class='nameItem sName nameItem_select' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+cliente.getNombre()+"</span>");
 		out.println("</div>");
 		out.println("<div class='dominioItem nameItem_select'>"+cliente.getWeb()+"</div>");
 
@@ -591,20 +594,38 @@ public class Data extends HttpServlet {
 		else if(valor.equalsIgnoreCase("false"))valor="0";
 		
 		ws.updateForo(id_foro, campo, valor, "updateForo.php");
+		System.out.println("Insertado en la BBDD");
+	}
+	private void guardarForoCompleto(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		
+		String web = request.getParameter("web");
+		String dr = request.getParameter("dr");
+		String da = request.getParameter("da");
+		String descripcion = request.getParameter("descripcion");
+		String reutilizable = request.getParameter("reutilizable");
+		String tipo = request.getParameter("tipo");
+		String aprobacion = request.getParameter("aprobacion");
+		String registro = request.getParameter("registro");
+		String fecha = request.getParameter("fecha");
+		String tematica = request.getParameter("tematica");
+		String categoria = request.getParameter("categoria");
+		
+
+		ws.insertWebs(web, dr, da, descripcion, reutilizable, tipo, aprobacion, registro, fecha, tematica, categoria, "insertWebs.php");
+		System.out.println("Insertada");
 	}
 	private void mostrarForos(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
 
 		int id_categoria = Integer.parseInt(request.getParameter("id_categoria"));
 		int posicion = Integer.parseInt(request.getParameter("posicion"));
-
+		
 		//comprobamos que estamos en la categoria correcta
 		if(categorias.get(posicion).getIdCategoria() == id_categoria) {
 		
 			out.println("<div class='infoClient'>");
 			out.println("	<div class='nameClient'>"+categorias.get(posicion).getEnlace()+"</div>");
-			out.println("	<div class='addK'>nuevo foro</div>");
+			out.println("	<div class='btnAdd' onclick='openNew(this)'>Nueva web</div>");
 			out.println("</div>");
-			
 			out.println("<div class='ctoolbar'><div id='websGuardar' class='zoom'>guardar</div></div>");
 			
 			out.println("<div class='keywordsClient'>");
@@ -653,14 +674,14 @@ public class Data extends HttpServlet {
 					htmlRequiere += 		"<li class='req'>";
 					htmlRequiere += 			"<div class='req'><label class='switch req'><input id='aparece_feca' onchange='guardarRequiere(this)' type='checkbox' "+statusFecha+"><span class='slider round req'></span><span class='spanRequiere req'>Fecha</span></label></div>";
 					htmlRequiere += 		"</li>";
-					htmlTematica += 	"</ul>";
+					htmlRequiere += 	"</ul>";
 					//------------DESPLEGABLE COLUMNA REUTILIZABLE---------
 					String opReutilizable = "Selecciona";
 					if(foros.get(i).getReutilizable().equalsIgnoreCase("un_cliente_una_vez")) opReutilizable = "UN cliente UNA vez";
 					else if(foros.get(i).getReutilizable().equalsIgnoreCase("un_cliente_varias_veces")) opReutilizable = "UN cliente VARIAS veces";
 					else if(foros.get(i).getReutilizable().equalsIgnoreCase("varios_clientes_una_vez")) opReutilizable = "VARIOS clientes UNA vez";
 					else if(foros.get(i).getReutilizable().equalsIgnoreCase("varios_clientes_varias_veces")) opReutilizable = "VARIOS clientes VARIAS veces";
-					String htmlReutilizable = "	<ul class='slCt effect7' >";
+					String htmlReutilizable = "	<ul class='slCt effect7'>";
 					htmlReutilizable += "			<div class='divSeparar'>Enlazar a:</div>";
 					htmlReutilizable += "			<li contenido='un_cliente_una_vez' onclick='guardarReutilizable(this)'>UN cliente UNA vez</li>";		
 					htmlReutilizable += "			<li contenido='un_cliente_varias_veces' onclick='guardarReutilizable(this)'>UN cliente VARIAS veces</li>";
@@ -691,7 +712,7 @@ public class Data extends HttpServlet {
 					//Columna TEMATICA con el desplegable-----------------
 					out.println("   <td class='tdCat cCTem pr' onclick='openTematica(this)'>");
 					out.println("		<div class='tdCat tdWeb'>");
-					out.println("			<span onmouseover='viewCampo(this)' class='tdCat'>"+opTematica+"</span>");
+					out.println("			<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat'>"+opTematica+"</span>");
 					out.println(			"<i class='material-icons arrow'>arrow_drop_down</i>");
 					out.println("		</div>");
 					out.println(		htmlTematica);
@@ -700,15 +721,15 @@ public class Data extends HttpServlet {
 					//Columna DESCRIPCION
 					out.println("<td class='cCDesc pr' onclick='openDescripcion(this)'>");
 					out.println(	"<div class='tdCat tdWeb'>");
-					out.println(		"<span class='tdCat tdWeb'>"+foros.get(i).getDescripcion()+"</span>");
+					out.println(		"<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>"+foros.get(i).getDescripcion()+"</span>");
 					out.println(		"<i class='material-icons arrow'>arrow_drop_down</i>");
 					out.println(	"</div>");
-					out.println(	"<textarea class='slCt effect7 taWeb'  wrap='hard' oninput='resizeta(this,0)' onchange='guardarDescripcion(this)'>"+foros.get(i).getDescripcion()+"</textarea>");
+					out.println(	"<textarea class='slCt effect7 taWeb'  wrap='hard' oninput='resizeta(this,0)' onclick='editandoDescripcion(this)' onchange='guardarDescripcion(this)'>"+foros.get(i).getDescripcion()+"</textarea>");
 					out.println("</td>");
 					//Columna REUTILIZABLE
 					out.println("	<td class='tdCat cCReut pr' onclick='openReutilizable(this)'>");
 					out.println("		<div class='tdCat tdWeb'>");
-					out.println("			<span onmouseover='viewCampo(this)' class='tdCat'>"+opReutilizable+"</span>");
+					out.println("			<span contenido='"+foros.get(i).getReutilizable()+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  class='tdCat'>"+opReutilizable+"</span>");
 					out.println(			"<i class='material-icons arrow'>arrow_drop_down</i>");
 					out.println("		</div>");
 					out.println(		htmlReutilizable);
@@ -721,7 +742,7 @@ public class Data extends HttpServlet {
 					out.println(		htmlRequiere);
 					out.println("	</td>");
 					//Columna TIPO con el desplegable
-					out.println(	"<td tipo='nofollow' class='cTipo slT pr cp' onclick='openTipo(this)'><i class='material-icons slT "+claseLink+"'>link</i>");
+					out.println(	"<td class='cTipo slT pr cp' onclick='openTipo(this)'><i class='material-icons slT "+claseLink+"'>link</i>");
 					out.println(		"<ul class='slCt effect7 ulTipoForo'>");
 					out.println(			"<li tipo='follow' onclick='guardarTipo(this)'><i class='material-icons lf'>link</i></li>");
 					out.println(			"<li tipo='nofollow' onclick='guardarTipo(this)'><i class='material-icons lnf'>link</i></li>");
@@ -733,16 +754,102 @@ public class Data extends HttpServlet {
 			out.println("			</tbody>");
 			out.println("		</table>");
 			out.println("	</div>");
+			
+			
+			String tematicas = htmlTemaicas();
+			String requiere = htmlRequiere();
+			
+			
 			out.println("</div>");
+			out.println("<div class='newSomething effect7'>");
+			out.println(	"<div class='cancelNew' onclick='cancelNew()' ><i class='material-icons lnf'> clear </i></div>");
+			out.println(	"<table id='tNuevaWeb' class='table'>");
+			out.println(	"	<thead><tr><th class='cabeceraTable cCWeb'>Web</th><th class='cabeceraTable cCDR'>DR</th><th class='cabeceraTable cCDA'>DA</th><th class='cabeceraTable cCTem'>Tematica</th><th class='cabeceraTable cCDesc'>Descripcion</th><th class='cabeceraTable cCReut'>Reutilizable</th><th class='cabeceraTable cCRegi'>Requiere</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>");
+			out.println("			<tbody>");
+			out.println(				"<tr>"
+											+ "<td class='cCWeb'><div class='tdCat tdWeb'><input class='inLink' type='text' placeholder='Introduce una web'></div></td>"
+											+ "<td class='cCDR' ><input class='inLink' type='text' value='0'></td>"
+											+ "<td class='cCDA'> <input class='inLink' type='text' value='0'></td>"
+											+ "<td class='tdCat cCTem pr' onclick='openTematica(this)'>"
+												+ "<div class='tdCat tdWeb'>"
+													+ "<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat'>Selecciona tematica</span><i class='material-icons arrow'>arrow_drop_down</i>"
+												+ "</div>"
+												+tematicas
+											+ "</td>"
+											+ "<td class='cCDesc pr' onclick='openDescripcion(this)'>"
+												+ "<div class='tdCat tdWeb'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>Introduce una descripcion</span><i class='material-icons arrow'>arrow_drop_down</i></div>"
+												+ "<textarea class='slCt effect7 taWeb  nuevaWeb'  wrap='hard' oninput='resizeta(this,0)' onclick='editandoDescripcion(this)' onchange='guardarDescripcion(this)'></textarea>"
+											+ "</td>"
+											+ "<td class='tdCat cCReut pr' onclick='openReutilizable(this)'>"
+												+"<div class='tdCat tdWeb'><span contenido='' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  class='tdCat'></span><i class='material-icons arrow'>arrow_drop_down</i></div>"
+												+htmlReutilizable()
+											+ "</td>"
+											+ "<td class='tdCat cCReq pr' onclick='openRequiere(this)'>"
+												+"<div class='tdCat tdWeb'><i class='material-icons slT'>settings</i></div>"+requiere
+											+ "</td>"
+											+ "<td class='cTipo slT pr cp' onclick='openTipo(this)'><i tipo='follow' class='material-icons slT lf'>link</i>"
+												+ "<ul class='slCt effect7 ulTipoForo nuevaWeb'>"
+													+"<li tipo='follow' onclick='guardarTipo(this)'><i class='material-icons lf'>link</i></li>"
+													+"<li tipo='nofollow' onclick='guardarTipo(this)'><i class='material-icons lnf'>link</i></li>"
+												+"</ul>"
+											+ "</tr>"
+											
+										+ "</tr>");
+			out.println("			</tbody>");
+			
+			
+			out.println(	"</table>");
+			out.println(	"<div class='guardarNew' onclick='guardarNew(this)'>guardar</div>");
+			out.println("</div>");
+			
+			out.println("<div class='divBlock'></div>");
 			System.out.println("Lista cargada");
 		}
-		
-		
+	
 		
 
 
 	}
 
+	private String htmlReutilizable() {
+		String htmlReutilizable = "	<ul class='slCt effect7 nuevaWeb'>";
+		htmlReutilizable += "			<div class='divSeparar'>Enlazar a:</div>";
+		htmlReutilizable += "			<li contenido='un_cliente_una_vez' onclick='guardarReutilizable(this)'>UN cliente UNA vez</li>";		
+		htmlReutilizable += "			<li contenido='un_cliente_varias_veces' onclick='guardarReutilizable(this)'>UN cliente VARIAS veces</li>";
+		htmlReutilizable += "			<li contenido='varios_clientes_una_vez' onclick='guardarReutilizable(this)'>VARIOS clientes UNA vez</li>";
+		htmlReutilizable += "			<li contenido='varios_clientes_varias_veces' onclick='guardarReutilizable(this)'>VARIOS clientes VARIAS veces</li>";	
+		htmlReutilizable += "		</ul>";
+		return htmlReutilizable;
+	}
+	private String htmlTemaicas() {
+		String htmlTematica = 	"<ul size="+tematicas.size()+" class='slCt slT effect7 ulTem  nuevaWeb'>";
+		htmlTematica += 	  		"<div class='pretty p-icon p-smooth divTemSele divTodo'>";		
+		htmlTematica += 				"<input class='slT' id='all' type='checkbox' onclick='guardarTematica(this)'/>";
+		htmlTematica += 				"<div class='state p-success paTem'><i class='icon material-icons'>done</i><label>Todas</label></div>";							
+		htmlTematica += 			"</div><br>";
+		for (int j = 0; j < tematicas.size(); j++) {
+			htmlTematica += 		"<div class='pretty p-icon p-smooth divTemSele nameTem'>";
+			htmlTematica += 			"<input class='slT' tematica='"+tematicas.get(j).getNombre()+"' type='checkbox' onclick='guardarTematica(this)'/><div class='state p-success'><i class='icon material-icons'>done</i><label>"+tematicas.get(j).getNombre()+"</label></div>";
+			htmlTematica += 		"</div><br>";
+		}
+		htmlTematica += 		"</ul>";
+		
+		return htmlTematica;
+	}
+	private String htmlRequiere(){
+		String htmlRequiere="<ul class='slCt slT effect7 ulReq  nuevaWeb'>";
+		htmlRequiere += 	  	"<li class='req'>";
+		htmlRequiere += 			"<div class='req'><label class='switch req'><input id='req_aprobacion' onchange='guardarRequiere(this)' type='checkbox'><span class='slider round req'></span><span class='spanRequiere req'>Aprobacion</span></label></div>";
+		htmlRequiere += 		"</li>";
+		htmlRequiere += 		"<li class='req'>";
+		htmlRequiere += 			"<div class='req'><label class='switch req'><input id='req_registro' onchange='guardarRequiere(this)' type='checkbox'><span class='slider round req'></span><span class='spanRequiere req'>Registro</span></label></div>";
+		htmlRequiere += 		"</li>";
+		htmlRequiere += 		"<li class='req'>";
+		htmlRequiere += 			"<div class='req'><label class='switch req'><input id='aparece_feca' onchange='guardarRequiere(this)' type='checkbox'><span class='slider round req'></span><span class='spanRequiere req'>Fecha</span></label></div>";
+		htmlRequiere += 		"</li>";
+		htmlRequiere += 	"</ul>";
+		return htmlRequiere;
+	}
 
 
 
@@ -776,20 +883,6 @@ public class Data extends HttpServlet {
 
 	}
 
-	
-	
-	
-	private void guardarTematica(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-		System.out.println(tematicas.size());
-		String tematica = request.getParameter("cosa");
-		int id_tr = Integer.parseInt(request.getParameter("id"));		
-		//Enviamos los datos a la base de datos y los reflejamos en nuestro array de foros
-		Webservice ws = new Webservice();
-		ws.updateForo(id_tr+"", "tematica", tematica, "updateForo.php");
-		foros.get(id_tr).setTematica(tematica);
-		System.out.println("Insertado tematica --> "+tematica);
-
-	}
 
 
 	private void obtenemosCategorias() {

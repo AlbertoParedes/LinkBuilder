@@ -73,7 +73,7 @@
 								<%if(i!=0){ %><div class="line"></div><%}%>
 								<div class="itemChild <%if(clientes.get(i).getEditando()==1){%>blur<%}%>">
 									<div class="nameItem">
-										<span class="nameItem sName" onmouseover="viewAll(this)" ><%= clientes.get(i).getNombre() %></span>
+										<span class="nameItem sName" onmouseover="viewCampo(this)" onmouseout="restartCampo(this)" ><%= clientes.get(i).getNombre() %></span>
 									</div>
 									<div class="dominioItem"><%= clientes.get(i).getWeb() %></div>
 									<%if(clientes.get(i).getEditando()==0){%>

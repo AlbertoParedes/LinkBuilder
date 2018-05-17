@@ -175,6 +175,31 @@ public class Webservice {
 		return response.toString();
 	}
 	
+	public String insertWebs(String web,String dr,String da,String descripcion,String reutilizable,String tipo,String aprobacion,String registro,String fecha,String tematica,String categoria, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("web", web);
+		jsonObj.put("dr", dr);
+		jsonObj.put("da", da);
+		jsonObj.put("descripcion", descripcion);
+		jsonObj.put("reutilizable", reutilizable);
+		jsonObj.put("tipo", tipo);
+		jsonObj.put("aprobacion", aprobacion);
+		jsonObj.put("registro", registro);
+		jsonObj.put("fecha", fecha);
+		jsonObj.put("tematica", tematica);
+		jsonObj.put("categoria", categoria);
+		
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
 	public String updateCliente(String id_cliente,String campo,String valor, String fichero) {
 		StringBuffer response = new StringBuffer();
 		JSONObject jsonObj = new JSONObject();
@@ -223,7 +248,7 @@ public class Webservice {
 				response.append(inputLine);
 			}
 			
-			//System.out.println("respuesta: "+response.toString());
+			System.out.println("respuesta: "+response.toString());
 
 			in.close();
 			
