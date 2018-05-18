@@ -47,8 +47,8 @@
 		<div class="main">
 			<div class="content-menu">
 				<ul>
-					<li><div id="btnClientes" onclick="changePanel(this.id)" class="circleIcono btnSelected"><i class="material-icons googleIcono btnSelected">perm_identity</i></div><h4 class="titleItem">Clientes</h4></li>
-					<li><div id="btnKeywords" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">sort_by_alpha</i></div><h4 class="titleItem">Keywords</h4></li>
+					<li><div id="btnClientes" onclick="changePanel(this.id)" class="circleIcono btnSelected"><i class="material-icons googleIcono btnSelected">link</i></div><h4 class="titleItem">Enlaces</h4></li>
+					<li><div id="btnKeywords" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">sort_by_alpha</i></div><h4 class="titleItem">Webs</h4></li>
 					<!-- <li><div id="btnEstadisticas" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">trending_up</i></div><h4 class="titleItem">Estadisticas</h4></li> -->
 				</ul>
 			</div>

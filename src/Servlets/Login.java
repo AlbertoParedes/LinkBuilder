@@ -49,14 +49,14 @@ public class Login extends HttpServlet {
 		int id_user =-1;
 		String userName="null";
 		String userPassword="null";
-		
-		
+		String role="null";
+	
 		for(int i=0;i<arrayData.size();i++){
 			JSONObject row =(JSONObject)arrayData.get(i);
 			id_user = Integer.parseInt(row.get("id").toString());
 			userName = row.get("user").toString();
 			userPassword = row.get("password").toString();
-			
+			role = row.get("role").toString();
 		}
 		
 		if(userName.equalsIgnoreCase(user)) {
@@ -64,6 +64,7 @@ public class Login extends HttpServlet {
 				HttpSession session = request.getSession();
 				session.setAttribute("id_user", id_user);
 				session.setAttribute("name_user", userName);
+				session.setAttribute("role_user", role);
 				response.sendRedirect("Data");
 			}else {
 				System.out.println("La contraseña no es esa");

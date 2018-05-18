@@ -62,9 +62,9 @@
 
 /*------------------------------------------*/
 
-.item:hover {border: solid;border-width: 3px;border-color: #e64a89;}
-.item:hover .line{background: transparent; }
-.item:hover .nameItem, .item:hover .dominioItem{/*color: #fff*/}
+.item:hover:not(.item_select) {border: solid;border-width: 3px;border-color: #d9d9d9;}
+.item:hover:not(.item_select) .line{background: transparent; }
+.item:hover:not(.item_select) .nameItem, .item:hover .dominioItem{/*color: #fff*/}
 
 .item_select {border: solid;border-width: 3px;border-color: #e64a89;}
 .line_select{background: transparent; }

@@ -70,10 +70,11 @@ public class Webservice {
 		return response.toString();
 	}
 	
-	public String getClientsByUser(int id_user, String fichero) {
+	public String getClientsByUser(int id_user,String role, String fichero) {
 		StringBuffer response = new StringBuffer();
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("id_user", id_user);
+		jsonObj.put("role", role);
 		List<JSONObject>  l = new LinkedList<JSONObject>();
 		l.addAll(Arrays.asList(jsonObj));
 
@@ -88,6 +89,20 @@ public class Webservice {
 		StringBuffer response = new StringBuffer();
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("id_client", id_client);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
+	public String getForosByCategoria (String categoria, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("categoria", categoria);
 		List<JSONObject>  l = new LinkedList<JSONObject>();
 		l.addAll(Arrays.asList(jsonObj));
 
@@ -248,7 +263,7 @@ public class Webservice {
 				response.append(inputLine);
 			}
 			
-			System.out.println("respuesta: "+response.toString());
+			//System.out.println("respuesta: "+response.toString());
 
 			in.close();
 			
