@@ -191,6 +191,12 @@ function setC() {
 function verify(){
 	document.login.submit();
 }
+function handleEnter(e){
+    var keycode = (e.keyCode ? e.keyCode : e.which);
+    if (keycode == '13') {
+    	verify();
+    }
+}
 
 
 // funciones de la nueva aplicacio
@@ -204,16 +210,19 @@ function openWebResultado(x){
 	if(!clase.includes("visible")){
 		var id_resultado = $(x).closest('tr').attr('id');
 		var id_categoria = $(x).closest('tr').children('td.cCateg').children('ul').children('li.liActive').attr('id');
-		$.post('Data', {
-			metodo : 'mostrarWebResultado',
-			id_categoria: id_categoria,
-			id_resultado: id_resultado
-		}, function(responseText) {
-			$(x).children('ul').html(responseText);
-			$(x).children('ul').addClass("visible");
-			//modificamos la flecha 
-			$(x).children('div').children('i').addClass("rotArrow");
-		});
+		if (typeof id_categoria !== 'undefined'){
+			$.post('Data', {
+				metodo : 'mostrarWebResultado',
+				id_categoria: id_categoria,
+				id_resultado: id_resultado
+			}, function(responseText) {
+				$(x).children('ul').html(responseText);
+				$(x).children('ul').addClass("visible");
+				//modificamos la flecha 
+				$(x).children('div').children('i').addClass("rotArrow");
+			});
+		}
+		
 	}
 }
 function guardarWebResultado(x){

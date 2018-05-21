@@ -18,7 +18,7 @@
 					<h1 class="is">Iniciar sesión</h1>
 					<form name="login" method="post" action="Login">
 						<input maxlength="255" name="user" id="username" placeholder="Nombre de usuario" type="text" class="TextInput TextInput_large">
-						<input maxlength="255" name="password" id="password" placeholder="Contraseña" type="password" class="TextInput TextInput_large">
+						<input maxlength="255" onkeypress="handleEnter(event)"  name="password" id="password" placeholder="Contraseña" type="password" class="TextInput TextInput_large">
 						<div onclick="verify()" class="btnContinuar">Continuar</div>
 					</form>
 					
