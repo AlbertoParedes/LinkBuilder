@@ -146,28 +146,34 @@ function searchKey(e) {
 
 function searchCliente(e) {
 	
-	var element = event.target.nodeName;
-	
-	if(element!="INPUT"){
-		var ti = $( "#ipCLient .addKi" ).text();
-		if(ti=="search"){
-			$("#searchC" ).addClass("vv");
-			
-			$( "#ipCLient" ).addClass("ms");
-			$( "#addC" ).css('display', "none");
-			$("#ipCLient .addKi").text("clear");
-			$("#searchC" ).autofocus;
-			
-			$("#searchC" ).focus();
-		}else{
-			$( "#searchC" ).removeClass("vv");
-			$( "#ipCLient" ).removeClass("ms");
-			$("#searchC").val("");
-			$( "#addC" ).css('display', "inline-block");
-			$("#ipCLient .addKi").text("search");
-			searchC();
+	$.post('Data', {
+		metodo : 'cleanBlocksUser',
+	}, function(responseText) {
+		var element = event.target.nodeName;
+		
+		if(element!="INPUT"){
+			var ti = $( "#ipCLient .addKi" ).text();
+			if(ti=="search"){
+				$("#searchC" ).addClass("vv");
+				
+				$( "#ipCLient" ).addClass("ms");
+				$( "#addC" ).css('display', "none");
+				$("#ipCLient .addKi").text("clear");
+				$("#searchC" ).autofocus;
+				
+				$("#searchC" ).focus();
+			}else{
+				$( "#searchC" ).removeClass("vv");
+				$( "#ipCLient" ).removeClass("ms");
+				$("#searchC").val("");
+				$( "#addC" ).css('display', "inline-block");
+				$("#ipCLient .addKi").text("search");
+				searchC();
+			}
 		}
-	}
+	});
+	
+	
 }
 
 function searchC() {
@@ -359,13 +365,31 @@ function guardarEnlaceResultado(x){
 	var posicion = $(x).closest('tr').attr("posicion");
 	var link = $(x).val();
 	var tipo = $("tr#"+id_resultado+" .cTipo").attr("tipo");
+	
+	var mes = $(".datedropper .picker .pick-m li.pick-sl").attr("value");
+	var year = $(".datedropper .picker .pick-y li.pick-sl").attr("value");
 
+	var follows_done=0,nofollows_done=0;
+	$(x).closest('tbody').children('tr').each(function(){
+		var tipo = $(this).children(".cTipo").attr("tipo");
+		var link_done = $(this).children(".cLink").children('input').val();
+		if(tipo=="follow" && link_done.trim()!=""){
+			follows_done++;
+		}else if(tipo=="follow" && link_done.trim()!=""){
+			nofollows_done++;
+		}
+	});
+	
 	$.post('Data', {
 		metodo : 'guardarEnlaceResultado',
 		id_resultado: id_resultado,
 		posicion: posicion,
 		link: link,
-		tipo: tipo
+		tipo: tipo,
+		follows_done: follows_done,
+		nofollows_done: nofollows_done,
+		mes: mes,
+		year: year
 	}, function(responseText) {
 		$('#lstC .item_select .itemChild').html(responseText);
 		$("#cGuardar").removeClass('cSave');

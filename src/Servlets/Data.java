@@ -49,7 +49,7 @@ public class Data extends HttpServlet {
 
 	Webservice ws = new Webservice();
 
-	private ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+	private ArrayList<ClienteGson> clientes = new ArrayList<ClienteGson>();
 	private Cliente cliente = new Cliente();
 	private ArrayList<ForoGson> foros = new ArrayList<ForoGson>();
 	private ArrayList<CategoriaGson> categorias = new ArrayList<CategoriaGson>();
@@ -78,6 +78,8 @@ public class Data extends HttpServlet {
 		String json = ws.getClientsByUser(id_user, role, "getClientsByUser.php");
 		Gson gson = new Gson();
 		ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
+		this.clientes.clear();
+		this.clientes = clientesGson;
 		
 		//obtenemos las tematicas
 		json = ws.getJSON("getTematica.php");
@@ -144,11 +146,13 @@ public class Data extends HttpServlet {
 		}
 
 
-
-
-
 		else if(metodo.equals("scs")) {
 			mostrarClientesInput(request, response, out);
+		}else if(metodo.equals("cleanBlocksUser")) {
+			ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
+			for (ClienteGson c : this.clientes) {
+				c.setEditando(0);
+			}
 		}
 	}
 
@@ -158,6 +162,8 @@ public class Data extends HttpServlet {
 		String json = ws.getClientsByUser(id_user,role, "getClientsByUser.php");
 		Gson gson = new Gson();
 		ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
+		this.clientes.clear();
+		this.clientes = clientesGson;
 		//-----------------------------------------------------------------------------------------------------------
 		int inicio = 0;
 		String clases = "",clases2="";
@@ -343,12 +349,12 @@ public class Data extends HttpServlet {
 				//Foro utilizado para este resultado
 				int mweb = cliente.getResultados().get(i).getId_foro();
 				String claseStatus="";
-				if(!cliente.getResultados().get(i).getEnlace().equalsIgnoreCase("")) claseStatus="sOK";
+				if(!cliente.getResultados().get(i).getEnlace().trim().equalsIgnoreCase("")) claseStatus="sOK";
 				else claseStatus="sPendiente";
 				
-				String claseTipo="";
-				if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("follow"))claseTipo="lf";
-				else if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("nofollow"))claseTipo="lnf";
+				String claseTipo="",tipo="";
+				if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("follow")) {claseTipo="lf";tipo="follow";}
+				else if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("nofollow")) {claseTipo="lnf";tipo="nofollow";}
 				
 				//TABLA----------------------
 				out.println("<tr id='"+id_resultado+"' posicion='"+i+"'>");
@@ -372,7 +378,7 @@ public class Data extends HttpServlet {
 				out.println("	</td>");
 				out.println("	<td class='cDest'><input class='inLink' onchange='updateDestino(this)' oninput='saveClient()' type='text' value='"+cliente.getResultados().get(i).getDestino()+"'></td>");
 				out.println("	<td class='cAnchor'><input class='inLink' onchange='updateAnchor(this)' oninput='saveClient()' type='text' value='"+cliente.getResultados().get(i).getAnchor()+"'></td>");
-				out.println("	<td tipo='follow' class='cTipo'><i class='material-icons "+claseTipo+"'>link</i></td>");
+				out.println("	<td tipo='"+tipo+"' class='cTipo'><i class='material-icons "+claseTipo+"'>link</i></td>");
 				out.println("</tr>");
 			}
 		}
@@ -394,32 +400,26 @@ public class Data extends HttpServlet {
 		String tipo = request.getParameter("tipo");
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
 		int posicion = Integer.parseInt(request.getParameter("posicion"));
+		int follows_done = Integer.parseInt(request.getParameter("follows_done"));
+		int nofollows_done = Integer.parseInt(request.getParameter("nofollows_done"));
+		int mes_js = Integer.parseInt(request.getParameter("mes"));
+		int year_js = Integer.parseInt(request.getParameter("year"));
 
+		Date date= new Date();Calendar cal = Calendar.getInstance();cal.setTime(date);
+		int mes = cal.get(Calendar.MONTH)+1;
+		int year = cal.get(Calendar.YEAR);
 		
 		ws.updateResultado(id_resultado+"", "enlace", link+"" , "updateResultado.php");
 		ws.updateResultado(id_resultado+"", "hecho_por", id_user+"" , "updateResultado.php");
 		cliente.getResultados().get(posicion).setEnlace(link);
-
-		//TODO A�adir al los if la condicion de las fechas 
-		int follows_no_done = 0,nofollows_no_done = 0;
-		for (int j = cliente.getResultados().size()-1; j > -1; j--) {
-			System.out.println(cliente.getResultados().get(j).getEnlace()+ "  "+cliente.getResultados().get(j).getFecha());
-			if(cliente.getResultados().get(j).getEnlace().trim().equals("") && cliente.getResultados().get(j).getTipo().equalsIgnoreCase("follow")) {
-				follows_no_done++;
-			}else if(cliente.getResultados().get(j).getEnlace().trim().equals("") && cliente.getResultados().get(j).getTipo().equalsIgnoreCase("nofollow")) {
-				nofollows_no_done++;
-			}
-		}
-
-		cliente.setFollows_done(cliente.getFollows()-follows_no_done);
-		cliente.setNofollows_done(cliente.getNofollows()-nofollows_no_done);
-
-		if(tipo.equalsIgnoreCase("follow")) {
+		
+		if(mes==mes_js && year==year_js) {
+			cliente.setFollows_done(follows_done);
+			cliente.setNofollows_done(nofollows_done);
 			ws.updateCliente(cliente.getId_cliente()+"","follows_done",cliente.getFollows_done()+"","updateCliente.php");
-		}else if(tipo.equalsIgnoreCase("nofollow")) {
 			ws.updateCliente(cliente.getId_cliente()+"","nofollows_done",cliente.getNofollows_done()+"","updateCliente.php");
 		}
-
+		
 		out.println("<div class='nameItem nameItem_select'>");
 		out.println(	"<span class='nameItem sName nameItem_select' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+cliente.getNombre()+"</span>");
 		out.println("</div>");
@@ -779,25 +779,45 @@ public class Data extends HttpServlet {
 	//modificar!!!!!!!!!!
 	private void mostrarClientesInput(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String k = request.getParameter("keyword").toLowerCase();
-
 		System.out.println(k);
-
-
-		int j = 0;
+		int inicio = 0;
+		String clases = "",clases2="";
 		for (int i = 0; i < clientes.size(); i++) {
+			ClienteGson c = clientes.get(i);
+
 			String nombre = clientes.get(i).getNombre().toLowerCase();
 			String web = clientes.get(i).getWeb().toLowerCase();
-
+			
 			if(nombre.contains(k) || web.contains(k)) {
-				if(j==0) {out.println("<div id='"+i+"' onclick='selectClient(this.id, 'lkc')' class='item'><div class='itemChild'><div class='nameItem'>"+clientes.get(i).getNombre()+"</div><div class='dominioItem'>"+clientes.get(i).getWeb()+"</div></div></div>");j++;
-				}else {out.println(   "<div id='"+i+"' onclick='selectClient(this.id, 'lkc')' class='item'><div class='line'></div><div class='itemChild'><div class='nameItem'>"+clientes.get(i).getNombre()+"</div><div class='dominioItem'>"+clientes.get(i).getWeb()+"</div></div></div>");}
+			
+				if(c.getEditando()==1 /*&& c.getIdCliente()!=id_client*/) {clases="itemChild blur";clases2="blockClient visible";}
+				else {clases ="itemChild";clases2="blockClient";}
+
+				out.println("<div id='"+c.getIdCliente()+"' onclick='selectClient(this.id)' class='item'>");
+				if(inicio!=0) {
+					out.println(	"<div class='line'></div>");
+				}
+				out.println(		"<div class='"+clases+"'>");
+				out.println(			"<div class='nameItem'>");
+				out.println(				"<span class='nameItem sName' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  >"+c.getNombre()+"</span>");
+				out.println(			"</div>");
+				out.println(			"<div class='dominioItem'>"+c.getWeb()+"</div>");
+				if(c.getEditando()==0 /*|| c.getIdCliente() == id_client*/) {
+					if(c.getFollows()-c.getFollowsDone()==0) {
+						out.println("<div class='noti notiPos'><i class='material-icons lf'>done</i></div>");
+					}else {
+						out.println("<div class='noti'>"+(c.getFollows()-c.getFollowsDone())+"</div>");
+					}
+				}	
+				out.println(		"</div>");
+				out.println("	<div class='"+clases2+"'><div class='lockDiv'><i class='material-icons lf blur'> lock </i></div></div>");
+				out.println("</div>");
+				inicio++;
+			
 			}
-
+			
 		}
-
 		out.println("<script type='text/javascript'>setC();</script>");
-
-		System.out.println("Lista clientes cargada");
 
 	}
 
