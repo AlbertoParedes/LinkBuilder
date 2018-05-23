@@ -202,26 +202,41 @@ public class Data extends HttpServlet {
 		String json = ws.getClientById(id_client, "getClientById.php");
 		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
 		ArrayList<ResultadoGson> resultadosGson = gson.fromJson(json, new TypeToken<List<ResultadoGson>>(){}.getType());
-
+		
 		Cliente cliente = null;
-
-		int x = 0;
-		for (ResultadoGson r : resultadosGson) {
-			if(x==0 && r.getEditando() == 0) {
-				cliente = new Cliente(r.getIdCliente(), r.getWeb(), r.getNombre(), r.getServicio(), r.getFollows(), r.getNofollows(), r.getAnchorCliente(), r.getBlog(), r.getIdioma(), r.getFollowsDone(), r.getNofollowsDone(), r.getLinkbuilder(), r.getEditando(), new ArrayList<Resultado>(), new ArrayList<ForoGson>());
-				//desbilitamos todos los clientes que estan bloqueados por este usuario
-				ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
-				//crear peticion para poner el cliente en edicion = 1
-				json = ws.actualizarEditando(1, id_user, r.getIdCliente(), "actualizarEditando.php");
-				x=1;
+		if(resultadosGson.size()==0) {
+			String jsonCliente = ws.getClientById(id_client, "getClient.php");
+			gson = new Gson();
+			ArrayList<ClienteGson> resultadosGsonClientes = gson.fromJson(jsonCliente, new TypeToken<List<ClienteGson>>(){}.getType());
+			int x = 0;
+			for (ClienteGson r : resultadosGsonClientes) {
+				if(x==0 && r.getEditando() == 0) {
+					cliente = new Cliente(r.getIdCliente(), r.getWeb(), r.getNombre(), r.getServicio(), r.getFollows(), r.getNofollows(), r.getAnchor(), Integer.parseInt(r.getBlog()), r.getIdioma(), r.getFollowsDone(), r.getNofollowsDone(), r.getLinkbuilder(), r.getEditando(), new ArrayList<Resultado>(), new ArrayList<ForoGson>());
+					ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
+					ws.actualizarEditando(1, id_user, r.getIdCliente(), "actualizarEditando.php");x=1;
+				}
+				if(r.getEditando() != 0) break;
 			}
-			if(r.getEditando() == 0) {
-				cliente.getResultados().add(new Resultado(r.getIdResultado(), r.getIdForo(), r.getEnlace(), r.getFecha(), r.getTipoRes(), r.getDestino(), r.getCategoriaResultado(), r.getEstado(), r.getAnchorR(), r.getWebForo()));
-				cliente.getForos().add(new ForoGson(r.getIdForo(), r.getWebForo(), r.getTipoForo(), r.getDR(), r.getDA(), r.getTematica(), r.getDestino(), r.getCategoriaResultado(), r.getReqAprobacion(), r.getReqRegistro(), r.getApareceFecha(), r.getReutilizable()));
-			}else {
-				break;
-			}
+		}else {
+			
+			int x = 0;
+			for (ResultadoGson r : resultadosGson) {
+				if(x==0 && r.getEditando() == 0) {
+					cliente = new Cliente(r.getIdCliente(), r.getWeb(), r.getNombre(), r.getServicio(), r.getFollows(), r.getNofollows(), r.getAnchorCliente(), r.getBlog(), r.getIdioma(), r.getFollowsDone(), r.getNofollowsDone(), r.getLinkbuilder(), r.getEditando(), new ArrayList<Resultado>(), new ArrayList<ForoGson>());
+					//desbilitamos todos los clientes que estan bloqueados por este usuario
+					ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
+					//crear peticion para poner el cliente en edicion = 1
+					json = ws.actualizarEditando(1, id_user, r.getIdCliente(), "actualizarEditando.php");
+					x=1;
+				}
+				if(r.getEditando() == 0) {
+					cliente.getResultados().add(new Resultado(r.getIdResultado(), r.getIdForo(), r.getEnlace(), r.getFecha(), r.getTipoRes(), r.getDestino(), r.getCategoriaResultado(), r.getEstado(), r.getAnchorR(), r.getWebForo()));
+					cliente.getForos().add(new ForoGson(r.getIdForo(), r.getWebForo(), r.getTipoForo(), r.getDR(), r.getDA(), r.getTematica(), r.getDestino(), r.getCategoriaResultado(), r.getReqAprobacion(), r.getReqRegistro(), r.getApareceFecha(), r.getReutilizable()));
+				}else {
+					break;
+				}
 
+			}
 		}
 		//si es null es que un usuario ya esta editando este cliente
 		if(cliente!=null) {
