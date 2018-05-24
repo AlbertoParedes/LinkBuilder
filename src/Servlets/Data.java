@@ -188,7 +188,7 @@ public class Data extends HttpServlet {
 			out.println(				"<span class='nameItem sName' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  >"+c.getNombre()+"</span>");
 			out.println(			"</div>");
 			out.println(			"<div class='dominioItem'>"+c.getWeb()+"</div>");
-			if(c.getEditando()==0 || c.getUserEditando()==id_user) {
+			if(c.getEditando()==0 || c.getUserEditando() == id_user) {
 				if(c.getFollows()-c.getFollowsDone()==0) {
 					out.println("<div class='noti notiPos'><i class='material-icons lf'>done</i></div>");
 				}else {
