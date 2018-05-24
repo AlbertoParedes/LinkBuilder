@@ -158,6 +158,7 @@ public class Data extends HttpServlet {
 
 	private void checkClients(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user,String role) throws IOException, ParseException {
 		int id_client = Integer.parseInt(request.getParameter("id_client"));
+		//int id_cliente_before = Integer.parseInt(request.getParameter("id_cliente_before"));
 		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
 		String json = ws.getClientsByUser(id_user,role, "getClientsByUser.php");
 		Gson gson = new Gson();
@@ -169,8 +170,14 @@ public class Data extends HttpServlet {
 		String clases = "",clases2="";
 
 		for (ClienteGson c : clientesGson) {
-			if(c.getEditando()==1 && c.getIdCliente()!=id_client) {clases="itemChild blur";clases2="blockClient visible";}
-			else {clases ="itemChild";clases2="blockClient";}
+			if(c.getEditando()==1 && c.getUserEditando()!=id_user) {
+				clases="itemChild blur";
+				clases2="blockClient visible";
+			}
+			else {
+				clases ="itemChild";
+				clases2="blockClient";
+			}
 
 			out.println("<div id='"+c.getIdCliente()+"' onclick='selectClient(this.id)' class='item'>");
 			if(inicio!=0) {
@@ -181,7 +188,7 @@ public class Data extends HttpServlet {
 			out.println(				"<span class='nameItem sName' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  >"+c.getNombre()+"</span>");
 			out.println(			"</div>");
 			out.println(			"<div class='dominioItem'>"+c.getWeb()+"</div>");
-			if(c.getEditando()==0 || c.getIdCliente() == id_client) {
+			if(c.getEditando()==0 || c.getUserEditando()==id_user) {
 				if(c.getFollows()-c.getFollowsDone()==0) {
 					out.println("<div class='noti notiPos'><i class='material-icons lf'>done</i></div>");
 				}else {

@@ -58,6 +58,9 @@ public class ClienteGson {
 	@Expose
 	private int editando;
 
+	@SerializedName("userEditando")
+	@Expose
+	private int userEditando;
 
 	public int getIdCliente() {
 		return idCliente;
@@ -173,5 +176,15 @@ public class ClienteGson {
 	public void setEditando(int editando) {
 		this.editando = editando;
 	}
+
+	public int getUserEditando() {
+		return userEditando;
+	}
+
+	public void setUserEditando(int userEditando) {
+		this.userEditando = userEditando;
+	}
+	
+	
 
 }

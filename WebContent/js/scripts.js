@@ -32,6 +32,7 @@ function abrirBox(id) {
 
 function selectClient(id_client) {
 	
+	var id_cliente_before = "";
 	
 	//revisamos si el cliente seleccionado esta disponible
 	$.post('Data', {
@@ -42,9 +43,11 @@ function selectClient(id_client) {
 		var r = responseText.length;
 		if(r == 0){
 			alert("Esta bloqueado");
+			id_cliente_before = $('#lstC div.item_select').attr('id');
 		}else{
 			//si el cliente selecionado esta disponible 
 			$('#uniqueClient').html(responseText);
+			id_cliente_before = id_client;
 			changeThemeC(id_client);
 		}
 		
@@ -52,10 +55,11 @@ function selectClient(id_client) {
 		$.post('Data', {
 			metodo : "ckcs",
 			id_client : id_client,
+			id_cliente_before: id_cliente_before
 		}, function(responseText) {
 			//actualizamos la lsita de clientes 
 			$('#lstC').html(responseText);
-			changeThemeC(id_client);
+			changeThemeC(id_cliente_before);
 		});
 		
 	});
