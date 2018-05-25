@@ -62,6 +62,7 @@ function selectClient(id_client) {
 			changeThemeC(id_cliente_before);
 		});
 		
+		
 	});
 }
 
