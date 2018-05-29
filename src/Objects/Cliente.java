@@ -19,6 +19,7 @@ public class Cliente {
 	private int nofollows_done;
 	private String linkbuilder;
 	private int editando;
+	private int enlaces_de_pago;
 	
 	private ArrayList <Resultado> resultados;
 	private ArrayList <ForoGson> foros;
@@ -29,7 +30,7 @@ public class Cliente {
 	}
 	public Cliente(int id_cliente, String web, String nombre, String servicio, int follows, int nofollows,
 			String anchor, int blog, String idioma, int follows_done, int nofollows_done, String linkbuilder,
-			int editando, ArrayList<Resultado> resultados, ArrayList<ForoGson> foros) {
+			int editando,int enlaces_de_pago, ArrayList<Resultado> resultados, ArrayList<ForoGson> foros) {
 		super();
 		this.id_cliente = id_cliente;
 		this.web = web;
@@ -44,6 +45,7 @@ public class Cliente {
 		this.nofollows_done = nofollows_done;
 		this.linkbuilder = linkbuilder;
 		this.editando = editando;
+		this.enlaces_de_pago=enlaces_de_pago;
 		this.resultados = resultados;
 		this.foros = foros;
 	}
@@ -136,6 +138,12 @@ public class Cliente {
 	}
 	public void setForos(ArrayList<ForoGson> foros) {
 		this.foros = foros;
+	}
+	public int getEnlaces_de_pago() {
+		return enlaces_de_pago;
+	}
+	public void setEnlaces_de_pago(int enlaces_de_pago) {
+		this.enlaces_de_pago = enlaces_de_pago;
 	}
 	
 	

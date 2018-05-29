@@ -237,6 +237,9 @@ function openWebResultado(x){
 	}
 }
 function guardarWebResultado(x){
+	
+	
+	
 	$(x).closest('ul').children('li').removeClass("liActive");
 	$(x).addClass("liActive");
 	
@@ -245,6 +248,13 @@ function guardarWebResultado(x){
 	var elemtAnterior = $(x).closest('td').children('div').children('span').attr("mweb");
 	var posicionResultado = $(x).closest('tr').attr('posicion');
 	var posicionForo = $(x).attr('posicion');
+	
+	//si se seleciona la X borraremos ese resultado de nuestra bbdd y de nuestro array
+	if($(x).attr('class').includes('crossReset')){
+		$(x).closest('td').children('div').children('span').text('');
+		id_foro = 0;
+		posicionForo = 0;
+	}
 	
 	$.post('Data', {
 		metodo : 'guardarWebResultado',
@@ -255,10 +265,9 @@ function guardarWebResultado(x){
 		posicionForo:posicionForo
 	}, function(responseText) {
 		$(x).closest('td').children('div').html(responseText);
-		
 	});
+	
 }
-
 
 function openCategoriaResultado(x){
 	$(".rotArrow").removeClass("rotArrow");
@@ -287,10 +296,22 @@ function guardarCategoriaResultado(x){
 	$.post('Data', {
 		metodo : 'guardarCategoriaResultado',
 		id_categoria: id_categoria,
-		id_cliente: id_cliente,
 		id_resultado: id_resultado,
 		posicion: posicion
 	});
+}
+function borrarCategoria(x){
+	var id_resultado = $(x).closest('tr').attr("id");
+	var posicion = $(x).closest('tr').attr("posicion");
+	$(x).closest('ul').removeClass("visible");
+	$(x).closest('td').children('div').children('span').text('Selecciona una categoría');
+	
+	$.post('Data', {
+		metodo : 'borrarCategoriaResultado',
+		id_resultado: id_resultado,
+		posicion: posicion
+	});
+	
 }
 //caundo cambiamos el mes se cambiará la tabla
 function changeMonth(){
@@ -437,11 +458,35 @@ function updateAnchor(x){
 }
 
 
-function saveClient(){
+function saveClient(x){
 	var clase_btn_guardar = $("#cGuardar").attr('class');
 	
 	if(!clase_btn_guardar.includes("cSave"))
 		$("#cGuardar").addClass('cSave');
+	
+}
+function openCoste(x){
+	$('.open_inputs').removeClass('open_inputs');
+	$(x).children('input').addClass('open_inputs');
+	
+	var value = $(x).children('input').val();
+	$(x).children('input').focus();
+	$(x).children('input').val("").val(value);
+	
+}
+function updatePrecioCompra(x){
+	$(x).removeClass('open_inputs');
+	var num = $(x).val();
+	if(!$(x).val())num = 0;
+	$(x).closest('td').children('span').text(num+" €")
+}
+function stopPropagation(){event.stopPropagation();}
+function deleteEuro(x){
+	//si hacemos click en un input donde vayamos a variar dinero tendremos que eliminar el caracter del euro para que no haya ningus problema
+	if($(x).attr('class').includes('paid_inputs')){
+		var value = $(x).val().replace(" €","");
+		$(x).val(value);
+	}
 }
 
 //*****************  DANI  ********************
@@ -758,6 +803,8 @@ function guardarNew(x){
 	}
 }
 
+
+
 //---------------------------
 function showGuardar(){$("#websGuardar").addClass('cSave');}
 //Hide the menus if visible
@@ -773,9 +820,12 @@ window.addEventListener('click', function(e){
 		//ignorar click dentro descripcion
 	}else if(clase.includes("slT")){
 		//ignorar click dentro descripcion
+	}else if(clase.includes("td_input_precio")){
+		//ignorar click dentro descripcion
 	}else {
 		$(".rotArrow").removeClass("rotArrow");
-		$(".slCt").removeClass("visible");	
+		$(".slCt").removeClass("visible");
+		$('.paid_inputs').removeClass('open_inputs');
 	}
 	}
 });

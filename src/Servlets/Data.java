@@ -25,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -75,7 +76,8 @@ public class Data extends HttpServlet {
 		ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
 
 		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
-		String json = ws.getClientsByUser(id_user, role, "getClientsByUser.php");
+		String json = ws.getClientsByUser("["+id_user+"]", role, "getClientsByUser.php");
+		System.out.println(json);
 		Gson gson = new Gson();
 		ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
 		this.clientes.clear();
@@ -114,11 +116,11 @@ public class Data extends HttpServlet {
 		if(metodo.equals("ckcs")) {
 			try {checkClients(request, response, out,id_user,role);} catch (ParseException e) {}
 		}else if(metodo.equals("ckc")) { 
-			try {checkClientEdition(request, response, out,id_user);} catch (ParseException e) {}
+			try {checkClientEdition(request, response, out,id_user, role);} catch (ParseException e) {}
 		}else if (metodo.equals("lkc")) {
-			try {mostrarResultados(request, response, out);} catch (ParseException e) {e.printStackTrace();}
+			try {mostrarResultados(request, response, out, role);} catch (ParseException e) {e.printStackTrace();}
 		}else if(metodo.equals("chv")) {
-			morstarResultadosMes(request, response, out);
+			morstarResultadosMes(request, response, out, role);
 		}else if(metodo.equals("guardarCategoriaResultado")) {
 			guardarCategoriaResultado(request, response, out);
 		}else if(metodo.equals("mostrarWebResultado")) {
@@ -133,6 +135,8 @@ public class Data extends HttpServlet {
 			guardarAnchor(request, response, out);
 		}else if(metodo.equals("guardarForoCompleto")) {
 			guardarForoCompleto(request, response, out);
+		}else if(metodo.equals("borrarCategoriaResultado")) {
+			borrarCategoriaResultado(request, response, out);
 		}
 
 
@@ -156,11 +160,22 @@ public class Data extends HttpServlet {
 		}
 	}
 
+	private void borrarCategoriaResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
+		int posicion = Integer.parseInt(request.getParameter("posicion"));
+
+		//Aplicamos los cambios en la bbdd y en el array
+		ws.updateResultado(id_resultado+"", "categoria", "0" , "updateResultado.php");
+		cliente.getResultados().get(posicion).setCategoria(0);
+		System.out.println("Insertado");
+		
+	}
+
 	private void checkClients(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user,String role) throws IOException, ParseException {
 		int id_client = Integer.parseInt(request.getParameter("id_client"));
 		//int id_cliente_before = Integer.parseInt(request.getParameter("id_cliente_before"));
 		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
-		String json = ws.getClientsByUser(id_user,role, "getClientsByUser.php");
+		String json = ws.getClientsByUser("["+id_user+"]",role, "getClientsByUser.php");
 		Gson gson = new Gson();
 		ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
 		this.clientes.clear();
@@ -201,24 +216,25 @@ public class Data extends HttpServlet {
 			inicio++;
 		}
 	}
-	private void checkClientEdition(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user) throws IOException, ParseException {
+	private void checkClientEdition(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role) throws IOException, ParseException {
 		int id_client = Integer.parseInt(request.getParameter("id_client"));
 		System.out.println(id_client);
 
-		//obtenemos la disponibilidad del cliente clickado
-		String json = ws.getClientById(id_client, "getClientById.php");
+		//obtenemos la disponibilidad del cliente clickado y los resultados de el
+		String json = ws.getClientById(id_client,user_role, "getClientById.php");
+		System.out.println("Hola"+json);
 		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
 		ArrayList<ResultadoGson> resultadosGson = gson.fromJson(json, new TypeToken<List<ResultadoGson>>(){}.getType());
 		
 		Cliente cliente = null;
 		if(resultadosGson.size()==0) {
-			String jsonCliente = ws.getClientById(id_client, "getClient.php");
+			String jsonCliente = ws.getClientById(id_client, user_role, "getClient.php");
 			gson = new Gson();
 			ArrayList<ClienteGson> resultadosGsonClientes = gson.fromJson(jsonCliente, new TypeToken<List<ClienteGson>>(){}.getType());
 			int x = 0;
 			for (ClienteGson r : resultadosGsonClientes) {
 				if(x==0 && r.getEditando() == 0) {
-					cliente = new Cliente(r.getIdCliente(), r.getWeb(), r.getNombre(), r.getServicio(), r.getFollows(), r.getNofollows(), r.getAnchor(), Integer.parseInt(r.getBlog()), r.getIdioma(), r.getFollowsDone(), r.getNofollowsDone(), r.getLinkbuilder(), r.getEditando(), new ArrayList<Resultado>(), new ArrayList<ForoGson>());
+					cliente = new Cliente(r.getIdCliente(), r.getWeb(), r.getNombre(), r.getServicio(), r.getFollows(), r.getNofollows(), r.getAnchor(), Integer.parseInt(r.getBlog()), r.getIdioma(), r.getFollowsDone(), r.getNofollowsDone(), r.getLinkbuilder(), r.getEditando(),r.getEnlacesDePago(), new ArrayList<Resultado>(), new ArrayList<ForoGson>());
 					ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
 					ws.actualizarEditando(1, id_user, r.getIdCliente(), "actualizarEditando.php");x=1;
 				}
@@ -229,7 +245,7 @@ public class Data extends HttpServlet {
 			int x = 0;
 			for (ResultadoGson r : resultadosGson) {
 				if(x==0 && r.getEditando() == 0) {
-					cliente = new Cliente(r.getIdCliente(), r.getWeb(), r.getNombre(), r.getServicio(), r.getFollows(), r.getNofollows(), r.getAnchorCliente(), r.getBlog(), r.getIdioma(), r.getFollowsDone(), r.getNofollowsDone(), r.getLinkbuilder(), r.getEditando(), new ArrayList<Resultado>(), new ArrayList<ForoGson>());
+					cliente = new Cliente(r.getIdCliente(), r.getWeb(), r.getNombre(), r.getServicio(), r.getFollows(), r.getNofollows(), r.getAnchorCliente(), r.getBlog(), r.getIdioma(), r.getFollowsDone(), r.getNofollowsDone(), r.getLinkbuilder(), r.getEditando(), r.getEnlaces_de_pago(),new ArrayList<Resultado>(), new ArrayList<ForoGson>());
 					//desbilitamos todos los clientes que estan bloqueados por este usuario
 					ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
 					//crear peticion para poner el cliente en edicion = 1
@@ -237,7 +253,7 @@ public class Data extends HttpServlet {
 					x=1;
 				}
 				if(r.getEditando() == 0) {
-					cliente.getResultados().add(new Resultado(r.getIdResultado(), r.getIdForo(), r.getEnlace(), r.getFecha(), r.getTipoRes(), r.getDestino(), r.getCategoriaResultado(), r.getEstado(), r.getAnchorR(), r.getWebForo()));
+					cliente.getResultados().add(new Resultado(r.getIdResultado(), r.getIdForo(), r.getEnlace(), r.getFecha(), r.getTipoRes(), r.getDestino(), r.getCategoriaResultado(), r.getEstado(), r.getAnchorR(), r.getWebForo(), r.getPrecio_compra(), r.getPrecio_venta()));
 					cliente.getForos().add(new ForoGson(r.getIdForo(), r.getWebForo(), r.getTipoForo(), r.getDR(), r.getDA(), r.getTematica(), r.getDestino(), r.getCategoriaResultado(), r.getReqAprobacion(), r.getReqRegistro(), r.getApareceFecha(), r.getReutilizable()));
 				}else {
 					break;
@@ -248,11 +264,11 @@ public class Data extends HttpServlet {
 		//si es null es que un usuario ya esta editando este cliente
 		if(cliente!=null) {
 			this.cliente = cliente;
-			mostrarResultados(request, response, out);
+			mostrarResultados(request, response, out, user_role);
 		}
 
 	}
-	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ParseException {
+	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out,String user_role) throws IOException, ParseException {
 		//obtenemosForos();
 		//int posicion = Integer.parseInt(request.getParameter("posicion"));
 		Date date= new Date();Calendar cal = Calendar.getInstance();cal.setTime(date);
@@ -282,7 +298,11 @@ public class Data extends HttpServlet {
 		out.println("	<div id='results_Client' class='contentTable'>");
 		//tabla
 		out.println("		<table id='tClientes' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cLink'>Link</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Web</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>");
+		if(!user_role.equals("user_paid")) {
+			out.println("			<thead><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cLink'>Link</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Web</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>");
+		}else {
+			out.println("			<thead><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable pago_web'>Web</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>");
+		}
 		out.println("			<tbody>");
 
 		//solo seleccionamos los resultados de la fecha deseada
@@ -298,7 +318,8 @@ public class Data extends HttpServlet {
 		}
 		//----------------------------------------------------------
 		//Con esto creamos los resultados nuevos de cada mes, cuando los creamos pedimos al webservice que nos devuelva los resultados con sus id's para poder asignarselos a nuetro array de clientes
-		if(resultados.size()==0) {
+		System.out.println(resultados.size()+" - "+user_role);
+		if(resultados.size()==0 && !user_role.equals("user_paid")) {
 			for (int i = 0; i < cliente.getFollows(); i++) {
 				int id_cliente = cliente.getId_cliente();
 				String tipo ="FOLLOW";
@@ -313,6 +334,7 @@ public class Data extends HttpServlet {
 			}
 			String fecha = year+"-"+mes+"-"+day;
 			String json = ws.getResultVacios(cliente.getId_cliente(), fecha, "getResultVacios.php");
+			System.out.println("["+json );
 			Object jsonObject =JSONValue.parse(json.toString());
 			JSONArray arrayData = (JSONArray)jsonObject;
 			for(int i=0;i<arrayData.size();i++){
@@ -329,9 +351,11 @@ public class Data extends HttpServlet {
 				String destino = (String) row.get("destino");
 				int categoria = Integer.parseInt(row.get("categoria").toString());
 				String estado = (String) row.get("estado");
-				String anchorR = (String) row.get("anchorR");
+				String anchorR = (String) row.get("anchor");
+				int precio_compra = Integer.parseInt(row.get("precio_compra").toString());
+				int precio_venta = Integer.parseInt(row.get("precio_venta").toString());
 
-				cliente.getResultados().add(new Resultado(id_resultado, id_foro, enlace, dateR, tipo, destino, categoria, estado, anchorR,""));
+				cliente.getResultados().add(new Resultado(id_resultado, id_foro, enlace, dateR, tipo, destino, categoria, estado, anchorR,"",precio_compra ,precio_venta));
 			}
 		}else {
 			System.out.println("curso del programa normal");
@@ -342,7 +366,7 @@ public class Data extends HttpServlet {
 
 		out.println("</div>");
 	}
-	private void morstarResultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+	private void morstarResultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String user_role) throws IOException {
 		int mes = Integer.parseInt(request.getParameter("mes"));
 		int year = Integer.parseInt(request.getParameter("year"));
 		out = response.getWriter();
@@ -356,18 +380,7 @@ public class Data extends HttpServlet {
 			int m = Integer.parseInt(fecha[1]);
 
 			if(mes == m && year == y) {
-				//lista de categorias---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-				String opCategoria = "Selecciona una categor&iacute;a";
-				String htmlCategorias = "";
-				for (int j = 0; j < categorias.size(); j++) {
-					if(cliente.getResultados().get(i).getCategoria() == categorias.get(j).getIdCategoria() && categorias.get(j).getIdCategoria()!=0) {
-						opCategoria = categorias.get(j).getEnlace();
-						htmlCategorias += "			<li id='"+categorias.get(j).getIdCategoria()+"' class='liActive' onclick='guardarCategoriaResultado(this)'>"+categorias.get(j).getEnlace()+"</li>";
-					}else if(categorias.get(j).getIdCategoria()!=0) {
-						htmlCategorias += "			<li id='"+categorias.get(j).getIdCategoria()+"' onclick='guardarCategoriaResultado(this)'>"+categorias.get(j).getEnlace()+"</li>";
-					}				
-				}
-
+				
 				//Foro utilizado para este resultado
 				int mweb = cliente.getResultados().get(i).getId_foro();
 				String claseStatus="";
@@ -378,30 +391,71 @@ public class Data extends HttpServlet {
 				if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("follow")) {claseTipo="lf";tipo="follow";}
 				else if(cliente.getResultados().get(i).getTipo().equalsIgnoreCase("nofollow")) {claseTipo="lnf";tipo="nofollow";}
 				
-				//TABLA----------------------
-				out.println("<tr id='"+id_resultado+"' posicion='"+i+"'>");
-				out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");
-				out.println("	<td class='cLink'>");
-				out.println("		<input class='inLink' onchange='guardarEnlaceResultado(this)' oninput='saveClient()' type='text' value='"+cliente.getResultados().get(i).getEnlace()+"'>");
-				out.println("	</td>");
-				out.println("	<td class='tdCat cCateg pr' onclick='openCategoriaResultado(this)'>");
-				out.println("		<div class='tdCat'>");
-				out.println("			<span class='tdCat'>"+opCategoria+"</span>");
-				out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
-				out.println("		</div>");
-				out.println(		"<ul class='slCt effect7'>"+htmlCategorias+"</ul>");
-				out.println("	</td>");
-				out.println("	<td class='tdCat tdWeb cWeb pr' onclick='openWebResultado(this)'>");
-				out.println("		<div class='tdCat tdWeb'>");
-				out.println("			<span mweb='"+mweb+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
-				out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
-				out.println("		</div>");
-				out.println(		"<ul class='slCt slWeb effect7'></ul>");
-				out.println("	</td>");
-				out.println("	<td class='cDest'><input class='inLink' onchange='updateDestino(this)' oninput='saveClient()' type='text' value='"+cliente.getResultados().get(i).getDestino()+"'></td>");
-				out.println("	<td class='cAnchor'><input class='inLink' onchange='updateAnchor(this)' oninput='saveClient()' type='text' value='"+cliente.getResultados().get(i).getAnchor()+"'></td>");
-				out.println("	<td tipo='"+tipo+"' class='cTipo'><i class='material-icons "+claseTipo+"'>link</i></td>");
-				out.println("</tr>");
+				if(!user_role.equals("user_paid")) {
+					//lista de categorias---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+					String opCategoria = "Selecciona una categor&iacute;a";
+					String htmlCategorias = "";
+					for (int j = 0; j < categorias.size(); j++) {
+						if(cliente.getResultados().get(i).getCategoria() == categorias.get(j).getIdCategoria() && categorias.get(j).getIdCategoria()!=0) {
+							opCategoria = categorias.get(j).getEnlace();
+							htmlCategorias += "			<li id='"+categorias.get(j).getIdCategoria()+"' class='liActive' onclick='guardarCategoriaResultado(this)'>"+categorias.get(j).getEnlace()+"</li>";
+						}else if(categorias.get(j).getIdCategoria()!=0) {
+							htmlCategorias += "			<li id='"+categorias.get(j).getIdCategoria()+"' onclick='guardarCategoriaResultado(this)'>"+categorias.get(j).getEnlace()+"</li>";
+						}				
+					}
+					
+					//TABLA----------------------
+					out.println("<tr id='"+id_resultado+"' posicion='"+i+"'>");
+					out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");
+					out.println("	<td class='cLink'>");
+					out.println("		<input class='inLink' onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getEnlace()+"'>");
+					out.println("	</td>");
+					out.println("	<td class='tdCat cCateg pr' onclick='openCategoriaResultado(this)'>");
+					out.println("		<div class='tdCat'>");
+					out.println("			<span class='tdCat'>"+opCategoria+"</span>");
+					out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
+					out.println("		</div>");
+					out.println(		"<ul class='slCt effect7'><i onclick='borrarCategoria(this)' class='material-icons crossReset'> clear </i>"+htmlCategorias+"</ul>");
+					out.println("	</td>");
+					out.println("	<td class='tdCat tdWeb cWeb pr' onclick='openWebResultado(this)'>");
+					out.println("		<div class='tdCat tdWeb'>");
+					out.println("			<span mweb='"+mweb+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
+					out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
+					out.println("		</div>");
+					out.println(		"<ul class='slCt slWeb effect7'></ul>");
+					out.println("	</td>");
+					out.println("	<td class='cDest'><input class='inLink' onchange='updateDestino(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getDestino()+"'></td>");
+					out.println("	<td class='cAnchor'><input class='inLink' onchange='updateAnchor(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getAnchor()+"'></td>");
+					out.println("	<td tipo='"+tipo+"' class='cTipo'><i class='material-icons "+claseTipo+"'>link</i></td>");
+					out.println("</tr>");
+				}else {
+					
+					int beneficio = cliente.getResultados().get(i).getPrecion_venta()-cliente.getResultados().get(i).getPrecio_compra();
+					Double div = (beneficio*1.0/cliente.getResultados().get(i).getPrecio_compra())*100;
+					
+					//TABLA----------------------
+					out.println("<tr id='"+id_resultado+"' posicion='"+i+"'>");
+					out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");
+					out.println("	<td class='tdCat tdWeb pago_web pr' onclick='openWebResultado(this)'>");
+					out.println("		<div class='tdCat tdWeb'>");
+					out.println("			<span mweb='"+mweb+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
+					out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
+					out.println("		</div>");
+					out.println(		"<ul class='slCt slWeb effect7'></ul>");
+					out.println("	</td>");
+					out.println("	<td class='cPrecio td_input_precio pr' onclick='openCoste(this)'><span>"+cliente.getResultados().get(i).getPrecio_compra()+" &euro;</span>"+"<input class='inLink paid_inputs' onchange='updatePrecioCompra(this)' onclick='stopPropagation(this)' oninput='saveClient(this)' type='number' value='"+cliente.getResultados().get(i).getPrecio_compra()+"'></td>");
+					out.println("	<td class='cPrecio td_input_precio pr' onclick='openCoste(this)'><span>"+cliente.getResultados().get(i).getPrecion_venta()+" &euro;</span>"+"<input class='inLink paid_inputs' onchange='updatePrecioVenta(this)' onclick='stopPropagation(this)' oninput='saveClient(this)' type='number' value='"+cliente.getResultados().get(i).getPrecion_venta()+"'></td>");
+					out.println("	<td class='cPrecio'>"+beneficio+" &euro;</td>");
+					out.println("	<td class='cPrecio'>"+div.intValue()+"%</td>");
+					out.println("	<td class='cDest'><input class='inLink' onchange='updateDestino(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getDestino()+"'></td>");
+					out.println("	<td class='cAnchor'><input class='inLink' onchange='updateAnchor(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getAnchor()+"'></td>");
+					
+					out.println("	<td tipo='"+tipo+"' class='cTipo'><i class='material-icons "+claseTipo+"'>link</i></td>");
+					out.println("</tr>");
+					
+				}
+				
+				
 			}
 		}
 	}
@@ -761,7 +815,8 @@ public class Data extends HttpServlet {
 		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
 		String forosUsados="";
 		for (ForoGson foro : cliente.getForos()) {forosUsados = forosUsados + "["+foro.getIdForo()+"]";}
-
+		System.out.println("$"+forosUsados);
+		out.println("<i onclick='guardarWebResultado(this)' class='material-icons crossReset'> clear </i>");
 		for (int i = 0; i < foros.size(); i++) {
 			String id_foro = "["+foros.get(i).getIdForo()+"]"; 
 			if(foros.get(i).getCategoria()==idCategoria && !forosUsados.contains(id_foro)) {
@@ -781,9 +836,15 @@ public class Data extends HttpServlet {
 		//Aplicamos los cambios en la bbdd y en el array
 		ws.updateResultado(id_resultado+"", "id_foro", id_foro+"" , "updateResultado.php");
 
-		cliente.getForos().add(foros.get(posicionForo));
-		cliente.getResultados().get(posicionResultado).setId_foro(foros.get(posicionForo).getIdForo());
-		cliente.getResultados().get(posicionResultado).setWeb_foro(foros.get(posicionForo).getWebForo());
+		if(id_foro !=0) {
+			cliente.getForos().add(foros.get(posicionForo));
+			cliente.getResultados().get(posicionResultado).setId_foro(foros.get(posicionForo).getIdForo());
+			cliente.getResultados().get(posicionResultado).setWeb_foro(foros.get(posicionForo).getWebForo());
+		}else {
+			cliente.getResultados().get(posicionResultado).setId_foro(0);
+			cliente.getResultados().get(posicionResultado).setWeb_foro("");
+		}
+		
 		//si no hay ningun foro anteriormento no hacemos el for, asi nos ahorramos ese proceso
 		if(elemtAnterior!=0) {
 			for (int i = 0, j = cliente.getForos().size()-1; i < cliente.getForos().size(); i++, j--) {

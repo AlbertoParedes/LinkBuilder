@@ -61,6 +61,11 @@ public class ClienteGson {
 	@SerializedName("userEditando")
 	@Expose
 	private int userEditando;
+	
+	@SerializedName("enlaces_de_pago")
+	@Expose
+	private int enlacesDePago;
+
 
 	public int getIdCliente() {
 		return idCliente;
@@ -184,6 +189,16 @@ public class ClienteGson {
 	public void setUserEditando(int userEditando) {
 		this.userEditando = userEditando;
 	}
+
+	public int getEnlacesDePago() {
+		return enlacesDePago;
+	}
+
+	public void setEnlacesDePago(int enlacesDePago) {
+		this.enlacesDePago = enlacesDePago;
+	}
+	
+	
 	
 	
 

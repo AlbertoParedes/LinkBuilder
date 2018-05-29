@@ -16,6 +16,9 @@ public class Resultado {
 	private String estado;
 	private String anchor;
 	
+	private int precio_compra;
+	private int precion_venta;
+	
 	//Nombre del foro al que se hace referencia con su id_foro
 	private String web_foro;
 	
@@ -28,7 +31,7 @@ public class Resultado {
 	
 	
 	public Resultado(int id_resultado, int id_foro, String enlace, Date fecha, String tipo, String destino,
-			int categoria, String estado, String anchor, String web_foro) {
+			int categoria, String estado, String anchor, String web_foro, int precio_compra, int precion_venta) {
 		super();
 		this.id_resultado = id_resultado;
 		this.id_foro = id_foro;
@@ -40,6 +43,8 @@ public class Resultado {
 		this.estado = estado;
 		this.anchor = anchor;
 		this.web_foro = web_foro;
+		this.precio_compra = precio_compra;
+		this.precion_venta = precion_venta;
 	}
 
 
@@ -162,6 +167,35 @@ public class Resultado {
 	public void setWeb_foro(String web_foro) {
 		this.web_foro = web_foro;
 	}
+
+
+
+
+	public int getPrecio_compra() {
+		return precio_compra;
+	}
+
+
+
+
+	public void setPrecio_compra(int precio_compra) {
+		this.precio_compra = precio_compra;
+	}
+
+
+
+
+	public int getPrecion_venta() {
+		return precion_venta;
+	}
+
+
+
+
+	public void setPrecion_venta(int precion_venta) {
+		this.precion_venta = precion_venta;
+	}
+	
 	
 	
 	

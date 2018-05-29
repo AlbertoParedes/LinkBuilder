@@ -39,6 +39,18 @@ public class ResultadoGson {
 	@SerializedName("anchorR")
 	@Expose
 	private String anchorR;
+	
+	@SerializedName("enlaces_de_pago")
+	@Expose
+	private int enlaces_de_pago;
+	
+	@SerializedName("precio_compra")
+	@Expose
+	private int precio_compra;
+	
+	@SerializedName("precio_venta")
+	@Expose
+	private int precio_venta;
 
 	
 	//Foro---------------------------------------
@@ -395,6 +407,30 @@ public class ResultadoGson {
 
 	public void setEditando(int editando) {
 		this.editando = editando;
+	}
+
+	public int getEnlaces_de_pago() {
+		return enlaces_de_pago;
+	}
+
+	public void setEnlaces_de_pago(int enlaces_de_pago) {
+		this.enlaces_de_pago = enlaces_de_pago;
+	}
+
+	public int getPrecio_compra() {
+		return precio_compra;
+	}
+
+	public void setPrecio_compra(int precio_compra) {
+		this.precio_compra = precio_compra;
+	}
+
+	public int getPrecio_venta() {
+		return precio_venta;
+	}
+
+	public void setPrecio_venta(int precio_venta) {
+		this.precio_venta = precio_venta;
 	}
 	
 	
