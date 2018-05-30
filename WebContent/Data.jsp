@@ -49,8 +49,7 @@
 				<ul>
 					<li><div id="btnClientes" onclick="changePanel(this.id)" class="circleIcono btnSelected"><i class="material-icons googleIcono btnSelected">link</i></div><h4 class="titleItem">Enlaces</h4></li>
 					<li><div id="btnKeywords" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">sort_by_alpha</i></div><h4 class="titleItem">Webs</h4></li>
-					<!-- <li><div id="btnEstadisticas" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">trending_up</i></div><h4 class="titleItem">Estadisticas</h4></li> -->
-				</ul>
+					<li><div id="btnListaClientes" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">perm_identity</i></div><h4 class="titleItem">Clientes</h4></li>				</ul>
 			</div>
 		</div>
 		
@@ -99,30 +98,7 @@
 					<div class="containerApp">	
 						<div class="msgSaludo">Hola <%= nameUser %>, </div>
 						<div><span class="msg">Selecciona un cliente.</span></div>							
-					</div>
-					
-					<!-- tag element -->
-					
-					<!-- init dateDropper -->
-
-					 
-					<!--
-					<div class="infoClient">
-						<div class="nameClient"></div>
-						<div class="urlClient">http://google.com</div>
-					</div>
-					<div class="keywordsClient">
-						
-						<div class="titleTable">Keywords<div class="horDiv"></div></div>
-						<div id="keywords_Client" class="contentTable">
-							<!--  <div class="itemTable"><div class="itemKeyword">keyword 1</div><div class="itemStatus"><label class="switch"><input type="checkbox"  checked><span class="slider round"></span></label></div><div class="itemDeleted">eliminar</div></div>
-							--x>
-							
-						</div>
-					
-					</div>
-					-->
-					
+					</div>	
 				</div>
 			</div>
 		
@@ -136,6 +112,12 @@
 				</div> 
 			</div>	
 		 
+		 	<!-- lista clientes -->
+		 	<div class="allClientes keyCont">		 		
+		 		<div id="divClientes" class="vistaClientes">
+						
+				</div> 
+		 	</div>
 		</div> 
 		
 		<script type="text/javascript" src="js/scripts.js"></script>

@@ -12,17 +12,18 @@ function changePanel(id) {
 		$(".allClients").css('display', "block");
 		$("#"+id).addClass("btnSelected");
 		$("#"+id+" i").addClass("btnSelected");
-	}else{
-		
+	}else if(id == "btnKeywords"){
 		$(".allKeywords").css('display', 'block');
 		$("#"+id).addClass("btnSelected");
 		$("#"+id+" i").addClass("btnSelected");
+		if(websInicio==false){cargarCategorias();}
 		
-		if(websInicio==false){
-			cargarCategorias();
-		}
-		
-	} 
+	}else if(btnListaClientes = "btnListaClientes"){
+		$(".allClientes").css('display', 'block');
+		$("#"+id).addClass("btnSelected");
+		$("#"+id+" i").addClass("btnSelected");
+		cargarListaClientes();
+	}
 }
 
 function abrirBox(id) {
@@ -460,10 +461,17 @@ function updateAnchor(x){
 
 function saveClient(x){
 	var clase_btn_guardar = $("#cGuardar").attr('class');
-	
 	if(!clase_btn_guardar.includes("cSave"))
 		$("#cGuardar").addClass('cSave');
-	
+}
+var valorKey="";
+function getKey(e){
+	valorKey="";
+	var keycode = (e.keyCode ? e.keyCode : e.which);
+	valorKey = keycode;
+	if(keycode == '13'){
+		$('.open_inputs').removeClass('open_inputs');
+	}
 }
 function openCoste(x){
 	$('.open_inputs').removeClass('open_inputs');
@@ -472,13 +480,23 @@ function openCoste(x){
 	var value = $(x).children('input').val();
 	$(x).children('input').focus();
 	$(x).children('input').val("").val(value);
-	
 }
-function updatePrecioCompra(x){
-	$(x).removeClass('open_inputs');
+function updatePrecio(x){
+
+	if(valorKey!=""){
+		$(x).removeClass('open_inputs');
+	}
 	var num = $(x).val();
 	if(!$(x).val())num = 0;
-	$(x).closest('td').children('span').text(num+" €")
+	$(x).closest('td').children('span').text(num+" €");
+	
+	//modificamos el campo de beneficio
+	var td = $(x).closest('tr');
+	var compra = parseInt($(td).children('td[data-paid="compra"]').children('span').text().replace(" €",""));
+	var venta = parseInt($(td).children('td[data-paid="venta"]').children('span').text().replace(" €",""));
+	$(td).children('td[data-paid="beneficio"]').text((venta-compra)+" €");
+	$(td).children('td[data-paid="incremento"]').text(parseInt(((venta-compra)/compra)*100)+"%");
+	valorKey="";
 }
 function stopPropagation(){event.stopPropagation();}
 function deleteEuro(x){
@@ -803,7 +821,14 @@ function guardarNew(x){
 	}
 }
 
-
+//##################################-VENTANA CLIENTES-###############################################
+function cargarListaClientes(){
+	$.post('Data', {
+		metodo : 'ventanaClientes'
+	}, function(responseText) {
+		$('#divClientes').html(responseText);
+	});
+}
 
 //---------------------------
 function showGuardar(){$("#websGuardar").addClass('cSave');}

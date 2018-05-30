@@ -138,8 +138,6 @@ public class Data extends HttpServlet {
 		}else if(metodo.equals("borrarCategoriaResultado")) {
 			borrarCategoriaResultado(request, response, out);
 		}
-
-
 		//daniii
 		else if(metodo.equals("cats")) {
 			mostrarCategorias(request, response, out);
@@ -148,8 +146,6 @@ public class Data extends HttpServlet {
 		}else if(metodo.equals("guardarForo")) {
 			guardarForo(request, response, out);
 		}
-
-
 		else if(metodo.equals("scs")) {
 			mostrarClientesInput(request, response, out);
 		}else if(metodo.equals("cleanBlocksUser")) {
@@ -157,6 +153,10 @@ public class Data extends HttpServlet {
 			for (ClienteGson c : this.clientes) {
 				c.setEditando(0);
 			}
+		}
+		//venta clientes
+		else if(metodo.equals("ventanaClientes")) {
+			try {mostrarVentanaClientes(request, response, out, id_user,role);} catch (ParseException e) {e.printStackTrace();}
 		}
 	}
 
@@ -301,7 +301,7 @@ public class Data extends HttpServlet {
 		if(!user_role.equals("user_paid")) {
 			out.println("			<thead><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cLink'>Link</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Web</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>");
 		}else {
-			out.println("			<thead><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable pago_web'>Web</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>");
+			out.println("			<thead><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable pago_web'>Web</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>");
 		}
 		out.println("			<tbody>");
 
@@ -443,14 +443,15 @@ public class Data extends HttpServlet {
 					out.println("		</div>");
 					out.println(		"<ul class='slCt slWeb effect7'></ul>");
 					out.println("	</td>");
-					out.println("	<td class='cPrecio td_input_precio pr' onclick='openCoste(this)'><span>"+cliente.getResultados().get(i).getPrecio_compra()+" &euro;</span>"+"<input class='inLink paid_inputs' onchange='updatePrecioCompra(this)' onclick='stopPropagation(this)' oninput='saveClient(this)' type='number' value='"+cliente.getResultados().get(i).getPrecio_compra()+"'></td>");
-					out.println("	<td class='cPrecio td_input_precio pr' onclick='openCoste(this)'><span>"+cliente.getResultados().get(i).getPrecion_venta()+" &euro;</span>"+"<input class='inLink paid_inputs' onchange='updatePrecioVenta(this)' onclick='stopPropagation(this)' oninput='saveClient(this)' type='number' value='"+cliente.getResultados().get(i).getPrecion_venta()+"'></td>");
-					out.println("	<td class='cPrecio'>"+beneficio+" &euro;</td>");
-					out.println("	<td class='cPrecio'>"+div.intValue()+"%</td>");
+					out.println("	<td data-paid='compra' class='cPrecio td_input_precio pr' onclick='openCoste(this)'><span>"+cliente.getResultados().get(i).getPrecio_compra()+" &euro;</span>"+"<input class='inLink paid_inputs' onchange='updatePrecio(this)' onclick='stopPropagation(this)' oninput='saveClient(this)' onkeypress='getKey(event)' type='number' value='"+cliente.getResultados().get(i).getPrecio_compra()+"'></td>");
+					out.println("	<td data-paid='venta' class='cPrecio td_input_precio pr' onclick='openCoste(this)'><span>"+cliente.getResultados().get(i).getPrecion_venta()+" &euro;</span>"+"<input class='inLink paid_inputs' onchange='updatePrecio(this)' onclick='stopPropagation(this)' oninput='saveClient(this)' onkeypress='getKey(event)' type='number' value='"+cliente.getResultados().get(i).getPrecion_venta()+"'></td>");
+					out.println("	<td data-paid='beneficio' class='cPrecio'>"+beneficio+" &euro;</td>");
+					out.println("	<td data-paid='incremento' class='cPrecio'>"+div.intValue()+"%</td>");
 					out.println("	<td class='cDest'><input class='inLink' onchange='updateDestino(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getDestino()+"'></td>");
 					out.println("	<td class='cAnchor'><input class='inLink' onchange='updateAnchor(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getAnchor()+"'></td>");
-					
-					out.println("	<td tipo='"+tipo+"' class='cTipo'><i class='material-icons "+claseTipo+"'>link</i></td>");
+					out.println("	<td class='cLink'>");
+					out.println("		<input class='inLink' onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getEnlace()+"'>");
+					out.println("	</td>");
 					out.println("</tr>");
 					
 				}
@@ -770,6 +771,7 @@ public class Data extends HttpServlet {
 		out.println("</div>");
 		out.println("<div class='divBlock'></div>");
 	}
+	
 	private String htmlReutilizable() {
 		String htmlReutilizable = "	<ul class='slCt effect7 nuevaWeb'>";
 		htmlReutilizable += "			<div class='divSeparar'>Enlazar a:</div>";
@@ -924,6 +926,233 @@ public class Data extends HttpServlet {
 		
 	}
 
+	
+private void mostrarVentanaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role) throws IOException, ParseException {
+		
+		String json = ws.getClientsByUser(id_user+"", user_role, "getClientsByUser.php");
+		Gson gson = new Gson();
+		ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
+		//this.clientesGson.clear();
+		//this.clientesGson = clientesGson;
+		String nuevo = "nuevo";
+		//COMIENZA LA TABLA CLIENTES
+		out.println("<div class=\"infoClient\">");
+		out.println("	<div class=\"nameClient\">CLIENTES</div>");//"+categorias.get(posicion).getEnlace()+"
+		out.println("	<div id=\"btn_nuevoCliente\" class=\"addForo\" onclick=\"openNuevoCliente()\" style=\"position: absolute; right: 0; width: 110px; cursor: pointer;\">+ Cliente</div>");
+		out.println("</div>");		
+		out.println("<div class=\"keywordsClient\">");
+		out.println("	<div id=\"results_Client\" class=\"contentTable\">");
+		
+		//------------DESPLEGABLE COLUMNA NUEVOUSER-----------------
+		String htmlNuevoUser = "		<ul id=\"selNuevoUser\" class=\"slCt effect7\"  style=\"width: auto; line-height: 0.7\">";
+		htmlNuevoUser += "			<li id=\"Guille\" class=\"slN\" onclick=\"liSelectNuevoUser(this)\">Guille</li><br>";
+		htmlNuevoUser += "			<li id=\"Nini\" class=\"slN\" onclick=\"liSelectNuevoUser(this)\">Nini</li><br>";
+		htmlNuevoUser += "			<li id=\"Vane\" class=\"slN\" onclick=\"liSelectNuevoUser(this)\">Vane</li><br>";
+		htmlNuevoUser += "		</ul>";
+		//-----------------------------------------------------
+		
+		//------------DESPLEGABLE COLUMNA SERVICIO-----------------
+		String htmlNuevoServicio = "		<ul id=\"selNuevoServicio\" class=\"slCt effect7\"  style=\"width: auto; line-height: 0.7\">";		
+		htmlNuevoServicio += "			<li id=\"SEOLite\" class=\"slN\" follows='3' nofollows='5' onclick=\"liSelectNuevoServicio(this)\">SEOLite</li><br>";
+		htmlNuevoServicio += "			<li id=\"SEOPro\" class=\"slN\" follows='4' nofollows='10' onclick=\"liSelectNuevoServicio(this)\">SEOPro</li><br>";
+		htmlNuevoServicio += "			<li id=\"SEOPremium\" class=\"slN\" follows='6' nofollows='15' onclick=\"liSelectNuevoServicio(this)\">SEOPremium</li><br>";
+		htmlNuevoServicio += "			<li id=\"SEOaMedida\" class=\"slN\" follows='0' nofollows='0' onclick=\"liSelectNuevoServicio(this)\">SEOaMedida</li><br>";
+		htmlNuevoServicio += "		</ul>";
+		//-----------------------------------------------------
+		
+		//NUEVO CLIENTE <DIV> EMERGENTE------------------------------------
+		String htmlNuevoCliente = "	<div id=\"nuevoClienteFondo\" class=\"contentTable slCtNuevo effect7\" style=\"width: calc(100% - 80px); height: 100%; opacity: 0.6;\"></div>";
+			   htmlNuevoCliente += "		<div id=\"nuevoCliente\" class=\"contentTable cerrar slCtNuevo effect7\" style=\"width: calc(100% - 80px); height: calc(100% - 659px);\">";//style=\"width: 20%; line-height: 1.2\"
+			   htmlNuevoCliente += "			<table id=\"tNuevoCliente\" class=\"table slN\">";
+			   htmlNuevoCliente += "				<thead><tr><th class=\"cabeceraTable slN cCNombre\">Nombre</th><th class=\"cabeceraTable slN cCWebCliente\">Web</th><th class=\"cabeceraTable slN cCDR\">Servicio</th><th class=\"cabeceraTable slN cCDA\">Follow</th><th class=\"cabeceraTable slN cCDA\">NoFollow</th><th class=\"cabeceraTable slN cCAnchor\">Anchor</th><th class=\"cabeceraTable slN cCApro\">Blog</th><th class=\"cabeceraTable slN cCRegi\" style=\"text-align: center;\">Idioma</th><th class=\"cabeceraTable slN cCRegi\">User</th></tr></thead>";
+			   htmlNuevoCliente += "					<tbody>";
+			   htmlNuevoCliente += "						<tr id=\"tr_NuevoCliente\" class=\"slN\">";
+			   //Nombre
+			   htmlNuevoCliente += "						<td id=\"td_NuevoNombre\" class=\"cCNombre slN\">";
+			   htmlNuevoCliente += "							<input class=\"inLink slN\" type=\"text\" id=\"input_NuevoNombre\" placeholder=\"Nombre del cliente\">";
+			   htmlNuevoCliente += "						</td>";
+			   //Web
+			   htmlNuevoCliente += "						<td id=\"td_NuevoWebCliente\" class=\"cCWebCliente slN\">";
+			   htmlNuevoCliente += "							<input class=\"inLink slN\" type=\"text\" id=\"input_NuevoWebCliente\" placeholder=\"URL del cliente*\">";
+			   htmlNuevoCliente += "						</td>";
+			   //Servicios
+			   htmlNuevoCliente += "						<td id=\"td_NuevoServicio\" class=\"slN cCTipo tdCaT\">";
+			   htmlNuevoCliente += "							<div class=\"tdCat tdWeb\" id=\"dvNuevoServicio\" onclick=\"selectNuevoServicio(this.id)\">";
+			   htmlNuevoCliente += "								<span id=\"spNuevoServicio\" class=\"tdCat\">Selecciona*</span>";
+			   htmlNuevoCliente += "							</div>";
+			   htmlNuevoCliente += 								htmlNuevoServicio;
+			   htmlNuevoCliente += "						</td>";
+			   //Follow
+			   htmlNuevoCliente += "						<td id=\"td_NuevoFollow\" class=\"cCDA cFollow slN\">";
+			   htmlNuevoCliente += "							<input class=\"inLink slN\" style=\"text-align: center;\" type=\"text\" id=\"inputNuevoFollow\" value=\"0\" readonly=\"true\">";
+			   htmlNuevoCliente += "						</td>";
+			   //NoFollow
+			   htmlNuevoCliente += "						<td id=\"td_NuevoNoFollow\" class=\"cCDA cNoFollow slN\">";
+			   htmlNuevoCliente += "							<input class=\"inLink slN\" style=\"text-align: center;\" type=\"text\" id=\"inputNuevoNoFollow\" value=\"0\" readonly=\"true\">";
+			   htmlNuevoCliente += "						</td>";
+			   //Anchor
+			   htmlNuevoCliente += "						<td id=\"td_NuevoAnchor\" class=\"cCAnchor slN\">";
+			   htmlNuevoCliente += "							<input class=\"inLink slN\" type=\"text\" id=\"input_NuevoAnchor\" placeholder=\"Anchor de busqueda\">";
+			   htmlNuevoCliente += "						</td>";
+			   //Blog
+			   htmlNuevoCliente += "						<td id=\"td_NuevoBlog\" class=\tdCat cCApro slN pr\">";
+			   htmlNuevoCliente += "							<div class=\"tdCat tdWeb \" id=\"dv_NuevoBlog\">";
+			   htmlNuevoCliente += "								<label  class=\"switch\" style=\"top: 5px;\">";
+			   htmlNuevoCliente += "									<input class=\"slT\" id=\"inputNuevoBlog\" type=\"checkbox\">";
+			   htmlNuevoCliente += "									<span class=\"slider round tdCat\"></span>";
+			   htmlNuevoCliente += "								</label>";
+			   htmlNuevoCliente += "							</div>";
+			   htmlNuevoCliente += "						</td>";
+			   //idioma
+			   htmlNuevoCliente += "						<td class=\"tdCat cCRegi slN\" id=\"td_NuevoIdioma\">";
+			   htmlNuevoCliente += "							<input class=\"inLink slN\" style=\"text-align: center;\" type=\"text\" id=\"inputNuevoIdioma\" style=\"width: 30px;\" value=\"ESP\">";
+			   htmlNuevoCliente += "						</td>";
+			   //User
+			   htmlNuevoCliente += "						<td class=\"tdCat cCRegi slN\" id=\"td_NuevoUser\">";
+			   htmlNuevoCliente += "							<div class=\"tdCat tdWeb\" id=\"dvNuevoIdioma\" onclick=\"selectNuevoUser(this)\">";
+			   htmlNuevoCliente += "								<span class=\"tdCat\" type=\"text\" id=\"spNuevoUser\">Selecciona*</span>";
+			   htmlNuevoCliente += "							</div>";
+			   htmlNuevoCliente += 							htmlNuevoUser;
+			   htmlNuevoCliente += "						</td>";
+			   
+			   
+			   htmlNuevoCliente += "						</tr>";
+			   htmlNuevoCliente += "					</tbody>";
+			   htmlNuevoCliente += "				</thead>";
+			   htmlNuevoCliente += "			</table>";
+			   htmlNuevoCliente += "			<div id=\"btn_guardarCliente\" class=\"addForo cerrar\" onclick=\"guardarNuevoCliente()\" style=\"position: absolute;  bottom: 20px; right: 20px; width: 110px; cursor: pointer;\">Guardar</div>";
+			   htmlNuevoCliente += "			<div id=\"btn_cancelarCliente\" class=\"addForo cerrar\" onclick=\"cancelarNuevoCliente()\" style=\"position: absolute;  bottom: 20px; right: 157px; width: 110px; cursor: pointer;\">Cancelar</div>";
+			   htmlNuevoCliente += "		</div>";
+		//--------------------------------------------------------------
+		
+		//pintamos la ventana de NUEVO Cliente
+		out.println(htmlNuevoCliente);
+		
+		out.println("		<table id=\"tClients\" class=\"table\">");
+		out.println("			<thead><tr><th class=\"cabeceraTable cCNombre\">Nombre</th><th class=\"cabeceraTable cCWebCliente\">Web</th><th class=\"cabeceraTable cCDR\">Servicio</th><th class=\"cabeceraTable cCDA\">Follow</th><th class=\"cabeceraTable cCDA\">NoFollow</th><th class=\"cabeceraTable cCAnchor\">Anchor</th><th class=\"cabeceraTable cCApro\">Blog</th><th class=\"cabeceraTable cCRegi\" style=\"text-align: center;\">Idioma</th><th class=\"cabeceraTable cCRegi\">User</th></tr></thead>");
+		out.println("			<tbody>");
+		
+		for (int c = 0; c < clientesGson.size(); c++) {
+			
+			int i = clientesGson.get(c).getIdCliente();//este es el ID REAL DE LA BBDD
+			
+			//------------DESPLEGABLE COLUMNA SERVICIO-----------------
+			String htmlServicio = "		<ul id=\"selServicio_"+i+"\" class=\"slCt effect7\"  style=\"width: auto; line-height: 0.8\">";
+			String opServicio = clientesGson.get(c).getServicio();
+			if(opServicio.equals("")) {
+				opServicio = "Selecciona";
+			}
+			htmlServicio += "			<li id=\"SEOLite\" follows='3' nofollows='5' onclick=\"liSelectServicio(this.id,"+i+",this)\">SEOLite</li><br>";
+			htmlServicio += "			<li id=\"SEOPro\" follows='4' nofollows='10' onclick=\"liSelectServicio(this.id,"+i+", this)\">SEOPro</li><br>";
+			htmlServicio += "			<li id=\"SEOPremium\" follows='6' nofollows='15' onclick=\"liSelectServicio(this.id,"+i+", this)\">SEOPremium</li><br>";
+			htmlServicio += "			<li id=\"SEOaMedida\" follows='0' nofollows='0' onclick=\"liSelectServicio(this.id,"+i+", this)\">SEOaMedida</li><br>";
+			htmlServicio += "		</ul>";
+			//-----------------------------------------------------
+			
+			//------------DESPLEGABLE COLUMNA USER-----------------
+			String htmlUser = "		<ul id=\"selUser_"+i+"\" class=\"slCt effect7\"  style=\"width: auto; line-height: 0.8\">";
+			String opUser = clientesGson.get(c).getLinkbuilder();
+			if(opUser.equals("")) {
+				opUser = "Selecciona";
+			}else if(opUser.equals("2")){
+				opUser = "Guille";
+			}else if(opUser.equals("3")){
+				opUser = "Nini";
+			}else if(opUser.equals("4")){
+				opUser = "Vane";
+			}
+			htmlUser += "			<li id=\"Guille\" onclick=\"liSelectUser(this.id,"+i+", this)\">Guille</li><br>";
+			htmlUser += "			<li id=\"Nini\" onclick=\"liSelectUser(this.id,"+i+", this)\">Nini</li><br>";
+			htmlUser += "			<li id=\"Vane\" onclick=\"liSelectUser(this.id,"+i+", this)\">Vane</li><br>";
+			htmlUser += "		</ul>";
+			//-----------------------------------------------------
+			
+			//------------------------Insertamos las filas de la tabla de CLIENTES----------------------------------------------------------
+			
+			out.println("<tr id=\""+i+"\" posicion=\""+c+"\">");//el atributo POSICION indica la posicion dentro del ARRAY
+			//el atributo ID indica la posicioin dentro de la BASE DE DATOS
+
+
+			//Columna NOMBRE
+			out.println("	<td class=\"cCNombre\">");
+			out.println("		<input class=\"inLink\" type=\"text\" id=\"inputNombre_"+i+"\" onchange=\"guardarNombreCliente("+i+", this)\" value=\""+clientesGson.get(c).getNombre()+"\">");
+			out.println("	</td>");
+			//Columna WEB
+			out.println("	<td class=\"cCWebCliente\" id=\"td_WebCliente"+i+"\">");
+			out.println("		<input class=\"inLink\" type=\"text\" id=\"inputWebCliente_"+i+"\" onclick=\"openUrl(this, event)\" onchange=\"guardarWebCliente("+i+", this)\" value=\""+clientesGson.get(c).getWeb()+"\">");
+			out.println("   </td>");
+			//Columna SERVICIO
+			out.println("	<td class=\"cCTipo\" id=\"td_Servicio_"+i+"\">");
+			out.println("		<div class=\"tdCat tdWeb\" id=\"dvServicio_"+i+"\" onclick=\"selectServicio("+i+")\">");
+			out.println("			<span id=\"spServicio_"+i+"\" class=\"tdCat\">"+opServicio+"</span>");
+			out.println("		</div>");		
+			out.println(		htmlServicio);
+			out.println("   </td>");
+			//Columna FOLLOW
+			out.println("	<td class=\"cCDA cFollow\"  id=\"td_F"+i+"\">");
+			if(clientesGson.get(c).getServicio().equals("SEOaMedida")) {
+				out.println("		<input class=\"inLink\" style=\"text-align: center;\" type=\"text\" id=\"inputF_"+i+"\" onchange=\"guardarF("+i+", "+c+")\" value=\""+clientesGson.get(c).getFollows()+"\">");				
+			}else{
+				out.println("		<input class=\"inLink\" style=\"text-align: center;\" type=\"text\" id=\"inputF_"+i+"\" onchange=\"guardarF("+i+", "+c+")\" value=\""+clientesGson.get(c).getFollows()+"\" readonly=\"true\">");				
+			}
+			out.println("   </td>");			
+			//Columna NOFOLLOW
+			out.println("   <td class=\"cCDA cNoFollow\" id=\"td_NF"+i+"\">");
+			if(clientesGson.get(c).getServicio().equals("SEOaMedida")) {
+				out.println("		<input class=\"inLink\" style=\"text-align: center;\" type=\"text\" id=\"inputNF_"+i+"\"  onchange=\"guardarNF("+i+", "+c+")\" value=\""+clientesGson.get(c).getNofollows()+"\">");	
+			}else {
+				out.println("		<input class=\"inLink\" style=\"text-align: center;\" type=\"text\" id=\"inputNF_"+i+"\"  onchange=\"guardarNF("+i+", "+c+")\" value=\""+clientesGson.get(c).getNofollows()+"\" readonly=\"true\">");
+			}
+			out.println("	</td>");	
+			//Columna ANCHOR
+			out.println("	<td class=\"cCAnchor\" id=\"td_Anchor"+i+"\" >");
+			out.println("			<input id=\"inputAnchor_"+i+"\" type=\"text\" class=\"inLink\" onchange=\"guardarAnchor("+i+", this)\" value=\""+clientesGson.get(c).getAnchor()+"\">");
+			out.println("	</td>");
+			
+			//Columna BLOG
+			out.println("	<td class=\"tdCat cCApro pr\" id=\"td_Blog"+i+"\">");
+			out.println("		<div class=\"tdCat tdWeb\" id=\"dvBlog_"+i+"\" style=\"line-height: 1.4\">");
+			out.println("			<label  class=\"switch\" style=\"top: 5px;\">");
+			if(Integer.parseInt(clientesGson.get(c).getBlog())==0) {
+				out.println("			<input class=\"slT\" id=\"inputBlog"+i+"\" type=\"checkbox\" onchange=\"guardarBlog("+i+", this)\">");
+			}else {
+				out.println("			<input class=\"slT\" id=\"inputBlog"+i+"\" type=\"checkbox\" onchange=\"guardarBlog("+i+", this)\" checked>");}
+			out.println("			<span class=\"slider round\"></span>");
+			out.println("			</label>");
+			out.println("		</div>");
+			out.println("	</td>");
+			
+			
+			//edit
+			//Columna IDIOMA
+			out.println("	<td class=\"tdCat cCRegi\" id=\"td_Idioma"+i+"\">");
+			out.println("		<div class=\"tdCat tdWeb\" style=\"padding-right: 0px;\"id=\"dvIdioma_"+i+"\">");
+			out.println("			<input class=\"inLink\" style=\"text-align: center;\" type=\"text\" id=\"inputIdioma_"+i+"\" onchange=\"guardarIdioma("+i+", this)\" style=\"width: 30px;\" value=\""+clientesGson.get(c).getIdioma()+"\">");				
+			out.println("		</div>");
+			out.println("	</td>");
+			
+			//Columna USER
+			out.println("	<td class=\"tdCat cCRegi\" id=\"td_User"+i+"\">");
+			out.println("		<div class=\"tdCat tdWeb\" id=\"dvUser_"+i+"\" onclick=\"selectUser("+i+")\">");
+			out.println("			<span class=\"tdCat\" type=\"text\" id=\"spUser_"+i+"\">"+opUser+"</span>");				
+			out.println("		</div>");
+			out.println(		htmlUser);
+			out.println("	</td>");
+			
+			/*out.println("	<td class\"cCRegi\" >"+foros.get(i).getReq_registro()+"</td>");
+			out.println("	<td class=\"cCFecha\">"+foros.get(i).getAparece_fecha()+"</td>");*/
+
+			out.println("</tr>");		
+			
+			
+		}
+		
+		out.println("			</tbody>");
+		out.println("		</table>");
+		out.println("	</div>");
+		out.println("</div>");
+		
+	}
 }
 
 
