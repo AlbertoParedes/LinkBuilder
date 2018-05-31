@@ -829,6 +829,136 @@ function cargarListaClientes(){
 		$('#divClientes').html(responseText);
 	});
 }
+//--CAMPO NOMBRE CLIENTE-----------------------------------------
+function guardarNombreCliente(x){
+	var campo = $(x).val();
+	var posicion = $(x).closest('tr').attr('posicion');
+	var id_cliente = $(x).closest('tr').attr('id');
+	$.post('Data', {
+		metodo : 'guardarNombreCliente',
+		id_cliente: id_cliente,
+		valor: valor
+	});
+}
+function guardarWebCliente(x){
+	var campo = $(x).val();
+	var posicion = $(x).closest('tr').attr('posicion');
+	var id_cliente = $(x).closest('tr').attr('id');
+	//alert(cosa);
+	$.post('Data', {
+		metodo : 'guardarWebCliente',
+		id_cliente: id_cliente,
+		valor: valor,
+	});
+}
+function openServicio(x){
+	$(".slCt").removeClass("visible");
+	$(x).closest('td').children('ul').addClass("visible");
+}
+function opentUser(x){
+	$(".slCt").removeClass("visible");
+	$(x).children('ul').addClass("visible");
+}
+function guardarServicio(x){
+	$(x).closest('ul').find('li').removeClass("liActive");
+	$(x).addClass('liActive');
+	var texto = $(x).text();
+	$(x).closest('td').find('div span').text(texto);
+	var id_cliente = $(x).closest('tr').attr('id');
+	var valor = $(x).attr('id');
+	
+	if(valor!='medida'){
+		$(x).closest('tr').find('.cFollow input').prop('readonly', true);
+		$(x).closest('tr').find('.cNoFollow input').prop('readonly', true);
+		$(x).closest('tr').find('.cFollow input').val($(x).attr('data-follows'));
+		$(x).closest('tr').find('.cNoFollow input').val($(x).attr('data-nofollows'));
+	}else{
+		$(x).closest('tr').find('.cFollow input').prop('readonly', false);
+		$(x).closest('tr').find('.cNoFollow input').prop('readonly', false);
+	}
+	
+	guardarFollows($(x).closest('tr').find('td.cFollow input'));
+	guardarNoFollows($(x).closest('tr').find('td.cNoFollow input'));
+	
+	$.post('Data', {
+		metodo : 'guardarServicio',
+		id_cliente: id_cliente,
+		valor: valor
+	});
+}
+function guardarFollows(x){
+	var id_cliente = $(x).closest('tr').attr('id');
+	var valor = $(x).val();
+	$.post('Data', {
+		metodo : 'guardarFollow',
+		id_cliente: id_cliente,
+		valor: valor
+	});
+}
+function guardarNoFollows(x){
+	var id_cliente = $(x).closest('tr').attr('id');
+	var valor = $(x).val();
+	$.post('Data', {
+		metodo : 'guardarNoFollow',
+		id_cliente: id_cliente,
+		valor: valor
+	});
+}
+//--CAMPO ANCHOR-----------------------------------------
+function guardarAnchorCliente(x){
+	var id_cliente = $(x).closest('tr').attr('id');
+	var valor = $ (x).val();
+	$.post('Data', {
+		metodo : 'guardarAnchorCliente',
+		id_cliente: id_cliente,
+		valor: valor
+	});
+}
+function guardarBlog(x){
+	var id_cliente = $(x).closest('tr').attr('id');
+	var valor = $(x).is(':checked') === true ? 1 : 0;
+	$.post('Data', {
+		metodo : 'guardarBlog',
+		id_cliente: id_cliente,
+		valor: valor
+	});
+}
+function guardarIdioma(x){
+	var id_cliente = $(x).closest('tr').attr('id');
+	var valor = $(x).val();
+	$.post('Data', {
+		metodo : 'guardarIdioma',
+		id_cliente: id_cliente,
+		valor: valor
+	});
+}
+
+function guardarUser(x){
+	$(x).closest('ul').find('li').removeClass("liActive");
+	
+	var id_cliente = $(x).closest('tr').attr('id');
+	
+	//empleado anterior
+	var data_user = $(x).closest('td').find('div span').attr('data-user');
+	//empleado nuevo
+	var id_user= $(x).attr('id');
+	//cadena a remplazar
+	var data_list_user = $(x).closest('td').find('div span').attr('data-list-user');
+	//cadena remplazada
+	var valor = data_list_user.replace(data_user,"["+id_user+"]");
+	
+	$(x).closest('td').find('div span').attr('data-user', "["+id_user+"]");
+	$(x).closest('td').find('div span').attr('data-list-user', valor);
+	$(x).closest('td').find('div span').text($(x).text());
+	$(x).addClass('liActive');
+	$.post('Data', {
+		metodo : 'guardarUsers',
+		id_cliente: id_cliente,
+		valor: valor
+	});
+}
+
+
 
 //---------------------------
 function showGuardar(){$("#websGuardar").addClass('cSave');}

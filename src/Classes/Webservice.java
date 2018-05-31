@@ -114,6 +114,20 @@ public class Webservice {
 		return response.toString();
 	}
 	
+	public String getUsersByCategoria (String categoria, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("categoria", categoria);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
 	public String actualizarEditando(int editando,int userEditando,int id_cliente, String fichero) {
 		StringBuffer response = new StringBuffer();
 		JSONObject jsonObj = new JSONObject();
