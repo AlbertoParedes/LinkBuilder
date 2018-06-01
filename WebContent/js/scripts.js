@@ -4,6 +4,7 @@ function changePanel(id) {
 	
 	$(".allClients").css('display', "none");
 	$(".allKeywords").css('display', "none");
+	$(".allClientes").css('display', "none");
 
 	$(".circleIcono").removeClass("btnSelected");
 	$(".circleIcono i").removeClass("btnSelected");
@@ -736,12 +737,19 @@ function guardarForo(campo,id_foro,valor){
 	});
 }
 
-function openNew(x){
+function openNewWeb(x){
 	var padre = $(x).parent("div").parent('div');
 	var panelNuevo = $(padre).children('.newSomething');
 	$(panelNuevo).addClass("openNew");
 	$('.divBlock').addClass("visible");
 	$('.keywordsClient').addClass("blur");
+}
+function openNewCliente(x){
+	var padre = $(x).parent("div").parent('div');
+	var panelNuevo = $(padre).children('.newSomething');
+	$(panelNuevo).addClass("openNew");
+	$('.divBlockClientes').addClass("visible");
+	$('.listaClientes').addClass("blur");
 }
 function cancelNew(x){
 	//eliminamos la ventana para añadir 
@@ -831,33 +839,50 @@ function cargarListaClientes(){
 }
 //--CAMPO NOMBRE CLIENTE-----------------------------------------
 function guardarNombreCliente(x){
-	var campo = $(x).val();
-	var posicion = $(x).closest('tr').attr('posicion');
+	var campo ="nombre";
+	var valor = $(x).val();
 	var id_cliente = $(x).closest('tr').attr('id');
-	$.post('Data', {
-		metodo : 'guardarNombreCliente',
-		id_cliente: id_cliente,
-		valor: valor
-	});
+	
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
 }
 function guardarWebCliente(x){
-	var campo = $(x).val();
-	var posicion = $(x).closest('tr').attr('posicion');
+	var campo ="web";
+	var valor = $(x).val();
 	var id_cliente = $(x).closest('tr').attr('id');
-	//alert(cosa);
-	$.post('Data', {
-		metodo : 'guardarWebCliente',
-		id_cliente: id_cliente,
-		valor: valor,
-	});
+	
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
 }
 function openServicio(x){
-	$(".slCt").removeClass("visible");
-	$(x).closest('td').children('ul').addClass("visible");
+	$(".rotArrow").removeClass("rotArrow");
+	if(!$(x).find("ul").attr('class').includes("visible")){
+		$(".slCt").removeClass("visible");
+		$(".slT").removeClass("visible");
+		$(x).children('ul').addClass("visible");
+		$(x).find('div i.arrow').addClass('rotArrow');
+	}else{
+		$(".slCt").removeClass("visible");
+		$(".slT").removeClass("visible");
+	}
+	
+	if($(x).children('ul').attr('class').includes("nuevaWeb")){$(x).children('ul').css("width",$(x).css("width"))}
 }
 function opentUser(x){
-	$(".slCt").removeClass("visible");
-	$(x).children('ul').addClass("visible");
+	
+	
+	$(".rotArrow").removeClass("rotArrow");
+	if(!$(x).find("ul").attr('class').includes("visible")){
+		$(".slCt").removeClass("visible");
+		$(".slT").removeClass("visible");
+		$(x).children('ul').addClass("visible");
+		$(x).find('div i.arrow').addClass('rotArrow');
+	}else{
+		$(".slCt").removeClass("visible");
+		$(".slT").removeClass("visible");
+	}
+	
+	if($(x).children('ul').attr('class').includes("nuevaWeb")){$(x).children('ul').css("width",$(x).css("width"))}
 }
 function guardarServicio(x){
 	$(x).closest('ul').find('li').removeClass("liActive");
@@ -866,6 +891,7 @@ function guardarServicio(x){
 	$(x).closest('td').find('div span').text(texto);
 	var id_cliente = $(x).closest('tr').attr('id');
 	var valor = $(x).attr('id');
+	var campo ="servicio";
 	
 	if(valor!='medida'){
 		$(x).closest('tr').find('.cFollow input').prop('readonly', true);
@@ -880,82 +906,160 @@ function guardarServicio(x){
 	guardarFollows($(x).closest('tr').find('td.cFollow input'));
 	guardarNoFollows($(x).closest('tr').find('td.cNoFollow input'));
 	
-	$.post('Data', {
-		metodo : 'guardarServicio',
-		id_cliente: id_cliente,
-		valor: valor
-	});
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
 }
 function guardarFollows(x){
+	var campo ="follows";
 	var id_cliente = $(x).closest('tr').attr('id');
 	var valor = $(x).val();
-	$.post('Data', {
-		metodo : 'guardarFollow',
-		id_cliente: id_cliente,
-		valor: valor
-	});
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
 }
 function guardarNoFollows(x){
+	var campo ="nofollows";
 	var id_cliente = $(x).closest('tr').attr('id');
 	var valor = $(x).val();
-	$.post('Data', {
-		metodo : 'guardarNoFollow',
-		id_cliente: id_cliente,
-		valor: valor
-	});
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
 }
 //--CAMPO ANCHOR-----------------------------------------
 function guardarAnchorCliente(x){
+	var campo ="anchor";
 	var id_cliente = $(x).closest('tr').attr('id');
 	var valor = $ (x).val();
-	$.post('Data', {
-		metodo : 'guardarAnchorCliente',
-		id_cliente: id_cliente,
-		valor: valor
-	});
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
+
 }
 function guardarBlog(x){
+	var campo ="blog";
 	var id_cliente = $(x).closest('tr').attr('id');
 	var valor = $(x).is(':checked') === true ? 1 : 0;
-	$.post('Data', {
-		metodo : 'guardarBlog',
-		id_cliente: id_cliente,
-		valor: valor
-	});
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
+
 }
 function guardarIdioma(x){
+	var campo ="idioma";
 	var id_cliente = $(x).closest('tr').attr('id');
 	var valor = $(x).val();
-	$.post('Data', {
-		metodo : 'guardarIdioma',
-		id_cliente: id_cliente,
-		valor: valor
-	});
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
+
 }
 
 function guardarUser(x){
-	$(x).closest('ul').find('li').removeClass("liActive");
-	
+	var campo ="linkbuilder";
 	var id_cliente = $(x).closest('tr').attr('id');
-	
 	//empleado anterior
-	var data_user = $(x).closest('td').find('div span').attr('data-user');
+	var data_user = $(x).closest('ul').find('li.liActive').attr('id')
+	$(x).closest('ul').find('li').removeClass("liActive");//removemos liActive de todos las opciones
 	//empleado nuevo
 	var id_user= $(x).attr('id');
 	//cadena a remplazar
 	var data_list_user = $(x).closest('td').find('div span').attr('data-list-user');
 	//cadena remplazada
-	var valor = data_list_user.replace(data_user,"["+id_user+"]");
+	var valor = data_list_user.replace(data_user,id_user);
 	
-	$(x).closest('td').find('div span').attr('data-user', "["+id_user+"]");
+	//$(x).closest('td').find('div span').attr('data-user', id_user);
 	$(x).closest('td').find('div span').attr('data-list-user', valor);
 	$(x).closest('td').find('div span').text($(x).text());
 	$(x).addClass('liActive');
+	
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
+}
+
+function guardarNewCliente(x){
+	var ob = $(x).closest('div.newSomething').find('table tbody');
+	var web = $(ob).find('td.cCWebCliente input').val();
+	var nombre = $(ob).find('td.cCNombre input').val();
+	var servicio = $(ob).find('td.tipoNew ul li.liActive').attr('id');
+	var follow = $(ob).find('td.cFollow input').val();
+	var nofollow = $(ob).find('td.cNoFollow input').val();
+	var anchor = $(ob).find('td.anchorC input').val();
+	var blog = $(ob).find('td.cCBlog div label input').is(':checked') === true ? 1 : 0;
+	var idioma = $(ob).find('td.cCIdioma input').val();
+	var user = $(ob).find('td.cCUser ul li.liActive').attr("id");
+
+	var text = "";
+	var aceptado = true;
+	if(web==""){text="Introuce una web";aceptado = false;}
+	else if(!web.startsWith('http://') && !web.startsWith('https://') ){text="Introuce una web correcta";aceptado = false;}
+	else if(web.includes('.')==false){text="Introuce una web correcta";aceptado = false;}
+	else if(typeof servicio === 'undefined'){text="Introuce un servicio";aceptado = false;}
+	else if(follow==""){text="Introuce follows";aceptado = false;}
+	else if(nofollow==""){text="Introuce no follows";aceptado = false;}
+	else if(typeof user === 'undefined'){text="Selecciona un usuario";aceptado = false;}
+	
+	if(aceptado===false){
+		$(x).closest('div.newSomething').children('.info').text(text);
+	}else{
+		$.post('Data', {
+			metodo : 'guardarNuevoCliente',
+			web: web,
+			nombre: nombre,
+			servicio:servicio,
+			follow:follow,
+			nofollow:nofollow,
+			anchor:anchor,
+			blog:blog,
+			idioma:idioma,
+			user:user
+		}, function(rt){
+			var status = rt.status
+			if(status==1){//cliente repetido
+				$(x).closest('div.newSomething').children('.info').text(rt.text);
+			}else if(status==2){//coincidencia en el dominio
+				$(x).closest('div.newSomething').children('.info').html(rt.text+"<span style='font-weight:700;'>"+rt.c+"   </span>");
+			}else if(status==0){//ok
+				cancelNewCliente(ob);
+				$('#btnListaClientes').click();
+			}
+		});
+	}
+}
+function resetValoresNuevoCliente(x){
+	var web = $(x).find('td.cCWebCliente input').val("");
+	var nombre = $(x).find('td.cCNombre input').val(""); 
+	
+	var servicio = $(x).find('td.tipoNew ul li').removeClass('liActive');
+	servicio = $(x).find('td.tipoNew div span').text('-');
+	
+	var follow = $(x).find('td.cFollow input').val("0");
+	var nofollow = $(x).find('td.cNoFollow input').val("0");
+	var anchor = $(x).find('td.anchorC input').val("");
+	var blog = $(x).find('td.cCBlog div label input').prop('checked', false);
+	var idioma = $(x).find('td.cCIdioma input').val("ESP");
+	
+	var user = $(x).find('td.cCUser ul li').removeClass('liActive');
+	user = $(x).find('td.cCUser div span').text('-');
+	
+	$(x).closest('div.newSomething').children('.info').html("");
+};
+function cancelNewCliente(x){
+	x = $(x).closest('div.newSomething').find('table tbody');
+	$(".openNew").removeClass('openNew');
+	$('.divBlockClientes').removeClass("visible");
+	$('.listaClientes').removeClass("blur");
+	$("#websGuardar").removeClass('cSave');
+	resetValoresNuevoCliente(x);
+}
+
+
+function guardarValoresCliente(id_cliente,campo,valor){
 	$.post('Data', {
-		metodo : 'guardarUsers',
+		metodo : "guardarValoresCliente",
 		id_cliente: id_cliente,
+		campo:campo,
 		valor: valor
+	}, function(){
+		$("#websGuardar").removeClass('cSave');
 	});
+}
+function deleteClient(x){
+	$('.select_client').addClass('visible');
 }
 
 

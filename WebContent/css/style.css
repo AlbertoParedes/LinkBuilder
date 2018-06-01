@@ -378,6 +378,12 @@ textarea{color: #878787;}
     top: 56px;
     table-layout: fixed;
 }
+#tNuevoCliente{
+	position: absolute;
+    width: calc(100% - 50px);
+    top: 56px;
+    table-layout: fixed;
+}
 .guardarNew{
     position: absolute;
     right: 32px;
@@ -404,6 +410,14 @@ textarea{color: #878787;}
     z-index: 1;
     margin-left: -423px;
 }
+.divBlockClientes{
+    display: none;
+    position: absolute;
+    width: calc(100% + 73px);
+    height: 100%;
+    z-index: 1;
+    margin-left: -73px;
+}
 .nuevaWeb{position: fixed;}
 
 /*DANI*/
@@ -424,9 +438,10 @@ textarea{color: #878787;}
 #tCategorias{table-layout:fixed}
 #tCategorias td{white-space: nowrap;overflow: visible;}
 .cCWeb{width: 20%;}
-.cCWebCliente{width: 20%;}
-.cCNombre{width: 28%}
+.cCWebCliente{width: 25%;}
+.cCNombre{width: 20%}
 .cCTipo{width: 100px;}
+.tipoNew{    width: 125px;}
 .cCDR{width: 40px;}
 .cCDA{width: 40px;}
 .cCTem{width: 13%;}
@@ -436,7 +451,19 @@ textarea{color: #878787;}
 .cCReu{width: 10%;}
 .cCReq{width: 10%;}
 .cCFecha{width: 5%;}
+.cCIdioma{width: 80px;}
+.cCUser{width: 75px;}
+.cCBlog{    width: 40px;}
+.cFollow{text-align: center;width: 100px;}
+.cNoFollow{text-align: center;width: 100px;}
+.cFollow input{text-align: center;}
+.cNoFollow input{text-align: center;}
+.anchorC{width: 20%;}
 
+.info{color: #ea4335;position: absolute;bottom: 13px;left: 33px;}
+.select_client{
+	display: none;
+}
 .addForo{background: #e64a89;color: #fff;border: solid;border-radius: 4px;border-color: #e64a89;border-width: 1px;width: 29px;height: 26px;text-align: center;margin-top: 0px;margin-right: 10px;}
 
 .allClientes{display: none;}
@@ -495,6 +522,9 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none;
 }
+
+.ckBlog{    position: absolute;
+    top: 7px;}
 
 .visible{display: block!important;}
 

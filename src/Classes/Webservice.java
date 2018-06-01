@@ -53,7 +53,46 @@ public class Webservice {
 
 		return response.toString();
 	}
+	
+	public String nuevoCliente(String web,String nombre,String servicio, String follow, String nofollow, String anchor, String blog, String idioma, String user, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		
+		jsonObj.put("web", web);
+		jsonObj.put("nombre", nombre);
+		jsonObj.put("servicio", servicio);
+		jsonObj.put("follows", follow);
+		jsonObj.put("nofollows", nofollow);
+		jsonObj.put("anchor", anchor);
+		jsonObj.put("blog", blog);
+		jsonObj.put("idioma", idioma);
+		jsonObj.put("linkbuilder", user);
+		
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
 
+		String jsonString = JSONValue.toJSONString(l);
+	
+		System.out.println(jsonString);
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+
+	public String getClienteByPieceDominio(String dominio, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("dominio", dominio);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
 	
 	
 	public String getUser(String user, String fichero) {
