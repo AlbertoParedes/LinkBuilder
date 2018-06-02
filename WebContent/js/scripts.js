@@ -808,7 +808,18 @@ function guardarNew(x){
 	aprobacion = aprobacion === true ? 1 : 0;
 	registro = registro === true ? 1 : 0;
 	fecha = fecha === true ? 1 : 0;
-	if(web.trim()!=""){
+	
+	
+	var text = "";
+	var aceptado = true;
+	if(web==""){text="Introuce una web";aceptado = false;}
+	else if(!web.startsWith('http://') && !web.startsWith('https://') ){text="Introuce una web correcta";aceptado = false;}
+	else if(web.includes('.')==false){text="Introuce una web correcta";aceptado = false;}
+
+	
+	if(aceptado===false){
+		$(x).closest('div.newSomething').children('.infoNew').text(text);
+	}else{
 		$.post('Data', {
 			metodo : 'guardarForoCompleto',
 			web: web,
@@ -994,7 +1005,7 @@ function guardarNewCliente(x){
 	else if(typeof user === 'undefined'){text="Selecciona un usuario";aceptado = false;}
 	
 	if(aceptado===false){
-		$(x).closest('div.newSomething').children('.info').text(text);
+		$(x).closest('div.newSomething').children('.infoNew').text(text);
 	}else{
 		$.post('Data', {
 			metodo : 'guardarNuevoCliente',
@@ -1010,9 +1021,9 @@ function guardarNewCliente(x){
 		}, function(rt){
 			var status = rt.status
 			if(status==1){//cliente repetido
-				$(x).closest('div.newSomething').children('.info').text(rt.text);
+				$(x).closest('div.newSomething').children('.infoNew').text(rt.text);
 			}else if(status==2){//coincidencia en el dominio
-				$(x).closest('div.newSomething').children('.info').html(rt.text+"<span style='font-weight:700;'>"+rt.c+"   </span>");
+				$(x).closest('div.newSomething').children('.infoNew').html(rt.text+"<span style='font-weight:700;'>"+rt.c+"   </span>");
 			}else if(status==0){//ok
 				cancelNewCliente(ob);
 				$('#btnListaClientes').click();
@@ -1036,7 +1047,7 @@ function resetValoresNuevoCliente(x){
 	var user = $(x).find('td.cCUser ul li').removeClass('liActive');
 	user = $(x).find('td.cCUser div span').text('-');
 	
-	$(x).closest('div.newSomething').children('.info').html("");
+	$(x).closest('div.newSomething').children('.infoNew').html("");
 };
 function cancelNewCliente(x){
 	x = $(x).closest('div.newSomething').find('table tbody');
@@ -1059,7 +1070,50 @@ function guardarValoresCliente(id_cliente,campo,valor){
 	});
 }
 function deleteClient(x){
-	$('.select_client').addClass('visible');
+	var status = $(x).children('i').text();
+	if(status == 'delete_outline'){
+		
+		$('.select_client').addClass('visible_td');
+		$(x).children('i').text('delete_forever');
+		$(x).children('i').removeClass('gris').addClass('lnf');
+		
+	}else if(status == 'delete_forever'){
+		
+		$('.select_client').removeClass('visible_td');
+		$(x).children('i').text('delete_outline');
+		$(x).children('i').removeClass('lnf').addClass('gris');
+		
+		eliminarClientesSeleccionados(x);
+	}
+}
+
+function eliminarClientesSeleccionados(x){
+	var clientes = [];
+	var obj = {};
+	$('#tClients tbody tr td.select_client div input:checked').each(function(){
+		var id_cliente = $(this).closest('tr').attr('id');
+		var web_cliente = $(this).closest('tr').find('td.cCWebCliente input').val();
+		obj = {	'id_cliente': id_cliente, 'web_cliente': web_cliente}
+		clientes.push(obj);
+	});
+	
+	//preguntar si esta seguro eliminar todos esos clientes
+	
+	/*for (var i = 0; i < clientes.length; i++){
+	    var obj = clientes[i];
+	    $('#tClients tbody tr#'+obj.id_cliente).remove();
+	    
+	    console.log(obj.id_cliente+"  "+obj.web_cliente);
+	}*/
+	if(clientes.length>0){
+		var json = JSON.stringify(clientes);
+		$.post('Data', {
+			metodo : "eliminarCliente",
+			json: json
+		}, function(){
+			$('#btnListaClientes').click();
+		});
+	}
 }
 
 

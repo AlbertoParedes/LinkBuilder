@@ -162,6 +162,8 @@ public class Data extends HttpServlet {
 			guardarValoresCliente(request, response, out);
 		}else if(metodo.equals("guardarNuevoCliente")) {
 			guardarNuevoCliente(request, response);
+		}else if(metodo.equals("eliminarCliente")) {
+			eliminarCliente(request, response, out);
 		}
 	}
 
@@ -696,10 +698,10 @@ public class Data extends HttpServlet {
 			//Columna DESCRIPCION
 			out.println("<td class='cCDesc pr' onclick='openDescripcion(this)'>");
 			out.println(	"<div class='tdCat tdWeb'>");
-			out.println(		"<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>"+foros.get(i).getDescripcion()+"</span>");
+			out.println(		"<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>"+foros.get(i).getDescripcion().replace("<", "&lt;").replace(">", "&gt;")+"</span>");
 			out.println(		"<i class='material-icons arrow'>arrow_drop_down</i>");
 			out.println(	"</div>");
-			out.println(	"<textarea class='slCt effect7 taWeb'  wrap='hard' oninput='resizeta(this,0)' onclick='editandoDescripcion(this)' onchange='guardarDescripcion(this)'>"+foros.get(i).getDescripcion()+"</textarea>");
+			out.println(	"<textarea class='slCt effect7 taWeb'  wrap='hard' oninput='resizeta(this,0)' onclick='editandoDescripcion(this)' onchange='guardarDescripcion(this)'>"+foros.get(i).getDescripcion().replace("<", "&lt;").replace(">", "&gt;")+"</textarea>");
 			out.println("</td>");
 			//Columna REUTILIZABLE
 			out.println("	<td class='tdCat cCReut pr' onclick='openReutilizable(this)'>");
@@ -735,7 +737,7 @@ public class Data extends HttpServlet {
 
 		out.println("</div>");
 		out.println("<div class='newSomething effect7'>");
-		out.println(	"<div class='cancelNew' onclick='cancelNew(this)' ><i class='material-icons lnf'> clear </i></div>");
+		out.println(	"<div class='cancelNew' onclick='cancelNew(this)' ><i class='material-icons i_cancel'> clear </i></div>");
 		out.println(	"<table id='tNuevaWeb' class='table'>");
 		out.println(	"	<thead><tr><th class='cabeceraTable cCWeb'>Web</th><th class='cabeceraTable cCDR'>DR</th><th class='cabeceraTable cCDA'>DA</th><th class='cabeceraTable cCTem'>Tem&aacute;tica</th><th class='cabeceraTable cCDesc'>Descripci&oacute;n</th><th class='cabeceraTable cCReut'>Reutilizable</th><th class='cabeceraTable cCRegi'>Requiere</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>");
 		out.println("			<tbody>");
@@ -769,6 +771,7 @@ public class Data extends HttpServlet {
 							+ "</tr>");
 		out.println("			</tbody>");
 		out.println(	"</table>");
+		out.println(	"<div class='infoNew'></div>"); 
 		out.println(	"<div class='guardarNew' onclick='guardarNew(this)'>guardar</div>");
 		out.println("</div>");
 		out.println("<div class='divBlock'></div>");
@@ -933,17 +936,17 @@ public class Data extends HttpServlet {
 		gson = new Gson();
 		ArrayList<UsuarioGson> usuariosGson = gson.fromJson(json, new TypeToken<List<UsuarioGson>>(){}.getType());
 		
+		String selectDelete = "<div class='pretty p-icon p-smooth div_select_cliente'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>";
 		//COMIENZA LA TABLA CLIENTES
 		out.println("<div class='infoClient'>");
 		out.println("	<div class='nameClient'>CLIENTES</div>");//"+categorias.get(posicion).getEnlace()+"
 		out.println("	<div class='btnAdd' onclick='openNewCliente(this)'>Nuevo cliente</div>");
 		out.println("</div>");
-		out.println("<div class='ctoolbar'><div onclick='deleteClient(this)' class='delete_client'>Eliminar</div><div id='websGuardar' class='zoom'>guardar</div></div>");
+		out.println("<div class='ctoolbar'><div onclick='deleteClient(this)' class='delete_client'><i class='material-icons gris'>delete_outline</i></div><div id='websGuardar' class='zoom'>guardar</div></div>");
 		out.println("<div class='keywordsClient listaClientes'>");
 		out.println("	<div id='results_Client' class='contentTable'>");
-		
 		out.println("		<table id='tClients' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable select_client'>X</th><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable cCTipo'>Servicio</th><th class='cabeceraTable cFollow'>Follow</th><th class='cabeceraTable cNoFollow'>NoFollow</th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th><th class='cabeceraTable cCUser'>User</th></tr></thead>");
+		out.println("			<thead><tr><th class='cabeceraTable select_client '>"+selectDelete+"</th><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable cCTipo'>Servicio</th><th class='cabeceraTable cFollow'>Follow</th><th class='cabeceraTable cNoFollow'>NoFollow</th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th><th class='cabeceraTable cCUser'>User</th></tr></thead>");
 		out.println("			<tbody>");
 		String htmlServicio="",htmlUserFinal="";
 		for (int c = 0; c < clientesGson.size(); c++) {
@@ -977,7 +980,7 @@ public class Data extends HttpServlet {
 
 			out.println("<tr id='"+id_cliente+"' posicion='"+c+"'>");
 			out.println("	<td class='select_client'>");
-			out.println("		<div class='pretty p-icon p-smooth divTemSele'>");
+			out.println("		<div class='pretty p-icon p-smooth div_select_cliente'>");
 			out.println("			<input class='slT' type='checkbox'/>");
 			out.println("			<div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div>");
 			out.println("		</div>");
@@ -1040,7 +1043,7 @@ public class Data extends HttpServlet {
 		out.println("	</div>");
 		out.println("</div>");
 		out.println("<div class='newSomething effect7'>");
-		out.println(	"<div class='cancelNew' onclick='cancelNewCliente(this)' ><i class='material-icons lnf'> clear </i></div>");
+		out.println(	"<div class='cancelNew' onclick='cancelNewCliente(this)' ><i class='material-icons i_cancel'> clear </i></div>");
 		out.println(	"<table id='tNuevoCliente' class='table'>");
 		out.println("			<thead><tr><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable tipoNew'>Servicio</th><th class='cabeceraTable cFollow'>Follow</th><th class='cabeceraTable cNoFollow'>NoFollow</th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th><th class='cabeceraTable cCUser'>User</th></tr></thead>");
 		out.println("			<tbody>");
@@ -1086,7 +1089,7 @@ public class Data extends HttpServlet {
 		out.println("				</td>");
 		out.println("			</tbody>");
 		out.println(	"</table>");
-		out.println(	"<div class='info'></div>");
+		out.println(	"<div class='infoNew'></div>"); 
 		out.println(	"<div class='guardarNew' onclick='guardarNewCliente(this)'>guardar</div>");
 		out.println("</div>");
 		out.println("<div class='divBlockClientes'></div>");
@@ -1117,19 +1120,13 @@ public class Data extends HttpServlet {
 		String json = ws.getClienteByPieceDominio(dominio, "getClienteByPieceDominio.php");
 		Gson gson = new Gson();
 		ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
-		
-		
+	
 		boolean coincidenciaExacta =false;
 		String coincidenciaParcial="";
 		for (ClienteGson c : clientesGson) {
-			if(c.getWeb().equals(web)) {
-				coincidenciaExacta=true;
-				break;
-			}else {
-				coincidenciaParcial=c.getWeb();
-			}
+			if(c.getWeb().equals(web)) {coincidenciaExacta=true;break;
+			}else {coincidenciaParcial=c.getWeb();}
 		}
-		
 		response.setContentType("application/json");
 	    PrintWriter out = response.getWriter();
 	    JSONObject obj = new JSONObject();
@@ -1138,55 +1135,26 @@ public class Data extends HttpServlet {
 			status="0";
 			ws.nuevoCliente(web, nombre, servicio, follow, nofollow, anchor, blog, idioma, user, "insertNuevoCliente.php");
 		}else {
-			if(coincidenciaExacta) {
-				status="1";text="Este cliente ya existe";
-			}else {
-				status="2"; text="Coincidencia parcial en el dominio con el cliente:  ";
-			}
+			if(coincidenciaExacta) {	status="1"; text="Este cliente ya existe";}
+			else {						status="2"; text="Coincidencia parcial en el dominio con el cliente:  ";}
 		}
-		obj.put("status", status);
-		obj.put("text", text);
-		obj.put("c", coincidenciaParcial);
-		out.print(obj);
+		obj.put("status", status);obj.put("text", text);obj.put("c", coincidenciaParcial);out.print(obj);		
+	}
+	private void eliminarCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String json = request.getParameter("json");
 		
-		System.out.println("Insertando nuevo cliente --> "+web+" | "+nombre+" | "+servicio+" | "+follow+" | "+nofollow+" | "+anchor+" | "+blog+" | "+idioma+" | "+user);
+		Object jsonObject =JSONValue.parse(json.toString());
+		JSONArray arrayData = (JSONArray)jsonObject;
+		for(int i=0;i<arrayData.size();i++){
+			JSONObject row =(JSONObject)arrayData.get(i);
+			
+			String id_cliente = row.get("id_cliente").toString();
+			String web_cliente = row.get("web_cliente").toString();
+			ws.updateCliente(id_cliente, "Eliminado", "1", "updateCliente.php");
+			System.out.println("Cliente "+web_cliente+" eliminado");
+			
+			
+		}
 		
 	}
-	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
