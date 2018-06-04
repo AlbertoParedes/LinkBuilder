@@ -833,9 +833,19 @@ function guardarNew(x){
 			fecha: fecha,
 			tematica: tematica,
 			categoria: categoria
-		}, function(){
-			cancelNew(x);
-			$('#lkkI .item_select').click();
+		}, function(rt){
+			
+			var status = rt.status
+			if(status==1){//cliente repetido
+				$(x).closest('div.newSomething').children('.infoNew').text(rt.text);
+			}else if(status==2){//coincidencia en el dominio
+				$(x).closest('div.newSomething').children('.infoNew').html(rt.text+"<span style='font-weight:700;'>"+rt.c+"   </span>");
+			}else if(status==0){//ok
+				cancelNew(x);
+				$('#lkkI .item_select').click();
+			}
+			
+			
 		});
 	}
 }
@@ -1116,6 +1126,21 @@ function eliminarClientesSeleccionados(x){
 	}
 }
 
+
+//subir factura a bbdd
+function uploadExcelFactura(x){
+	var target = event.target || event.srcElement;
+	
+	if (target.value.length == 0) {
+		$(x).closest('form').find('input[name="nombre"]').val('');
+	}else {
+		var file = $("#excelFactura")[0].files[0];
+		$(x).closest('form').find('input[name="nombre"]').val(file.name);
+		$(x).closest('form').prop("target", "null");
+		$(x).closest('form').submit();
+		
+	}
+}
 
 
 //---------------------------

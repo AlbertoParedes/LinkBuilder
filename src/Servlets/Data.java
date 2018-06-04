@@ -16,6 +16,7 @@ import java.util.StringTokenizer;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import Classes.ReadFactura;
 import Classes.Webservice;
 import Objects.Categoria;
 import Objects.Cliente;
@@ -46,6 +48,7 @@ import Objects.Gson.ResultadoGson;
 
 
 @WebServlet("/Data")
+@MultipartConfig
 public class Data extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -108,6 +111,7 @@ public class Data extends HttpServlet {
 		String role = session.getAttribute("role_user").toString();
 
 		String metodo = request.getParameter("metodo");
+		System.out.println(metodo);
 
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
@@ -135,7 +139,7 @@ public class Data extends HttpServlet {
 		}else if(metodo.equals("cha")) {
 			guardarAnchor(request, response, out);
 		}else if(metodo.equals("guardarForoCompleto")) {
-			guardarForoCompleto(request, response, out);
+			guardarForoCompleto(request, response);
 		}else if(metodo.equals("borrarCategoriaResultado")) {
 			borrarCategoriaResultado(request, response, out);
 		}
@@ -165,7 +169,15 @@ public class Data extends HttpServlet {
 		}else if(metodo.equals("eliminarCliente")) {
 			eliminarCliente(request, response, out);
 		}
+		
+		//anadir facturas de los enlaces
+		else if(metodo.equals("uploadFactura")) {
+			System.out.println("subiendo fichero");
+			subirNuevaFactura(request, response, id_user);
+		}
 	}
+
+	
 
 	private void borrarCategoriaResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
@@ -325,7 +337,7 @@ public class Data extends HttpServlet {
 		//----------------------------------------------------------
 		//Con esto creamos los resultados nuevos de cada mes, cuando los creamos pedimos al webservice que nos devuelva los resultados con sus id's para poder asignarselos a nuetro array de clientes
 		System.out.println(resultados.size()+" - "+user_role);
-		if(resultados.size()==0 && !user_role.equals("user_paid")) {
+		if(resultados.size()==0 && !user_role.equals("paid_user")) {
 			for (int i = 0; i < cliente.getFollows(); i++) {
 				int id_cliente = cliente.getId_cliente();
 				String tipo ="FOLLOW";
@@ -572,8 +584,9 @@ public class Data extends HttpServlet {
 		ws.updateForo(id_foro, campo, valor, "updateForo.php");
 		System.out.println("Insertado en la BBDD");
 	}
-	private void guardarForoCompleto(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-
+	@SuppressWarnings("unchecked")
+	private void guardarForoCompleto(HttpServletRequest request, HttpServletResponse response) throws IOException {
+ 
 		String web = request.getParameter("web");
 		String dr = request.getParameter("dr");
 		String da = request.getParameter("da");
@@ -585,10 +598,37 @@ public class Data extends HttpServlet {
 		String fecha = request.getParameter("fecha");
 		String tematica = request.getParameter("tematica");
 		String categoria = request.getParameter("categoria");
+		
+		
+		//comprobamos que el medio no se encuentra ya en la base de datos
+		String dominio = web.replace("http://", "").replace("https://","").replace("www.","");
+		dominio = dominio.substring(0, dominio.indexOf("."));
+		String json = ws.getForoByPieceDominio(dominio, "getForoByPieceDominio.php");
+		System.out.println(web+" -> "+json);
+		Gson gson = new Gson();
+		ArrayList<ForoGson> forosGson = gson.fromJson(json, new TypeToken<List<ForoGson>>(){}.getType());
 
+		boolean coincidenciaExacta =false;
+		String coincidenciaParcial="";
+		for (ForoGson f : forosGson) {
+			if(f.getWebForo().equals(web)) {coincidenciaExacta=true;break;
+			}else {coincidenciaParcial=f.getWebForo();}
+		}
+		response.setContentType("application/json");
+	    PrintWriter out = response.getWriter();
+	    JSONObject obj = new JSONObject();
+	    String status="",text="";
+		if(forosGson.size()==0) {//si esto es igual a 0 significa que en la bbdd no hay ningun cliente con este dominio
+			status="0";
+			System.out.println("Insertada");
+			ws.insertWebs(web, dr, da, descripcion, reutilizable, tipo, aprobacion, registro, fecha, tematica, categoria, "insertWebs.php");
+		}else {
+			if(coincidenciaExacta) {	status="1"; text="Este medio ya existe";}
+			else {						status="2"; text="Coincidencia parcial en el dominio con el medio:  ";}
+		}
+		obj.put("status", status);obj.put("text", text);obj.put("c", coincidenciaParcial);out.print(obj);
 
-		ws.insertWebs(web, dr, da, descripcion, reutilizable, tipo, aprobacion, registro, fecha, tematica, categoria, "insertWebs.php");
-		System.out.println("Insertada");
+		
 	}
 	private void mostrarForos(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
 
@@ -600,11 +640,22 @@ public class Data extends HttpServlet {
 		Gson gson = new Gson();
 		ArrayList<ForoGson> foros = gson.fromJson(json, new TypeToken<List<ForoGson>>(){}.getType());
 
+		
+		String form ="	<form class='formNewFactura' name='uploadFactura' method='post' action='Data' enctype='multipart/form-data' autocomplete='off'>" + 
+				"			<label class='fileContainer'>" + 
+				"				<input onchange='uploadExcelFactura(this)' type='file' class='inputAddFactura' name='excelFactura' id='excelFactura' value=''/>" + 
+				"			</label>" + 
+				"			<input type='hidden' name='nombre' value='' />" + 
+				"			<input type='hidden' name='metodo' value='uploadFactura' />" + 
+				"			<i class='material-icons'>file_upload</i>" + 
+				"		</form>";
+		
+		
 		out.println("<div class='infoClient'>");
 		out.println("	<div class='nameClient'>"+categorias.get(posicion).getEnlace()+"</div>");
 		out.println("	<div class='btnAdd' onclick='openNewWeb(this)'>Nueva web</div>");
 		out.println("</div>");
-		out.println("<div class='ctoolbar'><div id='websGuardar' class='zoom'>guardar</div></div>");
+		out.println("<div class='ctoolbar'>"+form+"<div id='websGuardar' class='zoom'>guardar</div></div>");
 
 		out.println("<div class='keywordsClient'>");
 		out.println("	<div id='results_Foros' class='contentTable'>");
@@ -675,7 +726,7 @@ public class Data extends HttpServlet {
 			//Columna WEB con animacion
 			out.println(	"<td class='cCWeb'>");
 			out.println(		"<div class='tdCat tdWeb'>");
-			out.println(			"<input class='inLink' type='text' oninput='showGuardar()' onchange='guardarWebForo(this)' value='"+foros.get(i).getWebForo()+"'>");
+			out.println(			"<input class='inLink' type='text' oninput='showGuardar()' onchange='guardarWebForo(this)'  value='"+foros.get(i).getWebForo()+"'>");
 			out.println(		"	</div>");
 			out.println(	"</td>");
 			//Columna DR
@@ -1116,7 +1167,7 @@ public class Data extends HttpServlet {
 		
 		//comprobamos que el cliente ya esta insertado en la base de datos
 		String dominio = web.replace("http://", "").replace("https://","").replace("www.","");
-		dominio = dominio.substring(0, dominio.indexOf("."));
+		dominio = dominio.substring(0, dominio.lastIndexOf("."));
 		String json = ws.getClienteByPieceDominio(dominio, "getClienteByPieceDominio.php");
 		Gson gson = new Gson();
 		ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
@@ -1157,4 +1208,17 @@ public class Data extends HttpServlet {
 		}
 		
 	}
+	
+	private void subirNuevaFactura(HttpServletRequest request, HttpServletResponse response, int id_user) throws IOException, ServletException {
+		
+		String nameFile = request.getParameter("nombre");
+		System.out.println(nameFile);
+		
+		ReadFactura rf = new ReadFactura();
+		
+		if(nameFile.endsWith(".xlsx")) rf.readExcel(request);	
+		else System.out.println("No se encontro ningun archivo");
+		
+	}
+	
 }

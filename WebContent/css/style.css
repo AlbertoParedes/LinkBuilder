@@ -437,7 +437,7 @@ textarea{color: #878787;}
 .material-icons.rositaGuay { color: #e64a89; }
 #tCategorias{table-layout:fixed}
 #tCategorias td{white-space: nowrap;overflow: visible;}
-.cCWeb{width: 20%;}
+.cCWeb{width: 25%;}
 .cCWebCliente{width: 25%;}
 .cCNombre{width: 20%}
 .cCTipo{width: 100px;}
@@ -447,7 +447,7 @@ textarea{color: #878787;}
 .cCTem{width: 13%;}
 
 .cCAnchor{width: 20%}
-.cCDesc{width: 37%;}
+.cCDesc{width: 30%;}
 .cCReu{width: 10%;}
 .cCReq{width: 10%;}
 .cCFecha{width: 5%;}
@@ -545,6 +545,19 @@ input[type=number]::-webkit-outer-spin-button {
 
 .ckBlog{ position: absolute;top: 7px;}
 
+.inputAddFactura{
+    border-radius: 6px;
+    height: 26px;
+    position: absolute;
+    opacity: 0;
+    top: 0;
+}
+
+.formNewFactura{
+	width: 35px;
+    overflow: hidden;
+    position: relative;
+}
 .visible{display: block!important;}
 
 

@@ -91,9 +91,21 @@ public class Webservice {
 		sendPost(fichero, response, jsonString);
 
 		return response.toString();
+	} 
+	
+	public String getForoByPieceDominio(String dominio, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("dominio", dominio);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
 	}
-	
-	
 	
 	public String getUser(String user, String fichero) {
 		StringBuffer response = new StringBuffer();
