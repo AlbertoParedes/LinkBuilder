@@ -2,7 +2,7 @@ package Objects;
 
 import java.sql.Date;
 
-public class Factura {
+public class Enlace {
 
 	private String enlace;
 	private String numFactura;
@@ -13,16 +13,11 @@ public class Factura {
 	private String iva;
 	private double total;
 	
-	
-	
-	
-	
-	public Factura() {
+	public Enlace() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
-	public Factura(String enlace, String numFactura, Date fecha, String medio, int cantidad, double precioUnidad,
+	public Enlace(String enlace, String numFactura, Date fecha, String medio, int cantidad, double precioUnidad,
 			String iva, double total) {
 		super();
 		this.enlace = enlace;
@@ -83,6 +78,15 @@ public class Factura {
 	public void setTotal(double total) {
 		this.total = total;
 	}
+
+	@Override
+	public String toString() {
+		return "Factura [enlace=" + enlace + ", numFactura=" + numFactura + ", fecha=" + fecha + ", medio=" + medio
+				+ ", cantidad=" + cantidad + ", precioUnidad=" + precioUnidad + ", iva=" + iva + ", total=" + total
+				+ "]";
+	}
+	
+	
 	
 	
 }

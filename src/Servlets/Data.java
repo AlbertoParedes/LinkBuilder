@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -36,6 +37,7 @@ import Classes.ReadFactura;
 import Classes.Webservice;
 import Objects.Categoria;
 import Objects.Cliente;
+import Objects.Enlace;
 import Objects.Foro;
 import Objects.Resultado;
 import Objects.Tematica;
@@ -172,8 +174,7 @@ public class Data extends HttpServlet {
 		
 		//anadir facturas de los enlaces
 		else if(metodo.equals("uploadFactura")) {
-			System.out.println("subiendo fichero");
-			subirNuevaFactura(request, response, id_user);
+			subirNuevaFactura(request, response, id_user, out);
 		}
 	}
 
@@ -602,7 +603,7 @@ public class Data extends HttpServlet {
 		
 		//comprobamos que el medio no se encuentra ya en la base de datos
 		String dominio = web.replace("http://", "").replace("https://","").replace("www.","");
-		dominio = dominio.substring(0, dominio.indexOf("."));
+		dominio = dominio.substring(0, dominio.lastIndexOf("."));
 		String json = ws.getForoByPieceDominio(dominio, "getForoByPieceDominio.php");
 		System.out.println(web+" -> "+json);
 		Gson gson = new Gson();
@@ -640,15 +641,18 @@ public class Data extends HttpServlet {
 		Gson gson = new Gson();
 		ArrayList<ForoGson> foros = gson.fromJson(json, new TypeToken<List<ForoGson>>(){}.getType());
 
+		String form="";
+		if(id_categoria==18) {
+			form ="	<form class='formNewFactura' name='uploadFactura' id='uploadFactura' method='post' action='Data' enctype='multipart/form-data' autocomplete='off'>" + 
+					"			<label class='fileContainer'>" + 
+					"				<input onchange='uploadExcelFactura(this)' type='file' class='inputAddFactura' name='excelFactura' id='excelFactura' value=''/>" + 
+					"			</label>" + 
+					"			<input type='hidden' name='nombre' value='' />" + 
+					"			<input type='hidden' name='metodo' value='uploadFactura' />" + 
+					"			<i class='material-icons'>file_upload</i>" + 
+					"		</form>";
+		}
 		
-		String form ="	<form class='formNewFactura' name='uploadFactura' method='post' action='Data' enctype='multipart/form-data' autocomplete='off'>" + 
-				"			<label class='fileContainer'>" + 
-				"				<input onchange='uploadExcelFactura(this)' type='file' class='inputAddFactura' name='excelFactura' id='excelFactura' value=''/>" + 
-				"			</label>" + 
-				"			<input type='hidden' name='nombre' value='' />" + 
-				"			<input type='hidden' name='metodo' value='uploadFactura' />" + 
-				"			<i class='material-icons'>file_upload</i>" + 
-				"		</form>";
 		
 		
 		out.println("<div class='infoClient'>");
@@ -1209,15 +1213,104 @@ public class Data extends HttpServlet {
 		
 	}
 	
-	private void subirNuevaFactura(HttpServletRequest request, HttpServletResponse response, int id_user) throws IOException, ServletException {
+	@SuppressWarnings("unchecked")
+	private void subirNuevaFactura(HttpServletRequest request, HttpServletResponse response, int id_user, PrintWriter out) throws IOException, ServletException {
+		
+		
 		
 		String nameFile = request.getParameter("nombre");
 		System.out.println(nameFile);
-		
+		ArrayList<Enlace> enlaces = new ArrayList<Enlace>();
 		ReadFactura rf = new ReadFactura();
-		
-		if(nameFile.endsWith(".xlsx")) rf.readExcel(request);	
+		if(nameFile.endsWith(".xlsx")) enlaces = rf.readExcel(request);	
 		else System.out.println("No se encontro ningun archivo");
+		
+		String contenidoTabla="";
+		JSONArray json = new JSONArray();
+		for (Enlace e : enlaces) {
+			
+			//comprobamos que el medio no se encuentra ya en la base de datos
+			String dominio = e.getMedio().replace("http://", "").replace("https://","").replace("www.","");
+			dominio = dominio.substring(0, dominio.lastIndexOf("."));
+			String respuesta = ws.getForoByPieceDominio(dominio, "getForoByPieceDominio.php");
+			System.out.println(respuesta);
+			Gson gson = new Gson();
+			ArrayList<ForoGson> forosGson = gson.fromJson(respuesta, new TypeToken<List<ForoGson>>(){}.getType());
+			
+			boolean coincidenciaExacta =false;
+			String coincidenciaParcial="<ul class='slCt effect7'>";
+			for (ForoGson f : forosGson) {
+				if(f.getWebForo().equals( e.getMedio())) {coincidenciaExacta=true;break;
+				}else {
+					coincidenciaParcial += "<li data-id-foro='"+f.getIdForo()+"' data-webForo='"+f.getWebForo()+"'>"+f.getWebForo()+"</li>"; 
+				}
+			}
+			if(coincidenciaExacta) {
+				coincidenciaParcial="<span>"+e.getMedio()+"</span>";
+			}else {
+				coincidenciaParcial="<div class='tdCat tdWeb pr'><span class='tdCat'>"+e.getMedio()+"</span><i class='material-icons arrow'>arrow_drop_down</i></div>"+coincidenciaParcial+"</ul>";
+			}
+			
+			
+			contenidoTabla+="<tr>"
+					+ "			<td class='' onclick='openOpcionesNuevaFactura(this)'>"
+					+ 				coincidenciaParcial
+					+ "			</td>"
+					+ "			<td class='f_cantidad'>"
+					+ "				<span>"+e.getCantidad()+"</span>"
+					+ "			</td>"
+					+ "			<td class='f_total'>"
+					+ "				<span>"+e.getTotal()+"</span>"
+					+ "			</td>"
+					+ "		</tr>";
+			
+			
+			JSONObject item = new JSONObject();
+			item.put("enlace", e.getEnlace());
+			item.put("numFactura", e.getNumFactura());
+			item.put("fecha", e.getFecha());
+			item.put("medio", e.getMedio());
+			item.put("cantidad", e.getCantidad());
+			item.put("precioUnidad", e.getPrecioUnidad());
+			item.put("iva", e.getIva());
+			item.put("total", e.getTotal());
+			json.add(item);
+			
+			
+		}
+		
+		out.print("<div class='tableCellContent'>");
+		out.print("		<div class='icono_confirmacion'><i class='material-icons'> cloud_upload </i></div>");
+		out.print("		<div class='divTitle'>");
+		out.print("			<div class='titleConfirmacion'>Importar factura</div>");
+		out.print("		</div>");
+		out.print("		<div class='separator'></div>");
+		out.print("		<div class='div_pregunta_confirmacion'>");
+		out.print("			<div>");
+		out.print("				<div class='text_pregunta'>¿Estás seguro de que quieres importar la factura <strong>PL-3005</strong>?</div>");
+		out.print("			</div>");
+		out.print("		</div>");
+		
+		
+		//añadir
+		out.println(	"<table id='tablaNewFactura' class='table'>");
+		out.println("			<thead><tr><th class='cabeceraTable f_Medio'>Medio</th><th class='cabeceraTable f_cantidad'>Cantidad</th><th class='cabeceraTable f_total'>Total</th></tr></thead>");
+		out.println("			<tbody>"+contenidoTabla+"</tbody>");
+		out.println(	"</table>");
+		
+		
+		
+		
+		out.print("		<div class='botonesConfirmacion'>");
+		out.print("			<div>");
+		out.print("				<span class='btnsConfi cancelBotonConfirmacion'>Cancelar</span>");
+		out.print("				<span class='btnsConfi aceptarBotonConfirmacion'>Aceptar</span>");
+		out.print("			</div>");
+		out.print("		</div>");
+		out.print("</div>");
+		
+		System.out.println(json.toString());
+		//out.print(json);
 		
 	}
 	

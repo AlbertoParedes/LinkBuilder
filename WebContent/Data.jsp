@@ -29,6 +29,7 @@
 		<script type="text/javascript" src="js/ityped.js"></script>
 		<script type="text/javascript" src="js/morris.min.js"></script>
 		<script type="text/javascript" src="js/raphel.js"></script>
+		<script type="text/javascript" src="js/jquery.form.js"></script>
 		
 		<!-- bootstrap -->
   		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -139,6 +140,14 @@
 		
 	</script>
 	<iframe name="null" style="display:none"></iframe>
+		<div id="panelConfirmacion" class="panelConfirmacion">
+			<div class="tableRow">
+				<div class="tableCell">
+					
+				</div>
+			</div>
+		</div>
+	
 	</body>
 	
 </html>

@@ -558,6 +558,111 @@ input[type=number]::-webkit-outer-spin-button {
     overflow: hidden;
     position: relative;
 }
+
+.panelConfirmacion{
+	display: none;
+	position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: white;
+}
+.displayTable{
+	display: table;
+	top: 0;
+	left: 0;
+}
+
+.tableRow{
+	display: table-row;
+    height: 89%;
+}
+.tableCell{
+	display: table-cell;
+    vertical-align: middle;
+}
+.tableCellContent{   
+	width: 650px;
+    max-height: 100%;
+    margin: auto;
+}
+.botonesConfirmacion{
+	text-align: center;
+    margin-top: 80px;
+}
+.btnsConfi{
+    cursor: pointer;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 0 4px;
+    padding: 5px 71px;
+    font-size: 14px;
+}
+.cancelBotonConfirmacion{
+	color: #606060;
+    background-color: #ececec;
+    border: 1px solid #d9d9d9;
+    
+}
+.cancelBotonConfirmacion:hover{
+	background-color: #d9d9d9;
+    border: 1px solid #d1d1d1;
+}
+.aceptarBotonConfirmacion{
+	color: white;
+    background-color: #2dbe60;
+    border: 1px solid #2dbe60;
+}
+.aceptarBotonConfirmacion:hover{
+	 background-color: #28a955;
+    border: 1px solid #28a955;
+}
+.div_pregunta_confirmacion{
+	    text-align: center;
+    word-break: break-word;
+    padding-bottom: 60px;
+}
+.text_pregunta{font-size: 32px;
+    font-weight: 300;
+    line-height: 44px;    color: #383838;    font-family: Lato, helvetica, arial, sans-serif;}
+.text_pregunta strong {
+    color: #4a4a4a;
+    font-weight: 400;
+    font-family: gotham, helvetica, arial, sans-serif;
+}
+.separator{
+	    width: 124px;
+    margin: 18px auto 54px;
+    border-bottom: 1px solid #d9d9d9;
+}
+.titleConfirmacion{    font-family: gotham, helvetica, arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;}
+.divTitle{
+	text-align: center;
+	color: #878787;
+}
+.icono_confirmacion{
+	text-align: center;
+	    margin-bottom: 24px;
+}
+
+.icono_confirmacion i{
+	font-size: 60px;
+    color: #ababab;
+}
+
+#tablaNewFactura{
+	width: 100%;
+    table-layout: fixed;
+}
+
+.f_Medio{width: 60%;}
+.f_cantidad{	width: 20%;text-align: center;}
+.f_total{width: 20%;text-align: center;}
+
 .visible{display: block!important;}
 
 

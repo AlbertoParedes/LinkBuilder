@@ -23,6 +23,12 @@ public class Foro {
 		// TODO Auto-generated constructor stub
 	}
 	
+	public Foro(int id_foro, String web_foro) {
+		super();
+		this.id_foro = id_foro;
+		this.web_foro = web_foro;
+	}
+
 	public Foro(int id_foro, String web_foro, String tipo, int dr, int da, String tematica, String descripcion,
 			int categoria, int req_aprobacion, int req_registro, int aparece_fecha, String reutilizable) {
 		super();
