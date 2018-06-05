@@ -27,7 +27,6 @@ import javax.servlet.http.Part;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.omg.PortableInterceptor.USER_EXCEPTION;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -1238,29 +1237,41 @@ public class Data extends HttpServlet {
 			ArrayList<ForoGson> forosGson = gson.fromJson(respuesta, new TypeToken<List<ForoGson>>(){}.getType());
 			
 			boolean coincidenciaExacta =false;
-			String coincidenciaParcial="<ul class='slCt effect7'>";
-			for (ForoGson f : forosGson) {
-				if(f.getWebForo().equals( e.getMedio())) {coincidenciaExacta=true;break;
-				}else {
-					coincidenciaParcial += "<li data-id-foro='"+f.getIdForo()+"' data-webForo='"+f.getWebForo()+"'>"+f.getWebForo()+"</li>"; 
+			String claseStatus ="",onclick="";
+			String coincidenciaParcial="<ul class='slCt effect7'><i onclick='resetEnlaceFactura(this)' class='material-icons crossReset'> cached </i>";
+			
+			if(forosGson.size()>0) {//si obtenemos algun resulatado analizaremos cuan se repite y cual se le parece
+				for (ForoGson f : forosGson) {//recorremos los foros que nos devuelve tras coparar si exite ese medio o se encuentran coincidencias
+					if(f.getWebForo().equals( e.getMedio())) {
+						coincidenciaExacta=true;
+						coincidenciaParcial="<span>"+e.getMedio()+"</span>";
+						claseStatus = "sOK";
+						break;
+					}else {//rellenamos el ul
+						coincidenciaParcial += "<li onclick='selectCoincidencia(this)' data-id-foro='"+f.getIdForo()+"' data-webForo='"+f.getWebForo()+"'>"+f.getWebForo()+"</li>";
+						claseStatus = "sPendiente";
+					}
 				}
-			}
-			if(coincidenciaExacta) {
-				coincidenciaParcial="<span>"+e.getMedio()+"</span>";
+				if(coincidenciaExacta==false) {
+					coincidenciaParcial="<div class='tdCat tdWeb pr'><span class='tdCat' data-origen='"+e.getMedio()+"'>"+e.getMedio()+"</span><i class='material-icons arrow'>arrow_drop_down</i></div>"+coincidenciaParcial+"</ul>";
+					onclick = "onclick='openOpcionesNuevaFactura(this)'";
+				}
 			}else {
-				coincidenciaParcial="<div class='tdCat tdWeb pr'><span class='tdCat'>"+e.getMedio()+"</span><i class='material-icons arrow'>arrow_drop_down</i></div>"+coincidenciaParcial+"</ul>";
+				coincidenciaParcial=e.getMedio();
+				claseStatus = "lf";
 			}
 			
 			
 			contenidoTabla+="<tr>"
-					+ "			<td class='' onclick='openOpcionesNuevaFactura(this)'>"
+					+ "			<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>"
+					+ "			<td class='pr' "+onclick+">"
 					+ 				coincidenciaParcial
 					+ "			</td>"
 					+ "			<td class='f_cantidad'>"
 					+ "				<span>"+e.getCantidad()+"</span>"
 					+ "			</td>"
 					+ "			<td class='f_total'>"
-					+ "				<span>"+e.getTotal()+"</span>"
+					+ "				<span>"+e.getTotal()+"&euro;</span>"
 					+ "			</td>"
 					+ "		</tr>";
 			
@@ -1287,14 +1298,14 @@ public class Data extends HttpServlet {
 		out.print("		<div class='separator'></div>");
 		out.print("		<div class='div_pregunta_confirmacion'>");
 		out.print("			<div>");
-		out.print("				<div class='text_pregunta'>¿Estás seguro de que quieres importar la factura <strong>PL-3005</strong>?</div>");
+		out.print("				<div class='text_pregunta'>&iquest;Est&aacute;s seguro de que quieres importar la factura <strong>PL-3005</strong>&#63;</div>");
 		out.print("			</div>");
 		out.print("		</div>");
 		
 		
-		//añadir
+		//anadir
 		out.println(	"<table id='tablaNewFactura' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable f_Medio'>Medio</th><th class='cabeceraTable f_cantidad'>Cantidad</th><th class='cabeceraTable f_total'>Total</th></tr></thead>");
+		out.println("			<thead><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable f_Medio'>Medio</th><th class='cabeceraTable f_cantidad'>Cantidad</th><th class='cabeceraTable f_total'>Total</th></tr></thead>");
 		out.println("			<tbody>"+contenidoTabla+"</tbody>");
 		out.println(	"</table>");
 		

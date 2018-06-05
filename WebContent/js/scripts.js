@@ -1162,6 +1162,17 @@ function uploadExcelFactura(x){
 function openOpcionesNuevaFactura(x){
 	$(x).children('ul').addClass('visible');
 }
+function selectCoincidencia(x){
+	$(x).closest('ul').find('li').removeClass('liActive');
+	$(x).addClass("liActive");
+	$(x).closest('td').find('span').text($(x).text());
+}
+function resetEnlaceFactura(x){
+	var span = $(x).closest('td').find('span')
+	$(span).text($(span).attr('data-origen'));
+	
+	$(x).closest('ul').children('li').removeClass('liActive');
+}
 
 
 //---------------------------
