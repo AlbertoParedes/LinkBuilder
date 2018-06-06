@@ -1165,15 +1165,60 @@ function openOpcionesNuevaFactura(x){
 function selectCoincidencia(x){
 	$(x).closest('ul').find('li').removeClass('liActive');
 	$(x).addClass("liActive");
-	$(x).closest('td').find('span').text($(x).text());
+	$(x).closest('td').find('div span.tdCat').text($(x).text());
 }
+
+function replaceInputMedio(x){
+	var checked = $(x).is(':checked') === true ? true : false;
+	$(x).closest('ul').find('input:checked').prop('checked', false);
+	$(x).prop('checked', checked);
+
+	
+}
+
 function resetEnlaceFactura(x){
-	var span = $(x).closest('td').find('span')
+	var span = $(x).closest('td').find('div span.tdCat');
 	$(span).text($(span).attr('data-origen'));
 	
 	$(x).closest('ul').children('li').removeClass('liActive');
 }
 
+
+function showPopUp(x) {
+    $(x).children('div.popup').addClass("show");
+}
+function hidePopUp(x){
+	$(x).children('div.popup').removeClass("show");
+}
+
+var timerCoincidencia;
+function showPopUpCoincidencias(x) {
+    
+	timerCoincidencia = setTimeout(function () {
+		//seleccionamos la url principal
+		var url = $(x).closest('td').find('div span.tdCat').attr('data-origen');
+		var urlARemplazar = $(x).closest('li').children('span').text();
+		var mensaje = "Remplazar <strong class='lnf'>" + urlARemplazar +"</strong> por " + "<strong class='color_green'>" + url+"</strong>";
+		$(x).closest('ul').find('.mensaje_coincidencia').html(mensaje);
+		$(x).closest('ul').children('div.popup').addClass("show");
+	}, 1000);
+	
+    
+    
+}
+function hidePopUpCoincidencias(x){
+	clearTimeout(timerCoincidencia);
+	$(x).stop();
+	$(x).closest('ul').children('div.popup').removeClass("show");
+}
+
+function openDestinos(x){
+	var w = window.innerWidth;
+    var h = window.innerHeight;
+    
+    alert(w + " "+ h);
+    var x = $("p").position();
+}
 
 //---------------------------
 function showGuardar(){$("#websGuardar").addClass('cSave');}

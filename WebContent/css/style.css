@@ -658,10 +658,110 @@ input[type=number]::-webkit-outer-spin-button {
 	width: 100%;
     table-layout: fixed;
 }
+.s_pendiente_opciones{
+	    background-color: #fea710;
+}
+.s_nuevo_opciones{
+	    background-color: #4688F1;
+}
+.pd_rigth_28{padding-right: 28px;}
 
 .f_Medio{width: 60%;}
 .f_cantidad{	width: 20%;text-align: center;}
 .f_total{width: 20%;text-align: center;}
+.replace_input_medio{    position: absolute;right: 0px;top: 5px;}
+
+
+
+/*info_div*/
+/* info_div container - can be anything you want */
+.info_div {
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* The actual info_div */
+.popup {
+    visibility: hidden;
+    width: auto;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    padding: 8px 0px;
+    padding-left: 10px;
+    padding-right: 17px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+    background: white;
+    color: #878787;
+}
+
+/* info_div arrow */
+.popup::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent #d9d9d9 #d9d9d9 transparent;
+    width: 10px;
+    height: 10px;
+    background: white;
+    transform: rotate(45deg);
+    margin-top: -6px;
+}
+
+/* Toggle this class - hide and show the info_div */
+.show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}
+
+.pop_up_coincidencia{
+	bottom: calc(100% + 10px);
+    left: 0;
+    margin-left: 0px;
+}    
+
+.pop_up_coincidencia::after{
+	left: unset;
+	right: 20px;
+}
+.color_green{
+	color: #0f9d58;
+}
+
+/* Add animation (fade in the info_div) */
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;} 
+    to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+}
+
+
+.div_destinos{
+	position: absolute;
+}
+
+
+
+
+.p_a{position: absolute;}
+.p_cicles{    left: 0;top: 8px;}
+.pd_left_30{padding-left: 30px;}
 
 .visible{display: block!important;}
 

@@ -1000,7 +1000,7 @@ public class Data extends HttpServlet {
 		out.println("<div class='keywordsClient listaClientes'>");
 		out.println("	<div id='results_Client' class='contentTable'>");
 		out.println("		<table id='tClients' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable select_client '>"+selectDelete+"</th><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable cCTipo'>Servicio</th><th class='cabeceraTable cFollow'>Follow</th><th class='cabeceraTable cNoFollow'>NoFollow</th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th><th class='cabeceraTable cCUser'>User</th></tr></thead>");
+		out.println("			<thead><tr><th class='cabeceraTable select_client '>"+selectDelete+"</th><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable cCTipo'>Servicio</th><th class='cabeceraTable cFollow'>Follow</th><th class='cabeceraTable cNoFollow'>NoFollow</th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th><th class='cabeceraTable cCUser'>User</th><th class='cabeceraTable cell_destino'>Destinos</th></tr></thead>");
 		out.println("			<tbody>");
 		String htmlServicio="",htmlUserFinal="";
 		for (int c = 0; c < clientesGson.size(); c++) {
@@ -1032,7 +1032,7 @@ public class Data extends HttpServlet {
 			String blogChecked ="checked";
 			if(Integer.parseInt(clientesGson.get(c).getBlog())==0) blogChecked="";
 
-			out.println("<tr id='"+id_cliente+"' posicion='"+c+"'>");
+			out.println("<tr id='"+id_cliente+"' posicion='"+c+"' class='pr'>");
 			out.println("	<td class='select_client'>");
 			out.println("		<div class='pretty p-icon p-smooth div_select_cliente'>");
 			out.println("			<input class='slT' type='checkbox'/>");
@@ -1090,7 +1090,10 @@ public class Data extends HttpServlet {
 			out.println("		</div>");
 			out.println("		<ul class='slCt effect7'>"+htmlUser+"</ul>");
 			out.println("	</td>");
-			out.println("</tr>");	
+			out.println("	<td class='tdCat cell_destino pr' onclick='openDestinos(this)'>destino"
+					+ "			<div data-id='lista_destinos' class='div_destinos' >akfhjdaskfjhhdkasfhdkasjhfkadshfj</div>"
+					+ "		</td>");
+			out.println("</tr>");
 		}
 		out.println("			</tbody>");
 		out.println("		</table>");
@@ -1248,20 +1251,30 @@ public class Data extends HttpServlet {
 						claseStatus = "sOK";
 						break;
 					}else {//rellenamos el ul
-						coincidenciaParcial += "<li onclick='selectCoincidencia(this)' data-id-foro='"+f.getIdForo()+"' data-webForo='"+f.getWebForo()+"'>"+f.getWebForo()+"</li>";
-						claseStatus = "sPendiente";
+						coincidenciaParcial += "<li class='pd_rigth_28 pr' onclick='selectCoincidencia(this)' data-id-foro='"+f.getIdForo()+"' data-webForo='"+f.getWebForo()+"'>" 
+						+ "<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'>"+f.getWebForo()+"</span>"
+						+"						<div class='req replace_input_medio' onclick='stopPropagation()' onmouseover='showPopUpCoincidencias(this)' onmouseout='hidePopUpCoincidencias(this)'>"
+						+ "							<label class='switch req'>"
+						+ "								<input type='checkbox' onchange='replaceInputMedio(this)'>"
+						+ "								<span class='slider round req'></span>"
+						+ "							</label>"
+						+ "						</div>"
+						+"						</li>";
+						claseStatus = "s_pendiente_opciones";
 					}
 				}
 				if(coincidenciaExacta==false) {
-					coincidenciaParcial="<div class='tdCat tdWeb pr'><span class='tdCat' data-origen='"+e.getMedio()+"'>"+e.getMedio()+"</span><i class='material-icons arrow'>arrow_drop_down</i></div>"+coincidenciaParcial+"</ul>";
+					coincidenciaParcial="<div class='tdCat tdWeb pr'><span class='tdCat' data-origen='"+e.getMedio()+"'>"+e.getMedio()+"</span><i class='material-icons arrow'>arrow_drop_down</i></div>"+coincidenciaParcial
+							+ "							<div class='popup effect7 pop_up_coincidencia'>"
+							+ "								<span class='mensaje_coincidencia'></span>"
+							+ "							</div>"
+							+ "</ul>";
 					onclick = "onclick='openOpcionesNuevaFactura(this)'";
 				}
 			}else {
 				coincidenciaParcial=e.getMedio();
-				claseStatus = "lf";
+				claseStatus = "s_nuevo_opciones";
 			}
-			
-			
 			contenidoTabla+="<tr>"
 					+ "			<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>"
 					+ "			<td class='pr' "+onclick+">"
@@ -1274,20 +1287,6 @@ public class Data extends HttpServlet {
 					+ "				<span>"+e.getTotal()+"&euro;</span>"
 					+ "			</td>"
 					+ "		</tr>";
-			
-			
-			JSONObject item = new JSONObject();
-			item.put("enlace", e.getEnlace());
-			item.put("numFactura", e.getNumFactura());
-			item.put("fecha", e.getFecha());
-			item.put("medio", e.getMedio());
-			item.put("cantidad", e.getCantidad());
-			item.put("precioUnidad", e.getPrecioUnidad());
-			item.put("iva", e.getIva());
-			item.put("total", e.getTotal());
-			json.add(item);
-			
-			
 		}
 		
 		out.print("<div class='tableCellContent'>");
@@ -1298,19 +1297,28 @@ public class Data extends HttpServlet {
 		out.print("		<div class='separator'></div>");
 		out.print("		<div class='div_pregunta_confirmacion'>");
 		out.print("			<div>");
-		out.print("				<div class='text_pregunta'>&iquest;Est&aacute;s seguro de que quieres importar la factura <strong>PL-3005</strong>&#63;</div>");
+		out.print("				<div class='text_pregunta'>&iquest;Est&aacute;s seguro de que quieres importar la factura <strong>PL-3005</strong> &#63;</div>");
 		out.print("			</div>");
 		out.print("		</div>");
 		
 		
 		//anadir
 		out.println(	"<table id='tablaNewFactura' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable f_Medio'>Medio</th><th class='cabeceraTable f_cantidad'>Cantidad</th><th class='cabeceraTable f_total'>Total</th></tr></thead>");
+		out.println("			<thead><tr>"
+				+ "					<th class='cabeceraTable cStatus info_div' onmouseover='showPopUp(this)' onmouseout='hidePopUp(this)'>"
+				+ "						<div class='divStatus sPendiente'></div>"
+				+ "						<div class='popup effect7'>"
+				+ "							<div class='pr pd_left_30'><div class='divStatus sOK p_a p_cicles'></div>Existe</div>"
+				+ "							<div class='pr pd_left_30'><div class='divStatus s_nuevo_opciones p_a p_cicles'></div>Nuevo</div>"
+				+ "							<div class='pr pd_left_30'><div class='divStatus s_pendiente_opciones p_a p_cicles'></div>Coincidencias</div>"
+				+ "						</div>"
+				+ "					</th>"
+				+ "					<th class='cabeceraTable f_Medio'>Medio</th>"
+				+ "					<th class='cabeceraTable f_cantidad'>Cantidad</th>"
+				+ "					<th class='cabeceraTable f_total'>Total</th>"
+				+ "				</tr></thead>");
 		out.println("			<tbody>"+contenidoTabla+"</tbody>");
 		out.println(	"</table>");
-		
-		
-		
 		
 		out.print("		<div class='botonesConfirmacion'>");
 		out.print("			<div>");
