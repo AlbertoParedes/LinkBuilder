@@ -1213,11 +1213,37 @@ function hidePopUpCoincidencias(x){
 }
 
 function openDestinos(x){
-	var w = window.innerWidth;
-    var h = window.innerHeight;
+	
+	
+    var p_tr = $(x).closest('tr').position().left + parseInt($(x).closest('tr').css('padding-left'), 10);
+    var position_width_tr = $(x).closest('tr').width()+p_tr;
     
-    alert(w + " "+ h);
-    var x = $("p").position();
+    var p_pop_up = $(x).position().left + parseInt($(x).css('padding-left'), 10);
+    var position_width_pop_up = $(x).children('div.pop_up').width()+p_pop_up;
+    
+    var retroceder = position_width_tr - (position_width_pop_up + 2) ;//si el border es 1 por cada lado sumaremos el borde izquierdo y derecho
+    
+    if(retroceder<0){
+    	$(x).children('div.pop_up').css('margin-left', retroceder+"px");
+    }
+    
+    $(x).children('div.pop_up').addClass('visible');
+    
+    //alert(position_width_tr + " - "+position_width_pop_up+ " = "+  retroceder);
+}
+function deleteDestino(x){
+	$(x).closest('li').remove();
+}
+function addDestino(x){
+	var url = $(x).closest('div').children('input').val();
+	var id_cliente = $(x).closest('tr').attr('id');
+	$.post('Data', {
+		metodo : "addDestino",
+		id_cliente: id_cliente,
+		url: url
+	}, function(){
+		$('div.pop_up').removeClass('visible');
+	});
 }
 
 //---------------------------

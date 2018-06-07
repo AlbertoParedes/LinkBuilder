@@ -169,6 +169,8 @@ public class Data extends HttpServlet {
 			guardarNuevoCliente(request, response);
 		}else if(metodo.equals("eliminarCliente")) {
 			eliminarCliente(request, response, out);
+		}else if(metodo.equals("addDestino")) {
+			addDestino(request, response, out);
 		}
 		
 		//anadir facturas de los enlaces
@@ -176,6 +178,8 @@ public class Data extends HttpServlet {
 			subirNuevaFactura(request, response, id_user, out);
 		}
 	}
+
+	
 
 	
 
@@ -1090,9 +1094,22 @@ public class Data extends HttpServlet {
 			out.println("		</div>");
 			out.println("		<ul class='slCt effect7'>"+htmlUser+"</ul>");
 			out.println("	</td>");
-			out.println("	<td class='tdCat cell_destino pr' onclick='openDestinos(this)'>destino"
-					+ "			<div data-id='lista_destinos' class='div_destinos' >akfhjdaskfjhhdkasfhdkasjhfkadshfj</div>"
-					+ "		</td>");
+			out.println("	<td class='tdCat cell_destino pr' onclick='openDestinos(this)'>destino");
+			out.println("			<div data-id='lista_destinos' class='div_destinos pop_up effect7 ' >");
+			out.println("				<div class='nuevo_destino'>");
+			out.println("					<span>Destino: </span><input type='text' class='inLink' value='' placeholder='Introduce una nueva url a atacar'><i onclick='addDestino(this)' class='material-icons'>add</i>");
+			out.println("				</div>");
+			out.println("				<ul class='scroll_115 pdd_v_12'>");
+			out.println("					<li class='pdd_h_17 pr' ><span>Home</span><i onclick='deleteDestino(this)' class='material-icons'> remove </i></li>");
+			out.println("					<li class='pdd_h_17 pr' ><span>Home</span><i onclick='deleteDestino(this)' class='material-icons'> remove </i></li>");
+			out.println("					<li class='pdd_h_17 pr' ><span>Home</span><i onclick='deleteDestino(this)' class='material-icons'> remove </i></li>");
+			out.println("					<li class='pdd_h_17 pr' ><span>Home</span><i onclick='deleteDestino(this)' class='material-icons'> remove </i></li>");
+			out.println("					<li class='pdd_h_17 pr' ><span>Home</span><i onclick='deleteDestino(this)' class='material-icons'> remove </i></li>");
+			out.println("					<li class='pdd_h_17 pr' ><span>Home</span><i onclick='deleteDestino(this)' class='material-icons'> remove </i></li>");
+			out.println("					<li class='pdd_h_17 pr' ><span>Home</span><i onclick='deleteDestino(this)' class='material-icons'> remove </i></li>");
+			out.println("				</ul>");
+			out.println("			</div>");
+			out.println("		</td>");
 			out.println("</tr>");
 		}
 		out.println("			</tbody>");
@@ -1213,6 +1230,15 @@ public class Data extends HttpServlet {
 			
 		}
 		
+	}
+	
+	private void addDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String id_cliente = request.getParameter("id_cliente");
+		String url = request.getParameter("url");
+		
+		ws.addDestino(id_cliente, url, "addDestino.php");
+		
+		System.out.println(id_cliente +"  "+url);
 	}
 	
 	@SuppressWarnings("unchecked")

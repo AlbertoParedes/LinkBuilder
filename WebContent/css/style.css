@@ -751,13 +751,61 @@ input[type=number]::-webkit-outer-spin-button {
     to {opacity:1 ;}
 }
 
+ul{list-style-type: none;margin: 0px!important;}
 
 .div_destinos{
+	width: 500px;
+	display: none;
+	background: white;
 	position: absolute;
+    z-index: 7;
+    border: 1px solid #ececec;
 }
 
+.nuevo_destino{     min-width: 300px;
+    padding: 12px 17px;
+    border-bottom: 1px solid #ececec;
+}
+.nuevo_destino span{
+	float: left;
+	padding-right: 10px;
+	color: #4a4a4a;
+}
 
+.div_destinos ul li i{
+	position: absolute;
+	right: 17px;
+	top: 2px;
+}
+.div_destinos ul li{
+	padding-top: 5px;
+    padding-bottom: 5px;
+}
+.div_destinos ul li:hover span{
+	color: #4688F1;
+}
+.div_destinos ul li i:hover{
+	color: #ea4335;
+}
+    
 
+/*  Paddings ----------------------------*/
+.pdd_v_12{
+	padding: 12px 0;
+}
+.pdd_h_17{
+	padding: 0 17px;
+}
+/*  Paddings ----------------------------*/
+.scroll_115{
+	max-height: 115px;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.nuevo_destino input{width: auto;}
+.nuevo_destino input::placeholder{color: #ababab;}
+.nuevo_destino i {float: right;}
 
 .p_a{position: absolute;}
 .p_cicles{    left: 0;top: 8px;}

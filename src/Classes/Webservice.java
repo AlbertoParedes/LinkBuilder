@@ -223,7 +223,22 @@ public class Webservice {
 		sendPost(fichero, response, jsonString);
 
 		return response.toString();
-	}	
+	}
+	
+	public String addDestino(String id_cliente,String url, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("id_cliente", id_cliente);
+		jsonObj.put("url", url);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+
+		String jsonString = JSONValue.toJSONString(l);
+	
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
 	
 	public String insertResultadoVacio(int id,String tipo, String fichero) {
 		StringBuffer response = new StringBuffer();
