@@ -1213,24 +1213,14 @@ function hidePopUpCoincidencias(x){
 }
 
 function openDestinos(x){
-	
-	
-    var p_tr = $(x).closest('tr').position().left + parseInt($(x).closest('tr').css('padding-left'), 10);
-    var position_width_tr = $(x).closest('tr').width()+p_tr;
-    
-    var p_pop_up = $(x).position().left + parseInt($(x).css('padding-left'), 10);
-    var position_width_pop_up = $(x).children('div.pop_up').width()+p_pop_up;
-    
-    var retroceder = position_width_tr - (position_width_pop_up + 2) ;//si el border es 1 por cada lado sumaremos el borde izquierdo y derecho
-    
-    if(retroceder<0){
-    	$(x).children('div.pop_up').css('margin-left', retroceder+"px");
-    }
-    
+	move2Left(x);
     $(x).children('div.pop_up').addClass('visible');
     
     //alert(position_width_tr + " - "+position_width_pop_up+ " = "+  retroceder);
 }
+
+
+
 function deleteDestino(x){
 	$(x).closest('li').remove();
 }
@@ -1245,6 +1235,22 @@ function addDestino(x){
 		$('div.pop_up').removeClass('visible');
 	});
 }
+
+function move2Left(x){
+	var p_tr = $(x).closest('tr').position().left + parseInt($(x).closest('tr').css('padding-left'), 10);
+    var position_width_tr = $(x).closest('tr').width()+p_tr;
+    
+    var p_pop_up = $(x).position().left + parseInt($(x).css('padding-left'), 10);
+    var position_width_pop_up = $(x).children('div.pop_up').width()+p_pop_up;
+    
+    var retroceder = position_width_tr - (position_width_pop_up + 2) ;//si el border es 1 por cada lado sumaremos el borde izquierdo y derecho
+    
+    if(retroceder<0){
+    	$(x).children('div.pop_up').css('margin-left', retroceder+"px");
+    }
+}
+
+
 
 //---------------------------
 function showGuardar(){$("#websGuardar").addClass('cSave');}
@@ -1263,10 +1269,14 @@ window.addEventListener('click', function(e){
 		//ignorar click dentro descripcion
 	}else if(clase.includes("td_input_precio")){
 		//ignorar click dentro descripcion
+	}else if(clase.includes("inner_pop_up")){
+		//ignorar click dentro del popup
 	}else {
 		$(".rotArrow").removeClass("rotArrow");
 		$(".slCt").removeClass("visible");
 		$('.paid_inputs').removeClass('open_inputs');
+		
+		$('.pop_up').removeClass("visible");
 	}
 	}
 });

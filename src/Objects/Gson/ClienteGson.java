@@ -1,5 +1,7 @@
 package Objects.Gson;
 
+import java.util.ArrayList;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -65,7 +67,52 @@ public class ClienteGson {
 	@SerializedName("enlaces_de_pago")
 	@Expose
 	private int enlacesDePago;
+	
+	@SerializedName("url_a_atacar")
+	@Expose
+	private String urlAAtacar;
+	
+	private ArrayList<String> urlsAAtacar;
+	
+	
 
+	public ClienteGson(int idCliente, String web, String nombre, String servicio, int follows, int nofollows,
+			String anchor, String blog, String idioma, int followsDone, int nofollowsDone, String linkbuilder,
+			int editando, int userEditando, int enlacesDePago, ArrayList<String> urlsAAtacar) {
+		super();
+		this.idCliente = idCliente;
+		this.web = web;
+		this.nombre = nombre;
+		this.servicio = servicio;
+		this.follows = follows;
+		this.nofollows = nofollows;
+		this.anchor = anchor;
+		this.blog = blog;
+		this.idioma = idioma;
+		this.followsDone = followsDone;
+		this.nofollowsDone = nofollowsDone;
+		this.linkbuilder = linkbuilder;
+		this.editando = editando;
+		this.userEditando = userEditando;
+		this.enlacesDePago = enlacesDePago;
+		this.urlsAAtacar = urlsAAtacar;
+	}
+
+	public ArrayList<String> getUrlsAAtacar() {
+		return urlsAAtacar;
+	}
+
+	public void setUrlsAAtacar(ArrayList<String> urlsAAtacar) {
+		this.urlsAAtacar = urlsAAtacar;
+	}
+
+	public String getUrlAAtacar() {
+		return urlAAtacar;
+	}
+
+	public void setUrlAAtacar(String urlAAtacar) {
+		this.urlAAtacar = urlAAtacar;
+	}
 
 	public int getIdCliente() {
 		return idCliente;
