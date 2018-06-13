@@ -195,11 +195,11 @@ public class Webservice {
 		return response.toString();
 	}
 	
-	public String desbloquearEditando(int editando,int userEditando, String fichero) {
+	public String desbloquearEditando(int editando,int id_user, String fichero) {
 		StringBuffer response = new StringBuffer();
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("editando", editando);
-		jsonObj.put("userEditando", userEditando);
+		jsonObj.put("userEditando", id_user);
 		List<JSONObject>  l = new LinkedList<JSONObject>();
 		l.addAll(Arrays.asList(jsonObj));
 
@@ -359,6 +359,23 @@ public class Webservice {
 		jsonObj.put("id_foro", id_foro);
 		jsonObj.put("campo", campo);
 		jsonObj.put("valor", valor);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+		String jsonString = JSONValue.toJSONString(l);
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
+	//Enlaces----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	public String getEnlaces(String elemento_1, String elemento_2,String elemento_3, String metodo, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("elemento_1", elemento_1);
+		jsonObj.put("elemento_2", elemento_2);
+		jsonObj.put("elemento_3", elemento_3);
+		jsonObj.put("metodo", metodo);
 		List<JSONObject>  l = new LinkedList<JSONObject>();
 		l.addAll(Arrays.asList(jsonObj));
 		String jsonString = JSONValue.toJSONString(l);

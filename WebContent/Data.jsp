@@ -18,6 +18,11 @@
 		
 		<title>LinkBuilder</title>
 		<style>::-webkit-scrollbar {display: none;width: 20px;}</style>
+		
+		<script type="text/javascript" src="js/script_enlaces.js"></script>
+		
+		
+		
 		<script type="text/javascript" src="js/jquery.js"></script>
 		<script type="text/javascript" src="js/jquery-ui.min.js"></script>
 		
@@ -69,7 +74,7 @@
 					<!-- lkc = listKeywordsClient -->
 					<div id="lstC" class="listItems">
 						<% for (int i = 0; i < clientes.size(); i++){%>
-							<div id="<%=clientes.get(i).getIdCliente()%>" onclick="selectClient(this.id)" class="item">
+							<div id="<%=clientes.get(i).getIdCliente()%>" onclick="enlaces_SelectClient(this.id)" class="item">
 								<%if(i!=0){ %><div class="line"></div><%}%>
 								<div class="itemChild <%if(clientes.get(i).getEditando()==1){%>blur<%}%>">
 									<div class="nameItem">
