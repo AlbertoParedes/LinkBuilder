@@ -23,7 +23,7 @@ public class Enlace {
 
 	@SerializedName("id_foro")
 	@Expose
-	private String idForo;
+	private int idForo;
 
 	@SerializedName("enlace")
 	@Expose
@@ -43,7 +43,7 @@ public class Enlace {
 
 	@SerializedName("categoria")
 	@Expose
-	private String categoria;
+	private int categoria;
 
 	@SerializedName("estado")
 	@Expose
@@ -73,6 +73,13 @@ public class Enlace {
 	@Expose
 	private String urlsAAtacar;
 
+	@SerializedName("nombreCategoria")
+	@Expose
+	private String nombreCategoria;
+	
+	@SerializedName("web_foro")
+	@Expose
+	private String webForo;
 
 	public int getDisponibilidad() {
 		return disponibilidad;
@@ -100,11 +107,11 @@ public class Enlace {
 	}
 
 
-	public String getIdForo() {
+	public int getIdForo() {
 		return idForo;
 	}
 
-	public void setIdForo(String idForo) {
+	public void setIdForo(int idForo) {
 		this.idForo = idForo;
 	}
 
@@ -143,11 +150,11 @@ public class Enlace {
 		this.destino = destino;
 	}
 
-	public String getCategoria() {
+	public int getCategoria() {
 		return categoria;
 	}
 
-	public void setCategoria(String categoria) {
+	public void setCategoria(int categoria) {
 		this.categoria = categoria;
 	}
 
@@ -216,6 +223,24 @@ public class Enlace {
 	public void setUrlsAAtacar(String urlsAAtacar) {
 		this.urlsAAtacar = urlsAAtacar;
 	}
+
+	public String getNombreCategoria() {
+		return nombreCategoria;
+	}
+
+	public void setNombreCategoria(String nombreCategoria) {
+		this.nombreCategoria = nombreCategoria;
+	}
+
+	public String getWebForo() {
+		return webForo;
+	}
+
+	public void setWebForo(String webForo) {
+		this.webForo = webForo;
+	}
+	
+	
 
 }
 

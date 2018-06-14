@@ -181,38 +181,7 @@ function handleEnter(e){
 // funciones de la nueva aplicacio
 // Resultados webs ----------------------------------------------------------
 
-function guardarWebResultado(x){
-	
-	
-	
-	$(x).closest('ul').children('li').removeClass("liActive");
-	$(x).addClass("liActive");
-	
-	var id_foro=$(x).attr('id');
-	var id_resultado=$(x).closest('tr').attr('id');
-	var elemtAnterior = $(x).closest('td').children('div').children('span').attr("mweb");
-	var posicionResultado = $(x).closest('tr').attr('posicion');
-	var posicionForo = $(x).attr('posicion');
-	
-	//si se seleciona la X borraremos ese resultado de nuestra bbdd y de nuestro array
-	if($(x).attr('class').includes('crossReset')){
-		$(x).closest('td').children('div').children('span').text('');
-		id_foro = 0;
-		posicionForo = 0;
-	}
-	
-	$.post('Data', {
-		metodo : 'guardarWebResultado',
-		id_foro: id_foro,
-		id_resultado: id_resultado,
-		elemtAnterior: elemtAnterior,
-		posicionResultado:posicionResultado,
-		posicionForo:posicionForo
-	}, function(responseText) {
-		$(x).closest('td').children('div').html(responseText);
-	});
-	
-}
+
 
 
 

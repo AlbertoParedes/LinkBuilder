@@ -1,10 +1,10 @@
 package Objects;
 
-public class Categoria {
+public class CategoriaObjeto {
 	
 	private int id;
 	private String nombre;
-	public Categoria(int id, String nombre) {
+	public CategoriaObjeto(int id, String nombre) {
 		super();
 		this.id = id;
 		this.nombre = nombre;

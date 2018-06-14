@@ -49,8 +49,11 @@ function guardarEnlaceResultado(x){
 	var link = $(x).val();
 	var tipo = $("tr#"+id_resultado+" .cTipo").attr("tipo");
 	
-	var mes = $(".datedropper .picker .pick-m li.pick-sl").attr("value");
-	var year = $(".datedropper .picker .pick-y li.pick-sl").attr("value");
+	//var mes = $(".datedropper .picker .pick-m li.pick-sl").attr("value");
+	//var year = $(".datedropper .picker .pick-y li.pick-sl").attr("value");
+	
+	var mes = $('.datedropper .picker [data-k="m"] .pick-sl').val();  mes = mes <10 ? "0"+mes : 0;
+	var year = $('.datedropper .picker [data-k="y"] .pick-sl').val();
 
 	var follows_done=0,nofollows_done=0;
 	$(x).closest('tbody').children('tr').each(function(){
@@ -86,7 +89,7 @@ function guardarEnlaceResultado(x){
 }
 function openCategoriaResultado(x){
 	$(".rotArrow").removeClass("rotArrow");
-	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
+	//comprobamos si se ha hecho otro click sobre esta misma categoria para cerrar el ul
 	var clase = $(x).children('ul').attr("class");
 	$(".slCt").removeClass("visible");
 	$(".slWeb").removeClass("visible");
@@ -109,8 +112,8 @@ function openWebResultado(x){
 	$(".slWeb").removeClass("visible");
 	if(!clase.includes("visible")){
 		var id_resultado = $(x).closest('tr').attr('id');
-		var id_categoria = $(x).closest('tr').children('td.cCateg').children('ul').children('li.liActive').attr('id');
-		if (typeof id_categoria !== 'undefined'){
+		var id_categoria = $(x).closest('tr').find('td.cCateg div span[data-id-categoria]').attr('data-id-categoria');
+		//if (typeof id_categoria !== 'undefined'){
 			$.post('Data_Enlaces', {
 				metodo : 'mostrarWebResultado',
 				id_categoria: id_categoria,
@@ -120,8 +123,9 @@ function openWebResultado(x){
 				$(x).children('ul').addClass("visible");
 				//modificamos la flecha 
 				$(x).children('div').children('i').addClass("rotArrow");
+				
 			});
-		}
+		//}
 		
 	}
 }
@@ -164,13 +168,15 @@ function guardarCategoriaResultado(x){
 	
 	//le damos el texto seleccionado a nuestra vista de categorias
 	var op = $(x).text();
-	$(x).closest('td').children('div').children('span').text(op);
+	$(x).closest('td').find('div span[data-id-categoria]').text(op);
 	
 	$.post('Data_Enlaces', {
 		metodo : 'guardarCategoriaResultado',
 		id_categoria: id_categoria,
 		id_resultado: id_resultado,
 		posicion: posicion
+	}, function (){
+		$(x).closest('td').find('div span[data-id-categoria]').attr('data-id-categoria', id_categoria);
 	});
 }
 
@@ -192,4 +198,35 @@ function changeMonth(){
 	}, function(responseText) {
 		$('#results_Client table tbody').html(responseText);
 	});
+}
+
+function guardarWebResultado(x){
+	
+	$(x).closest('ul').children('li').removeClass("liActive");
+	$(x).addClass("liActive");
+	
+	var id_foro=$(x).attr('id');
+	var id_resultado=$(x).closest('tr').attr('id');
+	var elemtAnterior = $(x).closest('td').children('div').children('span').attr("mweb");
+	var posicionResultado = $(x).closest('tr').attr('posicion');
+	var posicionForo = $(x).attr('posicion');
+	
+	//si se seleciona la X borraremos ese resultado de nuestra bbdd y de nuestro array
+	if($(x).attr('class').includes('crossReset')){
+		$(x).closest('td').children('div').children('span').text('');
+		id_foro = 0;
+		posicionForo = 0;
+	}
+	
+	$.post('Data_Enlaces', {
+		metodo : 'guardarWebResultado',
+		id_foro: id_foro,
+		id_resultado: id_resultado,
+		elemtAnterior: elemtAnterior,
+		posicionResultado:posicionResultado,
+		posicionForo:posicionForo
+	}, function(responseText) {
+		$(x).closest('td').children('div').html(responseText);
+	});
+	
 }

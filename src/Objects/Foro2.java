@@ -1,6 +1,6 @@
 package Objects;
 
-public class Foro {
+public class Foro2 {
 	
 	private int id_foro;
 	private String web_foro;
@@ -18,18 +18,18 @@ public class Foro {
 	//con esto guardo la posicion de un foro en especifico en un array no global, para saber en que posicion está en el array global de foros
 	private int posArrayForos;
 	
-	public Foro() {
+	public Foro2() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Foro(int id_foro, String web_foro) {
+	public Foro2(int id_foro, String web_foro) {
 		super();
 		this.id_foro = id_foro;
 		this.web_foro = web_foro;
 	}
 
-	public Foro(int id_foro, String web_foro, String tipo, int dr, int da, String tematica, String descripcion,
+	public Foro2(int id_foro, String web_foro, String tipo, int dr, int da, String tematica, String descripcion,
 			int categoria, int req_aprobacion, int req_registro, int aparece_fecha, String reutilizable) {
 		super();
 		this.id_foro = id_foro;

@@ -34,10 +34,10 @@ import com.google.gson.reflect.TypeToken;
 
 import Classes.ReadFactura;
 import Classes.Webservice;
-import Objects.Categoria;
+import Objects.CategoriaObjeto;
 import Objects.Cliente;
 import Objects.Enlace;
-import Objects.Foro;
+import Objects.Foro2;
 import Objects.Resultado;
 import Objects.Tematica;
 import Objects.Gson.CategoriaGson;
@@ -58,7 +58,7 @@ public class Data extends HttpServlet {
 	private ArrayList<ClienteGson> clientes = new ArrayList<ClienteGson>();
 	private Cliente cliente = new Cliente();
 	private ArrayList<ForoGson> foros = new ArrayList<ForoGson>();
-	private ArrayList<CategoriaGson> categorias = new ArrayList<CategoriaGson>();
+	public static ArrayList<CategoriaGson> categorias = new ArrayList<CategoriaGson>();
 	private ArrayList<TematicaGson> tematicas = new ArrayList<TematicaGson>();
 
 
@@ -79,7 +79,7 @@ public class Data extends HttpServlet {
 	private void cargarPage(HttpServletRequest request, HttpServletResponse response, int id_user, String name_user, String role) throws ServletException, IOException, ParseException {
 		System.out.println(id_user+" "+name_user);
 		ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
-
+		
 		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
 		String json = ws.getClientsByUser("["+id_user+"]", role, "getClientsByUser.php");
 		System.out.println(json);
@@ -125,9 +125,7 @@ public class Data extends HttpServlet {
 		}*/
 		
 		
-		if(metodo.equals("guardarWebResultado")) {
-			guardarWebResultado(request, response, out);
-		}else if(metodo.equals("chd")) {
+		if(metodo.equals("chd")) {
 			guardarDestino(request, response, out);
 		}else if(metodo.equals("guardarForoCompleto")) {
 			guardarForoCompleto(request, response);
@@ -491,37 +489,7 @@ public class Data extends HttpServlet {
 
 
 	
-	private void guardarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-		int id_foro = Integer.parseInt(request.getParameter("id_foro"));
-		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
-		int elemtAnterior = Integer.parseInt(request.getParameter("elemtAnterior"));
-		int posicionResultado = Integer.parseInt(request.getParameter("posicionResultado"));
-		int posicionForo = Integer.parseInt(request.getParameter("posicionForo"));
-
-		//Aplicamos los cambios en la bbdd y en el array
-		ws.updateResultado(id_resultado+"", "id_foro", id_foro+"" , "updateResultado.php");
-
-		if(id_foro !=0) {
-			cliente.getForos().add(foros.get(posicionForo));
-			cliente.getResultados().get(posicionResultado).setId_foro(foros.get(posicionForo).getIdForo());
-			cliente.getResultados().get(posicionResultado).setWeb_foro(foros.get(posicionForo).getWebForo());
-		}else {
-			cliente.getResultados().get(posicionResultado).setId_foro(0);
-			cliente.getResultados().get(posicionResultado).setWeb_foro("");
-		}
-
-		//si no hay ningun foro anteriormento no hacemos el for, asi nos ahorramos ese proceso
-		if(elemtAnterior!=0) {
-			for (int i = 0, j = cliente.getForos().size()-1; i < cliente.getForos().size(); i++, j--) {
-				if(cliente.getForos().get(i).getIdForo() == elemtAnterior) {cliente.getForos().remove(i);i = cliente.getForos().size();}
-				else if(cliente.getForos().get(j).getIdForo() == elemtAnterior) {cliente.getForos().remove(j); i = cliente.getForos().size();}
-			}
-		}
-		out.println("<span mweb='"+id_foro+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+cliente.getResultados().get(posicionResultado).getWeb_foro()+"</span>");
-		out.println("<i class='material-icons arrow'>arrow_drop_down</i>");
-		System.out.println("Insertado");
-
-	}
+	
 	private void mostrarClientesInput(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String k = request.getParameter("keyword").toLowerCase();
 		System.out.println(k);
