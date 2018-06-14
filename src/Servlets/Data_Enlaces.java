@@ -416,7 +416,7 @@ public class Data_Enlaces extends HttpServlet {
 					out.println("	</td>");
 					out.println("	<td class='tdCat tdWeb cWeb pr' onclick='openWebResultado(this)'>");
 					out.println("		<div class='tdCat tdWeb'>");
-					out.println("			<span mweb='"+mweb+"' data-posicion-foro'"+posicionForo+"' data-id-foro='"+e.getIdForo()+"'   onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+e.getWebForo()+"</span>");
+					out.println("			<span data-posicion-foro='"+posicionForo+"' data-id-foro='"+e.getIdForo()+"'   onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+e.getWebForo()+"</span>");
 					out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
 					out.println("		</div>");
 					out.println(		"<ul class='slCt slWeb effect7 pop_up'></ul>");
@@ -610,7 +610,7 @@ public class Data_Enlaces extends HttpServlet {
 			ws.updateResultado(id_resultado+"", "id_foro", id_foro+"" , "updateResultado.php");
 			
 			
-			out.println("<span mweb='"+id_foro+"' data-posicion-foro='"+posicionForo+"' data-id-foro='"+id_foro+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+forosDisponibles.get(posicionForo).getWebForo()+"</span>");
+			out.println("<span data-posicion-foro='"+posicionForo+"' data-id-foro='"+id_foro+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+forosDisponibles.get(posicionForo).getWebForo()+"</span>");
 			out.println("<i class='material-icons arrow'>arrow_drop_down</i>");
 			forosDisponibles.remove(posicionForo);
 			/*
