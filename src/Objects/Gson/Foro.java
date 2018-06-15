@@ -1,5 +1,7 @@
 package Objects.Gson;
 
+import java.util.Collections;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -19,11 +21,16 @@ public class Foro {
 	public Foro() {
 	}
 
-	public Foro(int idForo, String webForo) {
+	
+
+	public Foro(int idForo, String webForo, int categoria) {
 		super();
 		this.idForo = idForo;
 		this.webForo = webForo;
+		this.categoria = categoria;
 	}
+
+
 
 	public int getCategoria() {
 		return categoria;
@@ -50,5 +57,7 @@ public class Foro {
 	}
 
 
+	
+	
 
 }

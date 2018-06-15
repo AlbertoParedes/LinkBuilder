@@ -536,9 +536,12 @@ public class Data extends HttpServlet {
 		//ontenemos todas las categorias
 		String json = ws.getJSON("getCategorias.php");
 		Gson gson = new Gson();
-		ArrayList<CategoriaGson> categoriasGson = gson.fromJson(json, new TypeToken<List<CategoriaGson>>(){}.getType());
+		ArrayList<CategoriaGson> categorias = gson.fromJson(json, new TypeToken<List<CategoriaGson>>(){}.getType());
 		this.categorias.clear();
-		this.categorias = categoriasGson;
+		if(categorias.get(0).getIdCategoria()==0) {
+			categorias.remove(0);
+		}
+		this.categorias = categorias;
 	}
 	private void obtenemosForos() {
 		//obtenemos todos los foros
