@@ -42,6 +42,7 @@ import Objects.Resultado;
 import Objects.Tematica;
 import Objects.Gson.CategoriaGson;
 import Objects.Gson.ClienteGson;
+import Objects.Gson.Empleado;
 import Objects.Gson.ForoGson;
 import Objects.Gson.TematicaGson;
 import Objects.Gson.UsuarioGson;
@@ -60,6 +61,7 @@ public class Data extends HttpServlet {
 	private ArrayList<ForoGson> foros = new ArrayList<ForoGson>();
 	public static ArrayList<CategoriaGson> categorias = new ArrayList<CategoriaGson>();
 	private ArrayList<TematicaGson> tematicas = new ArrayList<TematicaGson>();
+	public static ArrayList<Empleado> empleados = new ArrayList<Empleado>();
 
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -96,6 +98,13 @@ public class Data extends HttpServlet {
 
 		obtenemosCategorias();
 		obtenemosForos();
+		
+		json = ws.getJSON("getEmpleados.php");
+		ArrayList<Empleado> empleados = gson.fromJson(json, new TypeToken<List<Empleado>>(){}.getType());
+		this.empleados.clear();
+		this.empleados = empleados;
+		
+		
 
 		String f = name_user.substring(0, 1).toUpperCase();name_user = f + name_user.substring(1,name_user.length()).toLowerCase();
 
@@ -595,10 +604,74 @@ public class Data extends HttpServlet {
 	//GUARDAR CAMPOS TABLA CLIENTES
 	private void mostrarVentanaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role) throws IOException, ParseException {
 		
+		String listaEmpleados = "";
+		
+		//web cliente
+		String onInputWebCliente="",onChangeWebCliente="";
+		//nombre cliente
+		String onInputNombreCliente="",onChangeNombreCliente="";
+		//servicio
+		String onClickServicio="", onClickGuardarServicio="";
+		//follows
+		String onChangeGuardarFollows="";
+		//nofollows
+		String onChangeGuardarNoFollows="";
+		//anchor
+		String onChangeGuardarAnchor="";
+		//blog
+		String onChangeGuardarBlog="";
+		//idioma
+		String onChangeGuardarIdioma="";
+		//empleados
+		String onClickOpenEmpleados="";
+		//destino
+		String onClickOpenDestinos = "", onClickAddDestino="",onClickDeleteDestino="";
+		
+		
+		String onInputGuardar=""; 
+		
+		for (Empleado e : empleados) {
+			if(user_role.equals("super_admin")) {
+				listaEmpleados += "<li>"+e.getName()+"</li>";
+				onInputWebCliente="oninput='showGuardar()'";onChangeWebCliente="onchange='guardarWebCliente(this)'";
+				onInputNombreCliente="oninput='showGuardar()'";onChangeNombreCliente="onchange='guardarNombreCliente(this)'";
+				onClickServicio = "onclick='openServicio(this)'";
+				onInputGuardar = "oninput='showGuardar()'";
+				onChangeGuardarFollows = "onchange='guardarFollows(this)'";
+				onChangeGuardarNoFollows = "onchange='guardarNoFollows(this)'";
+				onChangeGuardarAnchor="onchange='guardarAnchorCliente(this)'";
+				onChangeGuardarBlog="onchange='guardarBlog(this)'";
+				onChangeGuardarIdioma="onchange='guardarIdioma(this)'";
+				onClickOpenEmpleados = "onclick='opentUser(this)'";
+				onClickOpenDestinos = "onclick='openDestinos(this)'";
+				onClickAddDestino ="onclick='addDestino(this)'";
+				onClickDeleteDestino="onclick='deleteDestino(this)'";
+				onClickGuardarServicio="onclick='guardarServicio(this)'";
+			}else if(user_role.equals("free_admin")) {
+				if(e.getCategoria().equals("free")) {
+					listaEmpleados += "<li>"+e.getName()+"</li>";
+					
+				}
+				
+			}else if(user_role.equals("free_user")) {
+				if(e.getCategoria().equals("free")) {
+					listaEmpleados += "<li>"+e.getName()+"</li>";
+					
+				}
+			}else if(user_role.equals("paid_user")) {
+				if(e.getCategoria().equals("paid")) {
+					listaEmpleados += "<li>"+e.getName()+"</li>";
+					
+				}
+			}
+		}
+		
+		//obtenemos todos los clientes que se les ha asignado a este empleado
 		String json = ws.getClientsByUser(id_user+"", user_role, "getClientsByUser.php");
 		Gson gson = new Gson();
 		ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
 		
+		//
 		String categoria = user_role.substring(0, user_role.lastIndexOf("_"));
 		json = ws.getUsersByCategoria(categoria, "getUsersByCategoria.php");
 		gson = new Gson();
@@ -660,10 +733,10 @@ public class Data extends HttpServlet {
 			else if(cliente.getServicio().equals("pro"))    { opServicio = "SEO Pro";       clasePro="class='liActive'";      readonly="readonly='true'";}
 			else if(cliente.getServicio().equals("premium")){ opServicio = "SEO Premium";   clasePremium="class='liActive'";  readonly="readonly='true'";}
 			else if(cliente.getServicio().equals("medida")) { opServicio = "SEO a medida";  claseMedida="class='liActive'"; }
-			htmlServicio = "			<li id='lite' "+claseLite+" data-follows='3' data-nofollows='5' onclick='guardarServicio(this)'>SEO Lite</li>";
-			htmlServicio += "			<li id='pro' "+clasePro+" data-follows='4' data-nofollows='10' onclick='guardarServicio(this)'>SEO Pro</li>";
-			htmlServicio += "			<li id='premium' "+clasePremium+" data-follows='6' data-nofollows='15' onclick='guardarServicio(this)'>SEO Premium</li>";
-			htmlServicio += "			<li id='medida' "+claseMedida+" data-follows='0' data-nofollows='0' onclick='guardarServicio(this)'>SEO a medida</li>";
+			htmlServicio = "			<li id='lite' "+claseLite+" data-follows='3' data-nofollows='5' "+onClickGuardarServicio+">SEO Lite</li>";
+			htmlServicio += "			<li id='pro' "+clasePro+" data-follows='4' data-nofollows='10' "+onClickGuardarServicio+">SEO Pro</li>";
+			htmlServicio += "			<li id='premium' "+clasePremium+" data-follows='6' data-nofollows='15' "+onClickGuardarServicio+">SEO Premium</li>";
+			htmlServicio += "			<li id='medida' "+claseMedida+" data-follows='0' data-nofollows='0' "+onClickGuardarServicio+"'>SEO a medida</li>";
 			//------------DESPLEGABLE COLUMNA USER-----------------
 			String opUser = cliente.getLinkbuilder();
 			String htmlUser = "",name="", claseUser="";
@@ -678,6 +751,11 @@ public class Data extends HttpServlet {
 			//-----------------------------------------------------
 			String blogChecked ="checked";
 			if(Integer.parseInt(cliente.getBlog())==0) blogChecked="";
+			
+			
+			
+			
+			
 
 			out.println("<tr id='"+id_cliente+"' posicion='"+c+"' class='pr'>");
 			out.println("	<td class='select_client'>");
@@ -688,14 +766,14 @@ public class Data extends HttpServlet {
 			out.println("	</td>");
 			//Columna WEB
 			out.println("	<td class='cCWebCliente'>");
-			out.println("		<input class='inLink' oninput='showGuardar()' type='text' onchange='guardarWebCliente(this)' value='"+cliente.getWeb()+"'>");
+			out.println("		<input class='inLink' "+onInputWebCliente+" type='text' "+onChangeWebCliente+" value='"+cliente.getWeb()+"'>");
 			out.println("   </td>");
 			//Columna NOMBRE
 			out.println("	<td class='cCNombre'>");
-			out.println("		<input class='inLink' oninput='showGuardar()' type='text' onchange='guardarNombreCliente(this)' value='"+cliente.getNombre()+"'>");
+			out.println("		<input class='inLink' "+onInputNombreCliente+" type='text' "+onChangeNombreCliente+" value='"+cliente.getNombre()+"'>");
 			out.println("	</td>");
 			//Columna SERVICIO
-			out.println("	<td class='cCTipo pr' onclick='openServicio(this)'>");
+			out.println("	<td class='cCTipo pr' "+onClickServicio+">");
 			out.println("		<div class='tdCat tdWeb'>");
 			out.println("			<span class='tdCat'>"+opServicio+"</span>");
 			out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
@@ -704,21 +782,21 @@ public class Data extends HttpServlet {
 			out.println("   </td>");
 			//Columna FOLLOW
 			out.println("	<td class='cFollow'>");
-			out.println("		<input class='inLink' oninput='showGuardar()' type='text' onchange='guardarFollows(this)' value='"+cliente.getFollows()+"' "+readonly+">");				
+			out.println("		<input class='inLink' "+onInputGuardar+" type='text' "+onChangeGuardarFollows+" value='"+cliente.getFollows()+"' "+readonly+">");				
 			out.println("   </td>");			
 			//Columna NOFOLLOW
 			out.println("   <td class='cNoFollow'>");
-			out.println("		<input class='inLink' oninput='showGuardar()' type='text' onchange='guardarNoFollows(this)' value='"+cliente.getNofollows()+"' "+readonly+">");	
+			out.println("		<input class='inLink' "+onInputGuardar+" type='text' "+onChangeGuardarNoFollows+" value='"+cliente.getNofollows()+"' "+readonly+">");	
 			out.println("	</td>");	
 			//Columna ANCHOR
 			out.println("	<td class='anchorC'>");
-			out.println("			<input type='text' oninput='showGuardar()' class='inLink' onchange='guardarAnchorCliente(this)' value='"+cliente.getAnchor()+"'>");
+			out.println("			<input type='text' "+onInputGuardar+" class='inLink' "+onChangeGuardarAnchor+" value='"+cliente.getAnchor()+"'>");
 			out.println("	</td>");
 			//Columna BLOG
 			out.println("	<td class='tdCat cCBlog pr'>");
 			out.println("		<div class='tdCat tdWeb ckBlog'>");
 			out.println("			<label  class='switch'>");
-			out.println("			<input class='slT' type='checkbox' onchange='guardarBlog(this)' "+blogChecked+">");
+			out.println("			<input class='slT' type='checkbox' "+onChangeGuardarBlog+" "+blogChecked+">");
 			out.println("			<span class='slider round'></span>");
 			out.println("			</label>");
 			out.println("		</div>");
@@ -726,28 +804,27 @@ public class Data extends HttpServlet {
 			//Columna IDIOMA
 			out.println("	<td class='tdCat cCIdioma'>");
 			out.println("		<div class='tdCat tdWeb'>");
-			out.println("			<input oninput='showGuardar()' class='inLink' type='text' onchange='guardarIdioma(this)' value='"+cliente.getIdioma()+"'>");				
+			out.println("			<input "+onInputGuardar+" class='inLink' type='text' "+onChangeGuardarIdioma+" value='"+cliente.getIdioma()+"'>");				
 			out.println("		</div>");
 			out.println("	</td>");
 			//Columna USER
-			out.println("	<td class='tdCat cCUser pr' onclick='opentUser(this)'>");
+			out.println("	<td class='tdCat cCUser pr' "+onClickOpenEmpleados+">");
 			out.println("		<div class='tdCat tdWeb'>");
 			out.println("			<span data-list-user='"+opUser+"' class='tdCat' type='text'>"+name+"</span>");	
 			out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
 			out.println("		</div>");
-			out.println("		<ul class='slCt effect7 pop_up'>"+htmlUser+"</ul>");
+			out.println("		<ul class='slCt effect7 pop_up'>"+listaEmpleados+"</ul>");
 			out.println("	</td>");
-			out.println("	<td class='tdCat cell_destino pr text_center' onclick='openDestinos(this)'>");
+			out.println("	<td class='tdCat cell_destino pr text_center' "+onClickOpenDestinos+">");
 			out.println("			<i class='material-icons inner_pop_up'> directions </i>");
 			out.println("			<div data-id='lista_destinos' class='div_destinos pop_up effect7 inner_pop_up pop_up_move2left  text_left' >");
 			out.println("				<div class='nuevo_destino inner_pop_up'>");
-			out.println("					<span class='inner_pop_up'>Destino: </span><input type='text' class='inLink inner_pop_up' value='' placeholder='Introduce una nueva url a atacar'><i onclick='addDestino(this)' class='material-icons inner_pop_up'>add</i>");
+			out.println("					<span class='inner_pop_up'>Destino: </span><input type='text' class='inLink inner_pop_up' value='' placeholder='Introduce una nueva url a atacar'><i "+onClickAddDestino+" class='material-icons inner_pop_up'>add</i>");
 			out.println("				</div>");
 			out.println("				<ul class='scroll_115 pdd_v_12 inner_pop_up'>");
 			for (String destino : cliente.getUrlsAAtacar()) {
-				out.println("				<li class='pdd_h_17 pr inner_pop_up' ><span>"+destino+"</span><i onclick='deleteDestino(this)' class='material-icons inner_pop_up'> remove </i></li>");
+				out.println("				<li class='pdd_h_17 pr inner_pop_up' ><span>"+destino+"</span><i "+onClickDeleteDestino+" class='material-icons inner_pop_up'> remove </i></li>");
 			}
-			
 			out.println("				</ul>");
 			out.println("			</div>");
 			out.println("		</td>");
