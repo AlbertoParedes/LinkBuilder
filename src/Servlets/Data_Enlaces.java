@@ -28,10 +28,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import Classes.Webservice;
-import Objects.Cliente;
+import Objects.Cliente2;
 import Objects.Resultado;
 import Objects.Gson.Categoria;
 import Objects.Gson.CategoriaGson;
+import Objects.Gson.Cliente;
 import Objects.Gson.ClienteGson;
 import Objects.Gson.Enlace;
 import Objects.Gson.Foro;
@@ -45,13 +46,12 @@ public class Data_Enlaces extends HttpServlet {
 
 	private Webservice ws = new Webservice();
 	private Cliente cliente = new Cliente();
-	private ArrayList<ForoGson> foros = new ArrayList<ForoGson>();
-	private ArrayList<Foro> forosDisponibles = new ArrayList<Foro>();
-	private ArrayList<TematicaGson> tematicas = new ArrayList<TematicaGson>();
-	private ArrayList<ClienteGson> clientes = new ArrayList<ClienteGson>();
-
+	
+	
 	private ArrayList<Enlace> enlaces =  new ArrayList<Enlace>();
-
+	private ArrayList<Foro> forosDisponibles = new ArrayList<Foro>();
+	
+	
 	public Data_Enlaces() {super();}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -91,7 +91,7 @@ public class Data_Enlaces extends HttpServlet {
 		if(metodo.equals("enlaces_SelectClient")) { 
 			try {selectClient(request, response, out,id_user, role);} catch (ParseException e) {}
 		}else if(metodo.equals("enlaces_CheckClients")) {
-			try {checkClients(request, response, out,id_user,role);} catch (ParseException e) {}
+			//try {checkClients(request, response, out,id_user,role);} catch (ParseException e) {}
 		}else if(metodo.equals("enlaces_ResultadosMes")) {
 			resultadosMes(request, response, out, role);
 		}else if(metodo.equals("guardarEnlaceResultado")) {
@@ -100,19 +100,25 @@ public class Data_Enlaces extends HttpServlet {
 			mostrarWebResultado(request, response, out);
 		}else if(metodo.equals("borrarCategoriaResultado")) {
 			borrarCategoriaResultado(request, response, out);
-		}else if(metodo.equals("cha")) {
-			guardarAnchor(request, response, out);
+		}else if(metodo.equals("enlaces_guradarDestino")) {
+			guradarDestino(request, response, out);
 		}else if(metodo.equals("guardarCategoriaResultado")) {
 			guardarCategoriaResultado(request, response, out);
 		}else if(metodo.equals("guardarWebResultado")) {
 			guardarWebResultado(request, response, out);
 		}else if(metodo.equalsIgnoreCase("enlaces_buscarMedio")) {
 			buscarMedio(request, response, out);
+		}else if(metodo.equals("enlaces_nuevoDestino")) {
+			nuevoDestino(request, response, out);
+		}else if(metodo.equals("enlaces_GuardarAnchor")) {
+			guardarAnchor(request, response, out);
 		}
 
 	}
 
+	
 	private void selectClient(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_empleado, String user_role) throws IOException, ParseException {
+		System.out.println();
 		String id_client = request.getParameter("id_client");
 		String fecha = request.getParameter("fecha");
 
@@ -127,30 +133,35 @@ public class Data_Enlaces extends HttpServlet {
 		String json = ws.getEnlaces(id_client,id_empleado+"", fecha ,"getEnlaces","enlaces.php");
 		json = json.replace("[[[", "[").replace("],[]]]", "]");
 		String[] jsonArray = json.split("],");
-		System.out.println(jsonArray[0]);
-		System.out.println(jsonArray[1]);
-		//System.out.println(json);
+		jsonArray[0]+="]";
+		jsonArray[1]+="]";
+		jsonArray[2] = jsonArray[2] .replace("[", "");
+		System.out.println(jsonArray[0]);//array de disponibilidad
+		System.out.println(jsonArray[1]);//array de enlaces
+		System.out.println(jsonArray[2]);//array de datos del cliente
+		System.out.println(jsonArray[3]);//array de datos del cliente
 
-		//parseamos las categorias
-		ArrayList<Foro> forosDisponibles = new Gson().fromJson(jsonArray[0]+"]", new TypeToken<List<Foro>>(){}.getType());
+		//parseamos los foros disponibles
+		ArrayList<Foro> forosDisponibles = new Gson().fromJson(jsonArray[0], new TypeToken<List<Foro>>(){}.getType());
 		this.forosDisponibles.clear();
 		this.forosDisponibles = forosDisponibles;
 
 		//parseamos los enlaces (resultados)
 		ArrayList<Enlace> enlaces = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(jsonArray[1], new TypeToken<List<Enlace>>(){}.getType());
 		for (Enlace e : enlaces) {
-
 			if(e.getDisponibilidad()==1) {
 				this.enlaces.clear();
 				this.enlaces = enlaces;
 				mostrarResultados(request, response, out, user_role);
 				break;
-			}else {
-				System.out.println("Estas bloqueado");
-			}
-
-
+			}else {System.out.println("Estas bloqueado");}
 		}
+		
+		//parseamos al cliente seleccionado
+		Gson gson = new Gson();
+		Cliente cliente = gson.fromJson(jsonArray[2], Cliente.class);
+		this.cliente = cliente;
+		
 
 		//obtenemos la disponibilidad del cliente clickado y los resultados de el
 		/*String json = ws.getClientById(id_client,user_role, "getClientById.php");
@@ -201,6 +212,8 @@ public class Data_Enlaces extends HttpServlet {
 
 	}
 
+	
+	
 	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out,String empleado_role) throws IOException, ParseException {
 		//obtenemosForos();
 		//int posicion = Integer.parseInt(request.getParameter("posicion"));
@@ -299,8 +312,8 @@ public class Data_Enlaces extends HttpServlet {
 
 		out.println("</div>");
 	}
-
-	private void checkClients(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user,String role) throws IOException, ParseException {
+	
+	/*private void checkClients(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user,String role) throws IOException, ParseException {
 		int id_client = Integer.parseInt(request.getParameter("id_client"));
 		//int id_cliente_before = Integer.parseInt(request.getParameter("id_cliente_before"));
 		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
@@ -344,8 +357,7 @@ public class Data_Enlaces extends HttpServlet {
 			out.println("</div>");
 			inicio++;
 		}
-	}
-
+	}*/
 	private void resultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String user_role) throws IOException {
 		int mes = Integer.parseInt(request.getParameter("mes"));
 		int year = Integer.parseInt(request.getParameter("year"));
@@ -358,8 +370,9 @@ public class Data_Enlaces extends HttpServlet {
 		}
 		String urlsAAtacarLi="";
 		for (int i = 0; i < enlaces.get(0).getUrlsAAtacar().size(); i++) {
-			urlsAAtacarLi += "<li class='pdd_h_17 pr inner_pop_up' ><span>"+enlaces.get(0).getUrlsAAtacar().get(i)+"</span></li>";
+			urlsAAtacarLi += "<li onclick='enlaces_guradarDestino(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+enlaces.get(0).getUrlsAAtacar().get(i)+"</span></li>";
 		}
+		
 
 		for (int i = 0; i < enlaces.size(); i++) {
 			Enlace e = enlaces.get(i);
@@ -420,17 +433,19 @@ public class Data_Enlaces extends HttpServlet {
 				out.println(			"<ul class='slWeb'></ul>");
 				out.println(		"</div>");
 				out.println("	</td>");
-
 				out.println("	<td class='tdCat cell_destino pr' onclick='openDestinos(this)'>");
-				//out.println("	<td class='cDest pr'  onclick='openDestinosEnlace(this)'>");//destinoooo
-				//out.println("		<input class='inLink' onchange='updateDestino(this)' oninput='saveClient(this)' type='text' value='"+e.getDestino()+"'>");
-				out.println("		<div data-id='lista_destinos' class='div_destinos pop_up effect7 pop_up_move2left'>");
-				out.println("			<ul class='scroll_115 pdd_v_12 inner_pop_up'>"+urlsAAtacarLi+"</ul>");
+				out.println("		<div class='tdCat tdWeb'>");
+				out.println("			<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>"+e.getDestino()+"</span>");
+				out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
 				out.println("		</div>");
+				out.println(		"<div class='div_enlaces_pop_up effect7 pop_up'>");
+				out.println(			"<i onclick='enlaces_guradarDestino(this)' class='material-icons crossReset'> clear </i>");
+				out.println(			"<div onclick='stopPropagation(this)' class='border_bottom_gris inner_pop_up' ><input class='inLink inner_pop_up input_search_medio' type='text'  onkeypress='enlaces_nuevoDestinoEnter(event,this)' placeholder='Nuevo destino'><i onclick='enlaces_nuevoDestino(this)' class='material-icons p_a add_destinos_enlace'>add</i></div>");
+				out.println(			"<ul class='slWeb pdd_v_10'>"+urlsAAtacarLi+"</ul>");
+				out.println(		"</div>");
 				out.println("	</td>");
 
-
-				out.println("	<td class='cAnchor'><input class='inLink' onchange='updateAnchor(this)' oninput='saveClient(this)' type='text' value='"+e.getAnchor()+"'></td>");
+				out.println("	<td class='cAnchor'><input class='inLink' onchange='guardarAnchor(this)' oninput='saveClient(this)' type='text' value='"+e.getAnchor()+"'></td>");
 				out.println("	<td tipo='"+tipo+"' class='cTipo'><i class='material-icons "+claseTipo+"'>link</i></td>");
 				out.println("</tr>");
 				/*}else {
@@ -453,7 +468,7 @@ public class Data_Enlaces extends HttpServlet {
 					out.println("	<td data-paid='beneficio' class='cPrecio'>"+beneficio+" &euro;</td>");
 					out.println("	<td data-paid='incremento' class='cPrecio'>"+div.intValue()+"%</td>");
 					out.println("	<td class='cDest'><input class='inLink' onchange='updateDestino(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getDestino()+"'></td>");
-					out.println("	<td class='cAnchor'><input class='inLink' onchange='updateAnchor(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getAnchor()+"'></td>");
+					out.println("	<td class='cAnchor'><input class='inLink' onchange='guardarAnchor(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getAnchor()+"'></td>");
 					out.println("	<td class='cLink'>");
 					out.println("		<input class='inLink' onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getEnlace()+"'>");
 					out.println("	</td>");
@@ -469,9 +484,7 @@ public class Data_Enlaces extends HttpServlet {
 	private void guardarEnlaceResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user) {
 		String link = request.getParameter("link");
 		System.out.println("Enlace a subir:  "+link);
-		String tipo = request.getParameter("tipo");
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
-		int posicion = Integer.parseInt(request.getParameter("posicion"));
 		int follows_done = Integer.parseInt(request.getParameter("follows_done"));
 		int nofollows_done = Integer.parseInt(request.getParameter("nofollows_done"));
 		int mes_js = Integer.parseInt(request.getParameter("mes"));
@@ -481,16 +494,21 @@ public class Data_Enlaces extends HttpServlet {
 		int mes = cal.get(Calendar.MONTH)+1;
 		int year = cal.get(Calendar.YEAR);
 
-		String json = ws.updateResultado(id_resultado+"", "enlace", link+"" , "updateResultado.php");
-		System.out.println("->"+json);
+		ws.updateResultado(id_resultado+"", "enlace", link+"" , "updateResultado.php");
 		ws.updateResultado(id_resultado+"", "hecho_por", id_user+"" , "updateResultado.php");
-		cliente.getResultados().get(posicion).setEnlace(link);
 
+		
 		if(mes==mes_js && year==year_js) {
-			cliente.setFollows_done(follows_done);
-			cliente.setNofollows_done(nofollows_done);
-			ws.updateCliente(cliente.getId_cliente()+"","follows_done",cliente.getFollows_done()+"","updateCliente.php");
-			ws.updateCliente(cliente.getId_cliente()+"","nofollows_done",cliente.getNofollows_done()+"","updateCliente.php");
+			
+			cliente.setFollowsDone(follows_done);
+			cliente.setNofollowsDone(nofollows_done);
+			
+			System.out.println(cliente.getFollows());
+			System.out.println(cliente.getNofollows());
+			ws.updateCliente(cliente.getIdCliente()+"","follows_done",cliente.getFollowsDone()+"","updateCliente.php");
+			ws.updateCliente(cliente.getIdCliente()+"","nofollows_done",cliente.getNofollowsDone()+"","updateCliente.php");
+			
+			
 		}
 
 		out.println("<div class='nameItem nameItem_select'>");
@@ -498,30 +516,17 @@ public class Data_Enlaces extends HttpServlet {
 		out.println("</div>");
 		out.println("<div class='dominioItem nameItem_select'>"+cliente.getWeb()+"</div>");
 
-		if(cliente.getFollows()-cliente.getFollows_done()==0) {
+		System.out.println(cliente.getFollows()-cliente.getFollowsDone()+"·");
+
+		
+		if(cliente.getFollows()-cliente.getFollowsDone()==0) {
 			out.println("<div class='noti notiPos'><i class='material-icons lf'>done</i></div>");
 		}else {
-			out.println("<div class='noti'>"+(cliente.getFollows()-cliente.getFollows_done())+"</div>");
+			out.println("<div class='noti'>"+(cliente.getFollows()-cliente.getFollowsDone())+"</div>");
 		}
 
 	}
 
-	//Alberto 
-	private void mostrarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
-
-		ordenarForosDisponiblesAlfabeticamente();
-		for (Foro f : forosDisponibles) {
-			if(idCategoria==0) {//si la categoria es 0 mostramos todos los enlaces 
-				out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"' onclick='guardarWebResultado(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
-
-			}else if(f.getCategoria()==idCategoria) {
-				out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"' onclick='guardarWebResultado(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
-
-			}
-		}
-		System.out.println();
-	}
 
 	private void borrarCategoriaResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
@@ -541,20 +546,6 @@ public class Data_Enlaces extends HttpServlet {
 		System.out.println("Insertado");
 
 	}
-	private void guardarAnchor(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-		String anchor = request.getParameter("anchor");
-		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
-		ws.updateResultado(id_resultado+"", "anchor", anchor+"" , "updateResultado.php");
-		//enlaces
-		/*for (int i = 0,j = cliente.getResultados().size()-1; i < cliente.getResultados().size(); i++, j--) {
-				if(cliente.getResultados().get(i).getId_resultado() == id_resultado) {
-					cliente.getResultados().get(i).setAnchor(anchor); i = cliente.getResultados().size();
-				}else if(cliente.getResultados().get(j).getId_resultado() == id_resultado) {
-					cliente.getResultados().get(j).setAnchor(anchor); i = cliente.getResultados().size();
-				}
-			}*/
-
-	}
 	private void guardarCategoriaResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
@@ -566,6 +557,21 @@ public class Data_Enlaces extends HttpServlet {
 		System.out.println("Insertado");
 	}
 
+	private void mostrarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
+
+		ordenarForosDisponiblesAlfabeticamente();
+		for (Foro f : forosDisponibles) {
+			if(idCategoria==0) {//si la categoria es 0 mostramos todos los enlaces 
+				out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"' onclick='guardarWebResultado(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
+
+			}else if(f.getCategoria()==idCategoria) {
+				out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"' onclick='guardarWebResultado(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
+
+			}
+		}
+		System.out.println();
+	}
 	private void guardarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		int id_categoria_tdCategoria = Integer.parseInt(request.getParameter("id_categoria_tdCategoria"));
 		
@@ -603,7 +609,6 @@ public class Data_Enlaces extends HttpServlet {
 		System.out.println("Insertado");
 
 	}
-	
 	private void buscarMedio(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String texto = request.getParameter("texto");
 		int id_categoria = Integer.parseInt(request.getParameter("id_categoria"));
@@ -615,6 +620,13 @@ public class Data_Enlaces extends HttpServlet {
 			}
 		}
 	}
+	private void guradarDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String destino = request.getParameter("destino");
+		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
+		ws.updateResultado(id_resultado+"", "destino", destino+"" , "updateResultado.php");
+		System.out.println("Insertado");
+
+	}
 
 	private void ordenarForosDisponiblesAlfabeticamente() {
 		Collections.sort(forosDisponibles, new Comparator<Foro>() {
@@ -625,4 +637,34 @@ public class Data_Enlaces extends HttpServlet {
 		});
 		
 	}
+
+	private void nuevoDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+		String url = request.getParameter("url");
+		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
+		
+		response.setContentType("application/json");
+	    out = response.getWriter();
+	    JSONObject obj = new JSONObject();
+	    String status="",text="";
+		
+		
+		if(url.startsWith("http://") || url.startsWith("https://")) {
+			ws.updateResultado(id_resultado+"", "destino", url+"" , "updateResultado.php");
+			status = "1";
+		}else {
+			status = "0";
+		}
+		obj.put("status", status);
+		out.print(obj);
+
+	}
+	private void guardarAnchor(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String anchor = request.getParameter("anchor");
+		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
+		ws.updateResultado(id_resultado+"", "anchor", anchor+"" , "updateResultado.php");
+		System.out.println("Insertado");
+	}
+
+	
+	
 }

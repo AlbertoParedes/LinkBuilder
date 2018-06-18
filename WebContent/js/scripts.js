@@ -1044,6 +1044,8 @@ function move2Left(x){
     
     if(retroceder<0){
     	$(x).children('div.pop_up').css('margin-left', retroceder+"px");
+    }else{
+    	
     }
 }
 

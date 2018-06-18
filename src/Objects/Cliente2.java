@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import Objects.Gson.ForoGson;
 
-public class Cliente {
+public class Cliente2 {
 	
 	private int id_cliente;
 	private String web;
@@ -25,10 +25,10 @@ public class Cliente {
 	private ArrayList <ForoGson> foros;
 	
 	
-	public Cliente() {
+	public Cliente2() {
 		super();
 	}
-	public Cliente(int id_cliente, String web, String nombre, String servicio, int follows, int nofollows,
+	public Cliente2(int id_cliente, String web, String nombre, String servicio, int follows, int nofollows,
 			String anchor, int blog, String idioma, int follows_done, int nofollows_done, String linkbuilder,
 			int editando,int enlaces_de_pago, ArrayList<Resultado> resultados, ArrayList<ForoGson> foros) {
 		super();

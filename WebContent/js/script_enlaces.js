@@ -13,7 +13,7 @@ function enlaces_SelectClient(id_client) {
 	}, function(responseText) {
 		
 		$('#uniqueClient').html(responseText);
-		
+		changeThemeC(id_client);
 		/*
 		var r = responseText.length;
 		if(r == 0){
@@ -45,7 +45,7 @@ function enlaces_SelectClient(id_client) {
 function guardarEnlaceResultado(x){
 	
 	var id_resultado = $(x).closest('tr').attr("id");
-	var posicion = $(x).closest('tr').attr("posicion");
+	//var posicion = $(x).closest('tr').attr("posicion");
 	var link = $(x).val();
 	var tipo = $("tr#"+id_resultado+" .cTipo").attr("tipo");
 	
@@ -61,14 +61,20 @@ function guardarEnlaceResultado(x){
 		var link_done = $(this).children(".cLink").children('input').val();
 		if(tipo=="follow" && link_done.trim()!=""){
 			follows_done++;
-		}else if(tipo=="follow" && link_done.trim()!=""){
+		}else if(tipo=="nofollow" && link_done.trim()!=""){
 			nofollows_done++;
 		}
 	});
+	
+	alert(follows_done+"    "+ nofollows_done);
+	
+	
+	
+	
 	$.post('Data_Enlaces', {
 		metodo : 'guardarEnlaceResultado',
 		id_resultado: id_resultado,
-		posicion: posicion,
+		//posicion: posicion,
 		link: link,
 		tipo: tipo,
 		follows_done: follows_done,
@@ -86,6 +92,10 @@ function guardarEnlaceResultado(x){
 			tipo.addClass("sPendiente");
 		}
 	});
+	
+	
+	
+	
 }
 function openCategoriaResultado(x){
 	$(".rotArrow").removeClass("rotArrow");
@@ -103,17 +113,55 @@ function openCategoriaResultado(x){
 }
 function openDestinos(x){
 	move2Left(x);
-    $(x).children('div.pop_up').addClass('visible');
+    //$(x).children('div.pop_up').addClass('visible');
+    
+    $(".rotArrow").removeClass("rotArrow");
+	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
+	var clase = $(x).closest('td').find('div.pop_up').attr("class");
+	$(".slCt").removeClass("visible");
+	$(".pop_up").removeClass("visible");
+	$(".slWeb").removeClass("visible");
+	if(!clase.includes("visible")){
+		$(x).children('div.pop_up').addClass('visible');
+		$(x).children('div').children('i').addClass("rotArrow");
+	}
+    
     
     //alert(position_width_tr + " - "+position_width_pop_up+ " = "+  retroceder);
+}
+function enlaces_nuevoDestino(x){
+	var id_resultado = $(x).closest('tr').attr("id");
+	var url = $(x).closest('div').children('input').val();
+	$.post('Data_Enlaces', {
+		metodo : 'enlaces_nuevoDestino',
+		id_resultado: id_resultado,
+		url: url
+	}, function(rt) {
+		if(rt.status=="0"){
+			alert("El destino debe contener http:// o https://");
+		}else{
+			$(x).closest('div').children('input').val("");
+			$(".slCt").removeClass("visible");
+			$(".pop_up").removeClass("visible");
+			$(".slWeb").removeClass("visible");
+			$(".rotArrow").removeClass("rotArrow");
+			$(x).closest('td').find('div.tdWeb span').text(url);
+		}
+	});
+}
+function enlaces_nuevoDestinoEnter(e,x){
+    var keycode = (e.keyCode ? e.keyCode : e.which);
+    if (keycode == '13') {
+    	enlaces_nuevoDestino(x);
+    }
 }
 function openWebResultado(x){
 	$(".rotArrow").removeClass("rotArrow");
 	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
 	var clase = $(x).closest('td').find('div.pop_up').attr("class");
-	$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
-	$(".slWeb").removeClass("visible");
+	$(".slCt").removeClass("visible");
 	$(".pop_up").removeClass("visible");
+	$(".slWeb").removeClass("visible");
 	if(!clase.includes("visible")){
 		var id_resultado = $(x).closest('tr').attr('id');
 		var id_categoria = $(x).closest('tr').find('td.cCateg div span[data-id-categoria]').attr('data-id-categoria');
@@ -163,17 +211,27 @@ function borrarCategoria(x){
 	
 }
 
-function updateAnchor(x){
-	var id_resultado = $(x).parent().parent().attr("id");
-	var anchor = $(x).val();
+function enlaces_guradarDestino(x){
+	var id_resultado = $(x).closest('tr').attr("id");
+	var destino = $(x).text();
 	
+	//combio en el span de mi td
+	$(x).closest('td').find('.tdWeb span').text(destino);
+	
+	//si se seleciona la X borraremos ese resultado de nuestra bbdd y de nuestro array
+	if(typeof $(x).attr('class') != 'undefined'){
+		if($(x).attr('class').includes('crossReset')){
+			$(x).closest('td').children('div').children('span').text('');
+			destino="";
+		}
+	}
+
 	$.post('Data_Enlaces', {
-		metodo : 'cha',
+		metodo : 'enlaces_guradarDestino',
 		id_resultado: id_resultado,
-		anchor: anchor,
+		destino: destino,
 	}, function (){
-		//quitamos la clase para que parezca que guardamos los datos
-		$("#cGuardar").removeClass('cSave');
+		
 	});
 }
 
@@ -296,3 +354,43 @@ function guardarWebResultado(x){
 	});
 	
 }
+function guardarAnchor(x){
+	var id_resultado = $(x).closest('tr').attr("id");
+	var anchor = $(x).val();
+	
+	$.post('Data_Enlaces', {
+		metodo : 'enlaces_GuardarAnchor',
+		id_resultado: id_resultado,
+		anchor: anchor,
+	}, function(responseText) {
+		$('#cGuardar').removeClass('cSave');
+	});
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

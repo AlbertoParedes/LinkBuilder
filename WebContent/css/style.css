@@ -159,7 +159,7 @@ input:checked + .slider:before {-webkit-transform: translateX(11px);-ms-transfor
 
 .effect7{position:relative;-webkit-box-shadow:0 10px 55px rgba(0, 0, 0, 0.1), 0 0 40px rgba(0, 0, 0, 0.0) inset;-moz-box-shadow:0 10px 55px rgba(0, 0, 0, 0.1), 0 0 40px rgba(0, 0, 0, 0.0) inset;box-shadow:0 10px 55px rgba(0, 0, 0, 0.1), 0 0 40px rgba(0, 0, 0, 0.0) inset;}
 
-.slCt{display: none;position: absolute;background: white;border: solid;width: 100%;list-style-type: none;border-width: 1px;border-color: #ececec;padding: 10px 15px;margin-top: 6px;margin-left: -7px;position: absolute;z-index: 2;}
+.slCt{display: none;position: absolute;background: white;border: solid;width: 100%;list-style-type: none;border-width: 1px;border-color: #ececec;padding: 10px 15px;margin-top: 6px;margin-left: -7px!important;position: absolute;z-index: 2;}
 
 .visible{display: block;}
 .slCt li {padding-top: 5px;font-family: gotham, helvetica, arial, sans-serif;font-size: 12px;cursor: pointer;color: #878787;
@@ -198,10 +198,10 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 .arrow{position: absolute;right: 0;}
 
 .cStatus{ width: 35px;}
-.cLink{ width: 33%;}
-.cDest{width: 8%;}
+.cLink{ width: 25%;}
+.cDest{width: 18%;}
 .cAnchor{width: 12%;}
-.cWeb{width: 27%;}
+.cWeb{width: 18%;}
 .cTipo{ width: 50px; min-width: 50px;   text-align: center;}
 .cCateg{width: 210px;max-width: 210px;}
 .pa{position: absolute;background: white;    z-index: 1;    top: 0;}
@@ -754,12 +754,14 @@ input[type=number]::-webkit-outer-spin-button {
 ul{list-style-type: none;margin: 0px!important;}
 
 .div_destinos{
-	width: 500px;
+	width: auto;
 	display: none;
 	background: white;
 	position: absolute;
     z-index: 7;
     border: 1px solid #ececec;
+    min-width: 350px;
+    max-width: 500px;
 }
 
 .nuevo_destino{     min-width: 300px;
@@ -796,14 +798,19 @@ ul{list-style-type: none;margin: 0px!important;}
 .pdd_h_17{
 	padding: 0 17px;
 }
-/*  Paddings ----------------------------*/
+.pdd_v_10{    
+	padding: 10px 0px;
+}
+/*----------------------------*/
 .scroll_115{
 	max-height: 115px;
     overflow: hidden;
     overflow-y: scroll;
 }
 
-.nuevo_destino input{width: auto;}
+.right_15{right: 15px;}
+
+.nuevo_destino input{width: 230px;}
 .nuevo_destino input::placeholder{color: #ababab;}
 .nuevo_destino i {float: right;}
 
@@ -820,13 +827,12 @@ ul{list-style-type: none;margin: 0px!important;}
 
 /* The actual info_div */
 .pop_up_move2left {
-	top: calc(100% + 13px);
-	border: 1px solid #d9d9d9;
-    border-radius: 6px;
+	top: 100%;
+	border: 1px solid #ececec;
 }
 
 /* info_div arrow */
-.pop_up_move2left::before {
+/*.pop_up_move2left::before {
     content: "";
     position: absolute;
     bottom: calc(100% + -6px);
@@ -839,24 +845,9 @@ ul{list-style-type: none;margin: 0px!important;}
     background: white;
     transform: rotate(45deg);
 }
+*/
 
 
-/*td::after {
-	
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: transparent #d9d9d9 #d9d9d9 transparent;
-    width: 10px;
-    height: 10px;
-    background: white;
-    transform: rotate(45deg);
-    margin-top: -6px;
-}*/
 
 .input_search_medio{width: calc(100% - 39px);height: 40px;}
 
@@ -891,6 +882,44 @@ ul{list-style-type: none;margin: 0px!important;}
 
 }
 .pop_up li:hover{color:#4688F1}
+
+.prueba2::before{
+	content: "";
+    position: absolute;
+    bottom: -1px;
+    left: -3px;
+    right: -3px;
+    height: 1px;
+    /* background-image: -webkit-gradient(linear, 0 0, 100% 0, from(#000), to(transparent), from(transparent), to(red)); */
+    background-image: -webkit-linear-gradient(left,transparent, #4688F1, transparent);
+    background-image: -moz-linear-gradient(left, #000, transparent);
+    background-image: -o-linear-gradient(left, #000, transparent);
+
+}
+.prueba2::after {
+	
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent #4688F1 #4688F1 transparent;
+    width: 10px;
+    height: 10px;
+    background: white;
+    transform: rotate(45deg);
+    margin-top: -6px;
+}
+
+.add_destinos_enlace{right: 15px;
+    font-size: 22px;
+    top: 14px;}
+.add_destinos_enlace:hover{ color:#0f9d58}
+
+.text_center{text-align: center;}
+.text_left{text-align: left!important;} 
 
 .visible{display: block!important;-webkit-animation: fadeIn 1s;
     animation: fadeIn 1s;}

@@ -35,7 +35,7 @@ import com.google.gson.reflect.TypeToken;
 import Classes.ReadFactura;
 import Classes.Webservice;
 import Objects.CategoriaObjeto;
-import Objects.Cliente;
+import Objects.Cliente2;
 import Objects.Enlace;
 import Objects.Foro2;
 import Objects.Resultado;
@@ -56,7 +56,7 @@ public class Data extends HttpServlet {
 	Webservice ws = new Webservice();
 
 	private ArrayList<ClienteGson> clientes = new ArrayList<ClienteGson>();
-	private Cliente cliente = new Cliente();
+	private Cliente2 cliente = new Cliente2();
 	private ArrayList<ForoGson> foros = new ArrayList<ForoGson>();
 	public static ArrayList<CategoriaGson> categorias = new ArrayList<CategoriaGson>();
 	private ArrayList<TematicaGson> tematicas = new ArrayList<TematicaGson>();
@@ -737,9 +737,9 @@ public class Data extends HttpServlet {
 			out.println("		</div>");
 			out.println("		<ul class='slCt effect7 pop_up'>"+htmlUser+"</ul>");
 			out.println("	</td>");
-			out.println("	<td class='tdCat cell_destino pr' onclick='openDestinos(this)'>");
+			out.println("	<td class='tdCat cell_destino pr text_center' onclick='openDestinos(this)'>");
 			out.println("			<i class='material-icons inner_pop_up'> directions </i>");
-			out.println("			<div data-id='lista_destinos' class='div_destinos pop_up effect7 inner_pop_up pop_up_move2left' >");
+			out.println("			<div data-id='lista_destinos' class='div_destinos pop_up effect7 inner_pop_up pop_up_move2left  text_left' >");
 			out.println("				<div class='nuevo_destino inner_pop_up'>");
 			out.println("					<span class='inner_pop_up'>Destino: </span><input type='text' class='inLink inner_pop_up' value='' placeholder='Introduce una nueva url a atacar'><i onclick='addDestino(this)' class='material-icons inner_pop_up'>add</i>");
 			out.println("				</div>");
