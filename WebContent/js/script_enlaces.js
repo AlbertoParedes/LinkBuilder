@@ -66,11 +66,6 @@ function guardarEnlaceResultado(x){
 		}
 	});
 	
-	alert(follows_done+"    "+ nofollows_done);
-	
-	
-	
-	
 	$.post('Data_Enlaces', {
 		metodo : 'guardarEnlaceResultado',
 		id_resultado: id_resultado,
@@ -273,6 +268,7 @@ function saveClient(x){
 //caundo cambiamos el mes se cambiará la tabla
 function changeMonth(){
 	var mes = $(".picker .pick-m .pick-sl").val();
+	mes = mes <10 ? "0"+mes : mes;
 	var year = $(".picker .pick-y .pick-sl").val();
 
 	$.post('Data_Enlaces', {

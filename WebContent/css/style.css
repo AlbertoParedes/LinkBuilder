@@ -218,7 +218,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 #tClientes td{white-space: nowrap;overflow: visible;}
 .tdWeb{    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;padding-right: 25px;}
+    text-overflow: ellipsis; margin-right: 25px;}
 
 
 .divAcortar{
@@ -920,6 +920,8 @@ ul{list-style-type: none;margin: 0px!important;}
 
 .text_center{text-align: center;}
 .text_left{text-align: left!important;} 
+
+.goLink:hover{color:#4688F1}
 
 .visible{display: block!important;-webkit-animation: fadeIn 1s;
     animation: fadeIn 1s;}
