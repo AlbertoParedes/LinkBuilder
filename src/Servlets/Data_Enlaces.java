@@ -489,7 +489,8 @@ public class Data_Enlaces extends HttpServlet {
 		out.println("<span  data-id-foro='"+id_foro+"' data-posicion-foro='-1' data-id-categoria='"+id_categoria+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb goLink'>"+medio+"</span>");
 		out.println("<i class='material-icons arrow'>arrow_drop_down</i>");
 		if(id_foro>0) {
-		out.println("<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>"); 
+		out.println("<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>");
+		System.out.println("->"+forosDisponibles.get(posicion_foro).getDescripcion());
 		}
 		
 		if(posicion_foro!=-1) forosDisponibles.remove(posicion_foro);
