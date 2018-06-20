@@ -515,15 +515,15 @@ public class Data extends HttpServlet {
 				if(c.getEditando()==1 /*&& c.getIdCliente()!=id_client*/) {clases="itemChild blur";clases2="blockClient visible";}
 				else {clases ="itemChild";clases2="blockClient";}
 
-				out.println("<div id='"+c.getIdCliente()+"' onclick='enlaces_SelectClient(this.id)' class='item'>");
+				out.println("<div id='"+c.getIdCliente()+"' onclick='enlaces_SelectClient(this.id, this)' class='item'>");
 				if(inicio!=0) {
 					out.println(	"<div class='line'></div>");
 				}
 				out.println(		"<div class='"+clases+"'>");
-				out.println(			"<div class='nameItem'>");
-				out.println(				"<span class='nameItem sName' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  >"+c.getNombre()+"</span>");
+				out.println(			"<div class='dominioItem'>");
+				out.println(				"<span class='dominioItem' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  >"+c.getWeb()+"</span>");
 				out.println(			"</div>");
-				out.println(			"<div class='dominioItem'>"+c.getWeb()+"</div>");
+				out.println(			"<div class='nameItem sName'>"+c.getNombre()+"</div>");
 				if(c.getEditando()==0 /*|| c.getIdCliente() == id_client*/) {
 					if(c.getFollows()-c.getFollowsDone()==0) {
 						out.println("<div class='noti notiPos'><i class='material-icons lf'>done</i></div>");
@@ -533,6 +533,14 @@ public class Data extends HttpServlet {
 				}	
 				out.println(		"</div>");
 				out.println("	<div class='"+clases2+"'><div class='lockDiv'><i class='material-icons lf blur'> lock </i></div></div>");
+				String blocked="";
+				blocked = "						<div class='popup effect7'>"
+				+ "							<div class='pr pd_left_30'><div class='divStatus sOK p_a p_cicles'></div>Existe</div>"
+				+ "							<div class='pr pd_left_30'><div class='divStatus s_nuevo_opciones p_a p_cicles'></div>Nuevo</div>"
+				+ "							<div class='pr pd_left_30'><div class='divStatus s_pendiente_opciones p_a p_cicles'></div>Coincidencias</div>"
+				+ "						</div>";
+				
+				out.println(blocked);
 				out.println("</div>");
 				inicio++;
 

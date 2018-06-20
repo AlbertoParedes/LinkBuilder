@@ -80,6 +80,24 @@ public class Enlace {
 	@SerializedName("web_foro")
 	@Expose
 	private String webForo;
+	
+	@SerializedName("UserEditando")
+	@Expose
+	private String userEditando;
+	
+	@SerializedName("DescripcionForo")
+	@Expose
+	private String descripcionForo;
+	
+	
+
+	public String getDescripcionForo() {
+		return descripcionForo;
+	}
+
+	public void setDescripcionForo(String descripcionForo) {
+		this.descripcionForo = descripcionForo;
+	}
 
 	public int getDisponibilidad() {
 		return disponibilidad;
@@ -238,6 +256,14 @@ public class Enlace {
 
 	public void setWebForo(String webForo) {
 		this.webForo = webForo;
+	}
+
+	public String getUserEditando() {
+		return userEditando;
+	}
+
+	public void setUserEditando(String userEditando) {
+		this.userEditando = userEditando;
 	}
 	
 	

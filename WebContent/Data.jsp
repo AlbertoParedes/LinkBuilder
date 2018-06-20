@@ -74,13 +74,13 @@
 					<!-- lkc = listKeywordsClient -->
 					<div id="lstC" class="listItems">
 						<% for (int i = 0; i < clientes.size(); i++){%>
-							<div id="<%=clientes.get(i).getIdCliente()%>" onclick="enlaces_SelectClient(this.id)" class="item">
+							<div id="<%=clientes.get(i).getIdCliente()%>" onclick="enlaces_SelectClient(this.id, this)" class="item">
 								<%if(i!=0){ %><div class="line"></div><%}%>
 								<div class="itemChild <%if(clientes.get(i).getEditando()==1){%>blur<%}%>">
-									<div class="nameItem">
-										<span class="nameItem sName" onmouseover="viewCampo(this)" onmouseout="restartCampo(this)" ><%= clientes.get(i).getNombre() %></span>
+									<div class="dominioItem">
+										<span class="dominioItem" onmouseover="viewCampo(this)" onmouseout="restartCampo(this)" ><%= clientes.get(i).getWeb() %></span>
 									</div>
-									<div class="dominioItem"><%= clientes.get(i).getWeb() %></div>
+									<div class="nameItem sName"><%= clientes.get(i).getNombre() %></div>
 									<%if(clientes.get(i).getEditando()==0){%>
 										<%if(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() == 0){%>
 											<div class="noti notiPos"><i class="material-icons lf">done</i></div>
@@ -91,6 +91,12 @@
 									<%}%>
 								</div>
 								<div class="blockClient <%if(clientes.get(i).getEditando()==1){%>visible<%}%>"><div class="lockDiv"><i class="material-icons lf blur"> lock </i></div></div>
+								<div class='pop_up_info_blocked'>
+									<div class="msg_blocked">Editando cliente por</div>
+    								<div class="msg_name_blocked">Guillermo</div>
+    								<div class="lockDiv"><i class="material-icons lf"> lock </i></div>
+    								<div class="lockDiv" style="left:23px;"><i class="material-icons lf"> lock </i></div>
+								</div>
 							</div>
 						<% }%>
 						

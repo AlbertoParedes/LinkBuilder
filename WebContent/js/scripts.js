@@ -343,7 +343,7 @@ function guardarWebForo(x){
 
 //--CAMPO TIPO-------------------------------------------
 function openTipo(x){
-	$(".rotArrow").removeClass("rotArrow");
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
 	var ul = $(x).children('ul');
 	$(ul).addClass('visible');	
@@ -383,7 +383,7 @@ function guardarDA(x){
 }
 //--CAMPO TEMATICA----------------------------------------
 function openTematica(x){
-	$(".rotArrow").removeClass("rotArrow");
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	var ul = $(x).children('ul');
 	// si el ul ya es visible lo cerramos
 	if($(ul).attr('class').includes("visible")){
@@ -440,7 +440,7 @@ function guardarTematica(x){
 //--CAMPO REUTILIZABLE----------------------------------
 function openReutilizable(x){
 	
-	$(".rotArrow").removeClass("rotArrow");
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	var ul = $(x).children('ul');
 	
 	if($(ul).attr('class').includes("visible")){
@@ -474,7 +474,7 @@ function guardarReutilizable(x){
 //--CAMPO DESCRIPCION:---------------------------------
 var editando = 0;
 function openDescripcion(x){
-	if(editando==0)$(".rotArrow").removeClass("rotArrow");
+	if(editando==0)$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	var textarea = $(x).children('.taWeb');
 
 	if($(textarea).attr('class').includes("visible")){
@@ -516,7 +516,7 @@ function openRequiere(x){
 	var ul = $(x).children('ul');
 	//cerrar las ventanitas que esten abiertas
 	$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
-	$(".rotArrow").removeClass("rotArrow");
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	$(ul).addClass("visible");
 }
 function guardarRequiere(x){
@@ -678,7 +678,7 @@ function guardarWebCliente(x){
 		guardarValoresCliente(id_cliente,campo,valor);
 }
 function openServicio(x){
-	$(".rotArrow").removeClass("rotArrow");
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	if(!$(x).find("ul").attr('class').includes("visible")){
 		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
 		$(".slT").removeClass("visible");
@@ -694,7 +694,7 @@ function openServicio(x){
 function opentUser(x){
 	
 	
-	$(".rotArrow").removeClass("rotArrow");
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	if(!$(x).find("ul").attr('class').includes("visible")){
 		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
 		$(".slT").removeClass("visible");
@@ -1071,7 +1071,7 @@ window.addEventListener('click', function(e){
 	}else if(clase.includes("inner_pop_up")){
 		//ignorar click dentro del popup
 	}else {
-		$(".rotArrow").removeClass("rotArrow");
+		$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
 		$('.paid_inputs').removeClass('open_inputs');
 		

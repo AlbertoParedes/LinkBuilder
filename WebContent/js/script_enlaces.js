@@ -1,4 +1,5 @@
-function enlaces_SelectClient(id_client) {
+
+function enlaces_SelectClient(id_client,x) {
 	
 	var id_cliente_before = "";
 	var mes = $('.datedropper .picker [data-k="m"] .pick-sl').val();
@@ -10,34 +11,24 @@ function enlaces_SelectClient(id_client) {
 		metodo : "enlaces_SelectClient",
 		id_client : id_client,
 		fecha : fecha
-	}, function(responseText) {
+	}, function(response) {
 		
-		$('#uniqueClient').html(responseText);
-		changeThemeC(id_client);
-		/*
-		var r = responseText.length;
-		if(r == 0){
-			alert("Esta bloqueado");
-			id_cliente_before = $('#lstC div.item_select').attr('id');
-		}else{
-			//si el cliente selecionado esta disponible 
-			$('#uniqueClient').html(responseText);
-			id_cliente_before = id_client;
+		if(response.blocked=="1"){
+			
+			$(x).children('.pop_up_info_blocked').children('.msg_name_blocked').text(response.userEditando);
+			$(x).children('.pop_up_info_blocked').addClass("fadeIn");
+			
+			setTimeout(function () {
+				$(x).children('.pop_up_info_blocked').removeClass("fadeIn");
+		    }, 5000);
+
+		}else if(response.blocked=="0"){
+			$('#uniqueClient').html(response.html);
 			changeThemeC(id_client);
 		}
 		
-		//Comprobamos otra vez la disponibiladad de todos los clientes
-		$.post('Data_Enlaces', {
-			metodo : "enlaces_CheckClients",
-			id_client : id_client,
-			id_cliente_before: id_cliente_before
-		}, function(responseText) {
-			//actualizamos la lsita de clientes 
-			$('#lstC').html(responseText);
-			changeThemeC(id_cliente_before);
-		});
 		
-		*/
+		
 	});
 }
 
@@ -93,7 +84,7 @@ function guardarEnlaceResultado(x){
 	
 }
 function openCategoriaResultado(x){
-	$(".rotArrow").removeClass("rotArrow");
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	//comprobamos si se ha hecho otro click sobre esta misma categoria para cerrar el ul
 	var clase = $(x).children('ul').attr("class");
 	$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
@@ -110,7 +101,7 @@ function openDestinos(x){
 	move2Left(x);
     //$(x).children('div.pop_up').addClass('visible');
     
-    $(".rotArrow").removeClass("rotArrow");
+    $(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
 	var clase = $(x).closest('td').find('div.pop_up').attr("class");
 	$(".slCt").removeClass("visible");
@@ -139,7 +130,7 @@ function enlaces_nuevoDestino(x){
 			$(".slCt").removeClass("visible");
 			$(".pop_up").removeClass("visible");
 			$(".slWeb").removeClass("visible");
-			$(".rotArrow").removeClass("rotArrow");
+			$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 			$(x).closest('td').find('div.tdWeb span').text(url);
 		}
 	});
@@ -151,7 +142,7 @@ function enlaces_nuevoDestinoEnter(e,x){
     }
 }
 function openWebResultado(x){
-	$(".rotArrow").removeClass("rotArrow");
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
 	var clase = $(x).closest('td').find('div.pop_up').attr("class");
 	$(".slCt").removeClass("visible");
@@ -169,7 +160,7 @@ function openWebResultado(x){
 				$(x).find('div.pop_up ul').html(responseText);
 				$(x).find('div.pop_up').addClass("visible");
 				//modificamos la flecha 
-				$(x).children('div').children('i').addClass("rotArrow");
+				$(x).children('div').children('i.arrow').addClass("rotArrow");
 				
 			});
 		//}
@@ -362,6 +353,24 @@ function guardarAnchor(x){
 		$('#cGuardar').removeClass('cSave');
 	});
 	
+}
+
+function enlace_openDescription(x){
+	
+	
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
+	//comprobamos si se ha hecho otro click sobre esta misma categoria para cerrar el ul
+	var clase = $(x).children('ul').attr("class");
+	$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+	$(".slWeb").removeClass("visible");
+	
+	stopPropagation();
+	$(x).addClass("lf");
+	
+	var textarea = $(x).closest('td').children('.div_enlaces_descripcion_pop_up');
+	
+	$(textarea).addClass('visible');
+	resizeta(textarea,1);
 }
 
 
