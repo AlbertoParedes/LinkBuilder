@@ -50,52 +50,54 @@ public class Data_Enlaces extends HttpServlet {
 
 	private ArrayList<Enlace> enlaces =  new ArrayList<Enlace>();
 	private ArrayList<Foro> forosDisponibles = new ArrayList<Foro>();
+	private ArrayList<ClienteGson> clientes = new ArrayList<ClienteGson>();
+
 
 
 	public Data_Enlaces() {super();}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		int id_user = Integer.parseInt(session.getAttribute("id_user").toString());
-		String role = session.getAttribute("role_user").toString();
-
-		//revisar codigooooooooo-----------------------------------------------------
-		//ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
+		int id_empleado = Integer.parseInt(session.getAttribute("id_user").toString());
+		String nick_empleado = session.getAttribute("name_user").toString();
+		String role_empleado = session.getAttribute("role_user").toString();
 
 
-		/*
+		System.out.println("Metodo get");
 		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
-		String json = ws.getClientsByUser("["+id_user+"]", role, "getClientsByUser.php");
+		String json = ws.getClientsByUser("["+id_empleado+"]", role_empleado, "getClientsByUser.php");
 		System.out.println(json);
-		Gson gson = new Gson();
-		ArrayList<ClienteGson> clientesGson = gson.fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
+		ArrayList<ClienteGson> clientesGson = new Gson().fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
 		this.clientes.clear();
 		this.clientes = clientesGson;
 
-		//obtenemos las tematicas
-		json = ws.getJSON("getTematica.php");
-		gson = new Gson();
-		ArrayList<TematicaGson> tematicasGson = gson.fromJson(json, new TypeToken<List<TematicaGson>>(){}.getType());
-		this.tematicas = tematicasGson;
+		String f = nick_empleado.substring(0, 1).toUpperCase();nick_empleado = f + nick_empleado.substring(1,nick_empleado.length()).toLowerCase();
 
-		obtenemosCategorias();
-		obtenemosForos();
-		//revisar codigooooooooo-----------------------------------------------------////////////////////////////////////
-		 */
+		request.setAttribute("clientes", clientesGson);//pasamos la lista de clientes
+		request.setAttribute("name_user", nick_empleado);
+
+		request.getRequestDispatcher("Data.jsp").forward(request, response);
+		//doPost(request,response);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		int id_empleado = Integer.parseInt(session.getAttribute("id_user").toString());
+		String nick_empleado = session.getAttribute("name_user").toString();
+		String role_empleado = session.getAttribute("role_user").toString();
 
 		String metodo = request.getParameter("metodo");
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 
 		if(metodo.equals("enlaces_SelectClient")) { 
-			try {selectClient(request, response, out,id_user, role);} catch (ParseException e) {}
+			try {selectClient(request, response, out,id_empleado, role_empleado);} catch (ParseException e) {}
 		}else if(metodo.equals("enlaces_CheckClients")) {
 			//try {checkClients(request, response, out,id_user,role);} catch (ParseException e) {}
 		}else if(metodo.equals("enlaces_ResultadosMes")) {
-			resultadosMes(request, response, out, role);
+			resultadosMes(request, response, out, role_empleado);
 		}else if(metodo.equals("guardarEnlaceResultado")) {
-			guardarEnlaceResultado(request, response, out,id_user);
+			guardarEnlaceResultado(request, response, out,id_empleado);
 		}else if(metodo.equals("mostrarWebResultado")) {
 			mostrarWebResultado(request, response, out);
 		}else if(metodo.equals("borrarCategoriaResultado")) {
@@ -112,10 +114,11 @@ public class Data_Enlaces extends HttpServlet {
 			nuevoDestino(request, response, out);
 		}else if(metodo.equals("enlaces_GuardarAnchor")) {
 			guardarAnchor(request, response, out);
+		}else if(metodo.equals("enlaces_BuscarCliente")) {
+			buscarCliente(request, response, out);
 		}
 
 	}
-
 
 	private void selectClient(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_empleado, String user_role) throws IOException, ParseException {
 		System.out.println();
@@ -134,13 +137,13 @@ public class Data_Enlaces extends HttpServlet {
 		System.out.println(json);
 		String[] jsonArray = json.split(";;");
 		System.out.println("0- "+jsonArray[0]);//array de enlaces
-		
+
 
 		response.setContentType("application/json");
 		out = response.getWriter();
 		JSONObject obj = new JSONObject();
 		String blocked="",userEditando="";
-		
+
 		int disponibilidad=0;
 		//parseamos los enlaces (resultados)
 		ArrayList<Enlace> enlaces = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(jsonArray[0], new TypeToken<List<Enlace>>(){}.getType());
@@ -150,37 +153,37 @@ public class Data_Enlaces extends HttpServlet {
 			System.out.println("1- "+jsonArray[1]);//array de foros
 			System.out.println("2- "+jsonArray[2].substring(1, jsonArray[2].length()-1));//array de datos del cliente
 			//System.out.println("3- "+jsonArray[3]);//array de datos del cliente 
-			
+
 			//parseamos los foros disponibles
 			ArrayList<Foro> forosDisponibles = new Gson().fromJson(jsonArray[1], new TypeToken<List<Foro>>(){}.getType());
 			this.forosDisponibles.clear();
 			this.forosDisponibles = forosDisponibles;
-			
+
 			this.enlaces.clear();
 			this.enlaces = enlaces;
 			//parseamos al cliente seleccionado
 			Cliente cliente = new Gson().fromJson(jsonArray[2].substring(1, jsonArray[2].length()-1), Cliente.class);
 			this.cliente = cliente;
-			
+
 			mostrarResultados(request, response, out, user_role, obj);
 
-			
-			
+
+
 		}else {
-			
+
 			blocked="1";
-			
+
 			obj.put("blocked", blocked);
 			obj.put("userEditando", userEditando);
 			out.print(obj);
-			
+
 			System.out.println("Estas bloqueado por "+userEditando);
 		}
-		
-		
-		
 
-		
+
+
+
+
 
 	}
 
@@ -202,7 +205,7 @@ public class Data_Enlaces extends HttpServlet {
 
 		//out = response.getWriter();
 		String html="",blocked="0";
-		
+
 		html+="<div class='infoClient'>";
 		html+="	<div class='nameClient'>"+cliente.getWeb()+"</div>";
 		html+="	<div class='urlClient'>"+cliente.getNombre()+"</div>";
@@ -229,12 +232,12 @@ public class Data_Enlaces extends HttpServlet {
 		html+="	</div>";
 
 		html+="</div>";
-		
+
 
 		obj.put("blocked", blocked);
 		obj.put("html", html);
 		out.print(obj);
-		
+
 	}
 
 	private void resultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String user_role) throws IOException {
@@ -254,7 +257,7 @@ public class Data_Enlaces extends HttpServlet {
 			String json = ws.getEnlaces(cliente.getIdCliente()+"", year+"-"+mes ,"","getEnlacesAnteriores","enlaces.php");
 			System.out.println(json);
 			String[] jsonArray = json.split(";;");
-			
+
 			//Esto es irrelevante, en un futuro hacer mas pruebas y ver si conviene quitar esta peticion 
 			ArrayList<Foro> forosDisponibles = new Gson().fromJson(jsonArray[0], new TypeToken<List<Foro>>(){}.getType());
 			this.forosDisponibles.clear();
@@ -264,7 +267,7 @@ public class Data_Enlaces extends HttpServlet {
 			ArrayList<Enlace> enlaces = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(jsonArray[1], new TypeToken<List<Enlace>>(){}.getType());
 			this.enlaces.clear();
 			this.enlaces = enlaces;
-			
+
 		}
 
 
@@ -275,7 +278,7 @@ public class Data_Enlaces extends HttpServlet {
 		}
 
 		ordenarEnlacesTipoAlfabeticamente();
-		
+
 		for (int i = 0; i < enlaces.size(); i++) {
 			Enlace e = enlaces.get(i);
 			int id_resultado = Integer.parseInt(e.getIdResultado());
@@ -300,7 +303,7 @@ public class Data_Enlaces extends HttpServlet {
 			//lista de categorias-----------------------------
 			String nameCategoria = "Selecciona una categor&iacute;a";
 			if(e.getCategoria()!=0)nameCategoria = e.getNombreCategoria(); 
-			
+
 			String botonDescripcion="";
 			if(!e.getDescripcionForo().trim().equals("")) {
 				botonDescripcion="<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>";
@@ -309,7 +312,7 @@ public class Data_Enlaces extends HttpServlet {
 			//TABLA----------------------
 			out.println("<tr id='"+id_resultado+"' posicion='"+i+"'>");
 			out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");
-			
+
 			out.println("	<td class='tdCat cell_destino pr' onclick='openDestinos(this)'>");
 			out.println("		<div class='tdCat tdWeb'>");
 			out.println("			<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>"+e.getDestino()+"</span>");
@@ -321,7 +324,7 @@ public class Data_Enlaces extends HttpServlet {
 			out.println(			"<ul class='slWeb pdd_v_10'>"+urlsAAtacarLi+"</ul>");
 			out.println(		"</div>");
 			out.println("	</td>"); 
-			
+
 			out.println("	<td class='tdCat cCateg pr' onclick='openCategoriaResultado(this)'>");
 			out.println("		<div class='tdCat'>");
 			out.println("			<span class='tdCat' data-id-categoria='"+e.getCategoria()+"'>"+nameCategoria+"</span>");
@@ -340,11 +343,11 @@ public class Data_Enlaces extends HttpServlet {
 			out.println(			"<div onclick='stopPropagation(this)' class='border_bottom_gris inner_pop_up' ><input class='inLink inner_pop_up input_search_medio' type='text' oninput='buscarMedio(this)' placeholder='Busca un medio'><i class='material-icons p_a lupa_medios'>search</i></div>");
 			out.println(			"<ul class='slWeb'></ul>");
 			out.println(		"</div>");
-			out.println("		<textarea class='div_enlaces_pop_up pop_up effect7 div_enlaces_descripcion_pop_up'  wrap='hard' onclick='stopPropagation()'>");
+			out.println("		<textarea class='div_enlaces_pop_up pop_up effect7 div_enlaces_descripcion_pop_up'  wrap='hard' onclick='stopPropagation()' readonly>");
 			out.println(			e.getDescripcionForo().trim().replace("<", "&lt;").replace(">", "&gt;"));
 			out.println(		"</textarea>");
 			out.println("	</td>");
-			
+
 			out.println("	<td class='cLink'>");
 			out.println("		<input class='inLink' onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)' type='text' value='"+e.getEnlace()+"'>");
 			out.println("	</td>");
@@ -434,6 +437,7 @@ public class Data_Enlaces extends HttpServlet {
 		int id_foro_anterior = Integer.parseInt(request.getParameter("id_foro_anterior"));
 		int categoria_foro_anterior = Integer.parseInt(request.getParameter("categoria_foro_anterior"));
 		String medio_anterior = request.getParameter("medio_anterior");
+		String descripcion_foro_anterior = request.getParameter("descripcion_foro_anterior");
 
 		//Aplicamos los cambios en la bbdd y en el array
 		ws.updateResultado(id_resultado+"", "categoria", "0" , "updateResultado.php");
@@ -441,7 +445,7 @@ public class Data_Enlaces extends HttpServlet {
 		out.println("<span class='tdCat' data-id-categoria='0'>Selecciona una categor&iacute;a</span> <i class='material-icons arrow'>arrow_drop_down</i>");
 
 		if(id_foro_anterior>0) {
-			forosDisponibles.add(new Foro(id_foro_anterior, medio_anterior, categoria_foro_anterior));
+			forosDisponibles.add(new Foro(id_foro_anterior, medio_anterior, categoria_foro_anterior, descripcion_foro_anterior));
 		}
 		System.out.println("Insertado");
 
@@ -466,7 +470,11 @@ public class Data_Enlaces extends HttpServlet {
 			}
 		}
 	}
-	private void guardarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+	private void guardarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+		response.setContentType("application/json");
+		out = response.getWriter();
+		JSONObject obj = new JSONObject();
+
 		int id_categoria_tdCategoria = Integer.parseInt(request.getParameter("id_categoria_tdCategoria"));
 
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
@@ -477,31 +485,38 @@ public class Data_Enlaces extends HttpServlet {
 		int id_foro_anterior = Integer.parseInt(request.getParameter("id_foro_anterior"));
 		int posicion_foro_anterior = Integer.parseInt(request.getParameter("posicion_foro_anterior"));
 		int id_categoria_anterior = Integer.parseInt(request.getParameter("categoria_foro_anterior"));
+		String descripcion_foro_anterior = request.getParameter("descripcion_foro_anterior");
 		String medio_anterior = request.getParameter("medio_anterior");
 
 		//Aplicamos los cambios en la bbdd y en el array
 		ws.updateResultado(id_resultado+"", "id_foro", id_foro+"" , "updateResultado.php");
 
-		String medio ="Selecciona";
+		String medio ="";
 		if(posicion_foro==-1 && id_categoria==0 ) 	medio = "";
 		else medio = forosDisponibles.get(posicion_foro).getWebForo();
 
-		out.println("<span  data-id-foro='"+id_foro+"' data-posicion-foro='-1' data-id-categoria='"+id_categoria+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb goLink'>"+medio+"</span>");
-		out.println("<i class='material-icons arrow'>arrow_drop_down</i>");
+		String html="",descripcion="";
+		html+="<span  data-id-foro='"+id_foro+"' data-posicion-foro='-1' data-id-categoria='"+id_categoria+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb goLink'>"+medio+"</span>";
+		html+="<i class='material-icons arrow'>arrow_drop_down</i>";
 		if(id_foro>0) {
-		out.println("<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>");
-		System.out.println("->"+forosDisponibles.get(posicion_foro).getDescripcion());
+			html+="<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>";
+			descripcion = forosDisponibles.get(posicion_foro).getDescripcion();
 		}
-		
+
 		if(posicion_foro!=-1) forosDisponibles.remove(posicion_foro);
 
-		if(posicion_foro_anterior==-1 && id_foro_anterior>0) forosDisponibles.add(new Foro(id_foro_anterior, medio_anterior, id_categoria_anterior));
+		if(posicion_foro_anterior==-1 && id_foro_anterior>0) forosDisponibles.add(new Foro(id_foro_anterior, medio_anterior, id_categoria_anterior, descripcion_foro_anterior));
 		ordenarForosDisponiblesAlfabeticamente();
 
 		if(id_categoria_tdCategoria==0) {
 			System.out.println("se ha cambiado la categoria");
 			ws.updateResultado(id_resultado+"", "categoria", id_categoria+"" , "updateResultado.php");
 		}
+
+
+		obj.put("html", html);
+		obj.put("descripcion", descripcion);
+		out.print(obj);
 
 		System.out.println("Insertado");
 	}
@@ -550,7 +565,7 @@ public class Data_Enlaces extends HttpServlet {
 		ws.updateResultado(id_resultado+"", "anchor", anchor+"" , "updateResultado.php");
 		System.out.println("Insertado");
 	}
-	
+
 	private void ordenarForosDisponiblesAlfabeticamente() {
 		Collections.sort(forosDisponibles, new Comparator<Foro>() {
 			@Override
@@ -560,7 +575,7 @@ public class Data_Enlaces extends HttpServlet {
 		});
 
 	}
-	
+
 	private void ordenarEnlacesTipoAlfabeticamente() {
 		Collections.sort(enlaces, new Comparator<Enlace>() {
 			@Override
@@ -571,6 +586,61 @@ public class Data_Enlaces extends HttpServlet {
 
 	}
 
+	private void buscarCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+
+		String k = request.getParameter("keyword").toLowerCase();
+		System.out.println(k);
+		String html="";
+		for (int i = 0; i < clientes.size(); i++){
+			if(clientes.get(i).getNombre().toLowerCase().contains(k.toLowerCase()) || clientes.get(i).getWeb().toLowerCase().contains(k.toLowerCase())) {
+				html+="		<div id='"+clientes.get(i).getIdCliente()+"' onclick='enlaces_SelectClient(this.id, this)' class='item'>";
+				if(i!=0){html+="<div class='line'></div>";}
+				html+="			<div class='itemChild";if(clientes.get(i).getEditando()==1)html+=" blur"; html+="'>";
+				html+="				<div class='dominioItem'>";
+				html+="					<span class='dominioItem' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+clientes.get(i).getWeb()+"</span>";
+				html+="				</div>";
+				html+="				<div class='nameItem sName'>"+clientes.get(i).getNombre()+"</div>";
+				if(clientes.get(i).getEditando()==0){
+					if(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() == 0){
+						html+="		<div class='noti notiPos'><i class='material-icons lf'>done</i></div>";
+					}else{
+						html+="		<div class='noti'>"+(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone())+"</div>";
+					}
+
+				}
+				html+="			</div>";
+				html+="			<div class='blockClient"; if(clientes.get(i).getEditando()==1)html+="visible";html+="'><div class='lockDiv'><i class='material-icons lf blur'> lock </i></div></div>";
+				html+="			<div class='pop_up_info_blocked'>";
+				html+="				<div class='msg_blocked'>Editando cliente por</div>";
+				html+="				<div class='msg_name_blocked'>Guillermo</div>";
+				html+="				<div class='lockDiv'><i class='material-icons lf'> lock </i></div>";
+				html+="				<div class='lockDiv' style='left:23px;'><i class='material-icons lf'> lock </i></div>";
+				html+="			</div>";
+				html+="		</div>";
+			}
+		}
+
+		out.println(html+"<script type='text/javascript'>setC();</script>");
+	}
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

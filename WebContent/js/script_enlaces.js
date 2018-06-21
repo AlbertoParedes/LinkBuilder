@@ -176,6 +176,7 @@ function borrarCategoria(x){
 	var id_foro_anterior = $(x).closest('tr').children('td.cWeb').children('div').children('span').attr("data-id-foro");
 	var categoria_foro_anterior = $(x).closest('tr').children('td.cWeb').children('div').children('span').attr("data-id-categoria");
 	var medio_anterior = $(x).closest('tr').children('td.cWeb').children('div').children('span').text();
+	var descripcion_foro_anterior = $(x).closest('tr').children('td.cWeb').children('textarea').text();
 	
 	$.post('Data_Enlaces', {
 		metodo : 'borrarCategoriaResultado',
@@ -183,13 +184,15 @@ function borrarCategoria(x){
 		posicion: posicion,
 		id_foro_anterior:id_foro_anterior,
 		categoria_foro_anterior:categoria_foro_anterior,
-		medio_anterior:medio_anterior
+		medio_anterior:medio_anterior,
+		descripcion_foro_anterior: descripcion_foro_anterior
 	}, function (rt){
 		var spanMedio = $(x).closest('tr').children('td.cWeb').find('div.tdWeb span');
 		$(spanMedio).attr("data-id-foro","0");
 		$(spanMedio).attr("data-posicion-foro","-1");
 		$(spanMedio).attr("data-id-categoria","0");
 		$(spanMedio).text("");
+		$(x).closest('tr').children('td.cWeb').find('div.tdWeb i.description_enlace').remove();
 		
 		$(x).closest('td').children('div.tdCat').html(rt);
 		$(x).closest('td').find('li').removeClass("liActive");
@@ -302,6 +305,7 @@ function guardarWebResultado(x){
 	var posicion_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-posicion-foro");
 	var categoria_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-id-categoria");
 	var medio_anterior = $(x).closest('td').children('div').children('span').text();
+	var descripcion_foro_anterior = $(x).closest('td').children('textarea').text();
 	
 	//var posicionResultado = $(x).closest('tr').attr('posicion');
 	
@@ -325,8 +329,9 @@ function guardarWebResultado(x){
 		id_foro_anterior:id_foro_anterior,
 		posicion_foro_anterior:posicion_foro_anterior,
 		categoria_foro_anterior: categoria_foro_anterior,
-		medio_anterior: medio_anterior
-	}, function(responseText) {
+		medio_anterior: medio_anterior,
+		descripcion_foro_anterior:descripcion_foro_anterior
+	}, function(rt) {
 		
 		if(id_categoria_tdCategoria==0){
 			$(x).closest('tr').children('td.cCateg').find('div.tdCat span').attr("data-id-categoria", categoria_foro);
@@ -336,7 +341,8 @@ function guardarWebResultado(x){
 			}
 			
 		}
-		$(x).closest('td').children('div.tdCat').html(responseText);
+		$(x).closest('td').children('div.tdCat').html(rt.html);
+		$(x).closest('td').children('textarea').text(rt.descripcion);
 		
 	});
 	
@@ -373,6 +379,51 @@ function enlace_openDescription(x){
 	resizeta(textarea,1);
 }
 
+function searchCliente(e) {
+	
+	
+	$.post('Data', {
+		metodo : 'cleanBlocksUser',
+	}, function(responseText) {
+		var element = event.target.nodeName;
+		
+		if(element!="INPUT"){
+			var ti = $( "#ipCLient .addKi" ).text();
+			if(ti=="search"){
+				$("#searchC" ).addClass("vv");
+				
+				$( "#ipCLient" ).addClass("ms");
+				$( "#addC" ).css('display', "none");
+				$("#ipCLient .addKi").text("clear");
+				$("#searchC" ).autofocus;
+				
+				$("#searchC" ).focus();
+			}else{
+				$( "#searchC" ).removeClass("vv");
+				$( "#ipCLient" ).removeClass("ms");
+				$("#searchC").val("");
+				$( "#addC" ).css('display', "inline-block");
+				$("#ipCLient .addKi").text("search");
+				searchC();
+			}
+		}
+	});
+	
+	
+}
+
+function searchC() {
+	
+	var k = $('#searchC').val();
+	
+	$.post('Data_Enlaces', {
+		metodo : 'enlaces_BuscarCliente',
+		keyword: k
+	}, function(responseText) {
+		$('#lstC').html(responseText);
+	});
+	
+}
 
 
 

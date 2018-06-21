@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -375,6 +376,23 @@ public class Webservice {
 		jsonObj.put("elemento_1", elemento_1);
 		jsonObj.put("elemento_2", elemento_2);
 		jsonObj.put("elemento_3", elemento_3);
+		jsonObj.put("metodo", metodo);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+		String jsonString = JSONValue.toJSONString(l);
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
+	
+	//Clientes----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	public String clientes(ArrayList<String> elementos, String metodo, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		for (int i = 0; i < elementos.size(); i++) {
+			jsonObj.put("elemento_"+(i+1), elementos.get(i));
+		}
 		jsonObj.put("metodo", metodo);
 		List<JSONObject>  l = new LinkedList<JSONObject>();
 		l.addAll(Arrays.asList(jsonObj));

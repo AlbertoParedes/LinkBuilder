@@ -1001,9 +1001,12 @@ ul{list-style-type: none;margin: 0px!important;}
     }
 
 .div_enlaces_descripcion_pop_up{
+	outline: none;
 	position: absolute;
 	word-wrap: break-word;
 }
+
+.margin_top_6{margin-top: 6px!important;}
 
 .visible{display: block;}
 .fadeIn{

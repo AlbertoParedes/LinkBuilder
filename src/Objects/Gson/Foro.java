@@ -27,12 +27,19 @@ public class Foro {
 
 	
 
-	public Foro(int idForo, String webForo, int categoria) {
+	
+
+
+	public Foro(int idForo, String webForo, int categoria, String descripcion) {
 		super();
 		this.idForo = idForo;
 		this.webForo = webForo;
 		this.categoria = categoria;
+		this.descripcion = descripcion;
 	}
+
+
+
 
 
 

@@ -37,13 +37,13 @@ BEGIN
         END WHILE;
         
         
-    	SELECT '1' as 'Disponibilidad', r.*, (SELECT GROUP_CONCAT(DISTINCT url_a_atacar SEPARATOR ',') FROM `lnk_Cliente_Urls` AS cl WHERE cl.id_cliente = r.id_cliente) AS 'urls_a_atacar', ctg.`enlace` as nombreCategoria, f.web_foro
+    	SELECT '1' as 'Disponibilidad', r.*, (SELECT GROUP_CONCAT(DISTINCT url_a_atacar SEPARATOR ',') FROM `lnk_Cliente_Urls` AS cl WHERE cl.id_cliente = r.id_cliente) AS 'urls_a_atacar', ctg.`enlace` as nombreCategoria, f.web_foro, f.descripcion as 'DescripcionForo'
     		FROM `lnk_resultado` r 
     		JOIN `lnk_categorias` ctg ON r.categoria = ctg.id_categoria
     		JOIN `lnk_foros` f ON r.id_foro = f.id_foro
     		WHERE r.id_cliente = id_cliente_param AND r.fecha LIKE CONCAT('%',fecha_param,'%');
             
-            SELECT f.`id_foro`, f.`web_foro`, f.`categoria` from `lnk_foros` as f WHERE NOT EXISTS (SELECT * FROM `lnk_resultado` where `id_cliente` = id_cliente_param and f.`id_foro` = id_foro);
+            SELECT f.`id_foro`, f.`web_foro`, f.`categoria`, f.`descripcion` from `lnk_foros` as f WHERE NOT EXISTS (SELECT * FROM `lnk_resultado` where `id_cliente` = id_cliente_param and f.`id_foro` = id_foro);
 			
             SELECT c.* FROM `lnk_clientes` c WHERE c.id_cliente = id_cliente_param;
     

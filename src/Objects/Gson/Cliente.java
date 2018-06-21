@@ -53,10 +53,44 @@ public class Cliente {
 	@SerializedName("enlaces_de_pago")
 	@Expose
 	private String enlacesDePago;
+	@SerializedName("id_empleado")
+	@Expose
+	private String id_empleado;
+	@SerializedName("urls_a_atacar")
+	@Expose
+	private String urls_a_atacar;
+	
+	@SerializedName("name_empleado")
+	@Expose
+	private String name_empleado;
 
 	public Cliente() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getName_empleado() {
+		return name_empleado;
+	}
+
+	public void setName_empleado(String name_empleado) {
+		this.name_empleado = name_empleado;
+	}
+
+	public String getUrls_a_atacar() {
+		return urls_a_atacar;
+	}
+
+	public void setUrls_a_atacar(String urls_a_atacar) {
+		this.urls_a_atacar = urls_a_atacar;
+	}
+
+	public String getId_empleado() {
+		return id_empleado;
+	}
+
+	public void setId_empleado(String id_empleado) {
+		this.id_empleado = id_empleado;
 	}
 
 	public int getIdCliente() {

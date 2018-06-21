@@ -20,6 +20,7 @@
 		<style>::-webkit-scrollbar {display: none;width: 20px;}</style>
 		
 		<script type="text/javascript" src="js/script_enlaces.js"></script>
+		<script type="text/javascript" src="js/script_clientes.js"></script>
 		
 		
 		
@@ -65,7 +66,7 @@
 			<div class="allClients">
 				<div id="lcc" class="listClients">
 					<div class="titleCategory">
-						<div class="titleInner">Clientes<div class="horDiv wa"><div id="addC" class="addK"><i class="material-icons addKi">add</i></div><div onclick="searchCliente(event)"><div id="ipCLient" class="srchI"><i class="material-icons addKi">search</i><input id="searchC" class="searchI" type="text" oninput="searchC()"></div></div></div></div>
+						<div class="titleInner">Clientes<div class="horDiv wa"><div id="addC" class="addK"><i class="material-icons addKi">add</i></div><div onclick="searchCliente(event)"><div id="ipCLient" onclick='stopPropagation()' class="srchI"><i onclick="searchCliente(event)" class="material-icons addKi">search</i><input id="searchC" class="searchI" type="text" oninput="searchC()"></div></div></div></div>
 					</div>
 					<div class="infoCategory">
 						<div  class="info"><%=clientes.size()%> clientes</div>
