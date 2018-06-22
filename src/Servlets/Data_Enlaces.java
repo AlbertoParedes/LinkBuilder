@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,7 +51,7 @@ public class Data_Enlaces extends HttpServlet {
 
 	private ArrayList<Enlace> enlaces =  new ArrayList<Enlace>();
 	private ArrayList<Foro> forosDisponibles = new ArrayList<Foro>();
-	private ArrayList<ClienteGson> clientes = new ArrayList<ClienteGson>();
+	private ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 
 
 
@@ -65,9 +66,10 @@ public class Data_Enlaces extends HttpServlet {
 
 		System.out.println("Metodo get");
 		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
-		String json = ws.getClientsByUser("["+id_empleado+"]", role_empleado, "getClientsByUser.php");
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_empleado+"",role_empleado));
+		String json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
 		System.out.println(json);
-		ArrayList<ClienteGson> clientesGson = new Gson().fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
+		ArrayList<Cliente> clientesGson = new Gson().fromJson(json, new TypeToken<List<Cliente>>(){}.getType());
 		this.clientes.clear();
 		this.clientes = clientesGson;
 
@@ -75,6 +77,7 @@ public class Data_Enlaces extends HttpServlet {
 
 		request.setAttribute("clientes", clientesGson);//pasamos la lista de clientes
 		request.setAttribute("name_user", nick_empleado);
+
 
 		request.getRequestDispatcher("Data.jsp").forward(request, response);
 		//doPost(request,response);
@@ -414,12 +417,7 @@ public class Data_Enlaces extends HttpServlet {
 			ws.updateCliente(cliente.getIdCliente()+"","nofollows_done",cliente.getNofollowsDone()+"","updateCliente.php");
 
 		}
-
-		out.println("<div class='nameItem nameItem_select'>");
-		out.println(	"<span class='nameItem sName nameItem_select' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+cliente.getNombre()+"</span>");
-		out.println("</div>");
-		out.println("<div class='dominioItem nameItem_select'>"+cliente.getWeb()+"</div>");
-
+		
 		System.out.println(cliente.getFollows()-cliente.getFollowsDone()+"·");
 
 

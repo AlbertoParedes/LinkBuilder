@@ -68,7 +68,7 @@ function guardarEnlaceResultado(x){
 		mes: mes,
 		year: year
 	}, function(responseText) {
-		$('#lstC .item_select .itemChild').html(responseText);
+		$('#lstC .item_select .itemChild .noti').replaceWith(responseText);
 		$("#cGuardar").removeClass('cSave');
 		var tipo = $(x).parent().parent().children().children('.divStatus');
 		tipo.removeClass("sOK").removeClass("sPendiente");

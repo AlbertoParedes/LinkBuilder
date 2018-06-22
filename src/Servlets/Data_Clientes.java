@@ -68,10 +68,30 @@ public class Data_Clientes extends HttpServlet {
 		}else if(metodo.equals("guardarValoresCliente")) {
 			guardarValoresCliente(request, response, out);
 		}else if(metodo.equals("guardarEmpleado")) {
-			guardarEmpleado(request, response, out);
+			guardarEmpleado(request, response, out); 
 		}else if(metodo.equals("uploadFactura")) {
 			subirNuevaFactura(request, response, id_user, out);
+		}else if(metodo.equals("removeDestino")) {
+			removeDestino(request, response, out);
 		}
+		
+	}
+
+	private void removeDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+		
+		response.setContentType("application/json");
+		out = response.getWriter();
+		JSONObject obj = new JSONObject();
+		
+		String id_cliente = request.getParameter("id_cliente");
+		String url = request.getParameter("url");
+
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente,url));
+		ws.clientes(wbList, "removeDestino", "clientes.php");
+		
+		out.print(obj);
+
+		System.out.println("Eliminado");
 		
 	}
 
@@ -79,10 +99,10 @@ public class Data_Clientes extends HttpServlet {
 		String id_cliente = request.getParameter("id_cliente");
 		String id_empleado_anterior = request.getParameter("id_empleado_anterior");
 		String id_empleado_seleccionado = request.getParameter("id_empleado_seleccionado");
+		String tipo_empleado_seleccionado = request.getParameter("tipo_empleado_seleccionado");
 		
 		
-		
-		ArrayList<String> wbList=new ArrayList<String>();wbList.add(id_cliente);wbList.add(id_empleado_seleccionado);wbList.add(id_empleado_anterior);
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente,id_empleado_seleccionado, id_empleado_anterior, tipo_empleado_seleccionado));
 		String json = ws.clientes(wbList, "insertClienteEmpleado", "clientes.php");
 		System.out.println("->"+"   "+json);
 		
@@ -126,8 +146,8 @@ public class Data_Clientes extends HttpServlet {
 		String blog = request.getParameter("blog");
 		String idioma = request.getParameter("idioma");
 		int user = Integer.parseInt(request.getParameter("user"));
-		
-		System.out.println();
+		String user_tipo = request.getParameter("user_tipo");
+		System.out.println(user_tipo+"+++");
 		
 		obj.put("status", "0");
 		if(!web.startsWith("http://") && !web.startsWith("http://")) {
@@ -163,8 +183,8 @@ public class Data_Clientes extends HttpServlet {
 			if(clientesGson.size()==0) {//si esto es igual a 0 significa que en la bbdd no hay ningun cliente con este dominio
 				status="1";
 				
-				ArrayList<String> wbList = new ArrayList<>(Arrays.asList(web,nombre,servicio,follow,nofollow,anchor,blog,idioma,user+""));
-				ws.clientes(wbList, "insertNuevoCliente", "cliente.php");
+				ArrayList<String> wbList = new ArrayList<>(Arrays.asList(web,nombre,servicio,follow,nofollow,anchor,blog,idioma,user+"",user_tipo));
+				json = ws.clientes(wbList, "insertNuevoCliente", "clientes.php");
 				//ws.nuevoCliente(web, nombre, servicio, follow, nofollow, anchor, blog, idioma, user, "insertNuevoCliente.php");
 			}else {
 				if(coincidenciaExacta) {status="2";text="Este cliente ya existe";}
@@ -174,11 +194,11 @@ public class Data_Clientes extends HttpServlet {
 			obj.put("text", text);
 			obj.put("c", coincidenciaParcial);
 			
-
+ 
 		}
 		out.print(obj);
 				
-	}
+	} 
 	private void eliminarCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String json = request.getParameter("json");
 
@@ -196,11 +216,19 @@ public class Data_Clientes extends HttpServlet {
 		}
 
 	}
-	private void addDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+	private void addDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+		response.setContentType("application/json");
+		out = response.getWriter();
+		JSONObject obj = new JSONObject();
+		
 		String id_cliente = request.getParameter("id_cliente");
 		String url = request.getParameter("url");
 
 		ws.addDestino(id_cliente, url, "addDestino.php");
+		
+		String html = "<li class='pdd_h_17 pr inner_pop_up'><span>"+url+"</span><i onclick='deleteDestino(this)' class='material-icons inner_pop_up'> remove </i></li>";
+		obj.put("html", html);
+		out.print(obj);
 
 		System.out.println(id_cliente +"  "+url);
 	}
@@ -325,7 +353,7 @@ public class Data_Clientes extends HttpServlet {
 	private void cargarListaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role) throws IOException, ParseException {
 
 		String listaEmpleados = "";
-
+		String onClickEstado="", onClickguardarEstado="";
 		//web cliente
 		String onInputWebCliente="",onChangeWebCliente="";
 		//nombre cliente
@@ -366,9 +394,13 @@ public class Data_Clientes extends HttpServlet {
 				onClickAddDestino ="onclick='addDestino(this)'";
 				onClickDeleteDestino="onclick='deleteDestino(this)'";
 				onClickGuardarServicio="onclick='guardarServicio(this)'";
+				onClickEstado = "onclick='openEstadoCliente(this)'";
+				onClickguardarEstado="onclick='guardarEstadoCliente(this)'";
+				
 			}else if(user_role.equals("free_admin")) {
 				if(e.getCategoria().equals("free")) {
-					listaEmpleados += "<li data-id-empleado='"+e.getId()+"' onclick='guardarEmpleado(this)'>"+e.getName()+"</li>";
+					listaEmpleados += "<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' onclick='guardarEmpleado(this)'>"+e.getName()+"</li>";
+					
 					onInputWebCliente="oninput='showGuardar()'";onChangeWebCliente="onchange='guardarWebCliente(this)'";
 					onInputNombreCliente="oninput='showGuardar()'";onChangeNombreCliente="onchange='guardarNombreCliente(this)'";
 					onClickServicio = "onclick='openServicio(this)'";
@@ -383,12 +415,16 @@ public class Data_Clientes extends HttpServlet {
 					onClickAddDestino ="onclick='addDestino(this)'";
 					onClickDeleteDestino="onclick='deleteDestino(this)'";
 					onClickGuardarServicio="onclick='guardarServicio(this)'";
-
+					onClickEstado = "onclick='openEstadoCliente(this)'";
+					onClickguardarEstado="onclick='guardarEstadoCliente(this)'";
 				}
 
 			}else if(user_role.equals("free_user")) {
 				if(e.getCategoria().equals("free")) {
 					listaEmpleados += "<li>"+e.getName()+"</li>";
+					onClickOpenDestinos = "onclick='openDestinos(this)'";
+					onClickEstado = "onclick='openEstadoCliente(this)'";
+					onClickguardarEstado="onclick='guardarEstadoCliente(this)'";
 
 				}
 			}else if(user_role.equals("paid_user")) {
@@ -400,7 +436,7 @@ public class Data_Clientes extends HttpServlet {
 		}
 		
 		//clientes por usuario///////////********************************************************************
-		ArrayList<String> wbList=new ArrayList<String>();wbList.add(id_user+"");wbList.add(user_role);
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_user+"",user_role));
 		String json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
 		ArrayList<Cliente> clientes = new Gson().fromJson(json, new TypeToken<List<Cliente>>(){}.getType());
 		//***************************************************************************************************
@@ -415,7 +451,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("<div class='keywordsClient listaClientes'>");
 		out.println("	<div id='results_Client' class='contentTable'>");
 		out.println("		<table id='tClients' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable select_client '>"+selectDelete+"</th><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable cCTipo'>Servicio</th><th class='cabeceraTable cFollow'>Follow</th><th class='cabeceraTable cNoFollow'>NoFollow</th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th><th class='cabeceraTable cCUser'>User</th><th class='cabeceraTable cell_destino'>Destinos</th></tr></thead>");
+		out.println("			<thead><tr><th class='cabeceraTable select_client '>"+selectDelete+"</th><th class='cabeceraTable cStatus'><div class=\"divStatus sPendiente\"></div></th><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable cCTipo'>Servicio</th><th class='cabeceraTable cFollow'><i class='material-icons lf'>link</i></th><th class='cabeceraTable cNoFollow'><i class='material-icons lnf'>link</i></th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog'>Blog</th><th class='cabeceraTable cCIdioma'><i class='material-icons'> g_translate </i></th><th class='cabeceraTable cCUser'><i class='material-icons f_size26'> account_circle </i></th><th class='cabeceraTable cell_destino'>Destinos</th></tr></thead>");
 		out.println("			<tbody>");
 		String htmlServicio="",htmlUserFinal="";
 
@@ -424,7 +460,11 @@ public class Data_Clientes extends HttpServlet {
 			Cliente cliente = clientes.get(c);
 			
 			ArrayList<String> destinos = new ArrayList<>(Arrays.asList((cliente.getUrls_a_atacar()+",").split(",")));;
-
+			String status = "sPendiente";
+			if(cliente.getStatus().equals("new"))status = "sOK";
+			else if(cliente.getStatus().equals("old"))status = "sPendiente";
+			if(cliente.getStatus().equals("our"))status = "sYS";
+			
 			
 			int id_cliente = cliente.getIdCliente();//este es el ID REAL DE LA BBDD
 			//------------DESPLEGABLE COLUMNA SERVICIO-----------------
@@ -448,6 +488,18 @@ public class Data_Clientes extends HttpServlet {
 			out.println("			<div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div>");
 			out.println("		</div>");
 			out.println("	</td>");
+			//columna Estado del cliente
+			
+			out.println("<td class='cStatus pr tdCat' "+onClickEstado+">");
+			out.println("	<div class='divStatus "+status+" tdCat'></div>");
+			out.println("	<div class='div_Estado_Cliente pop_up effect7 text_left' >");
+			out.println("		<ul class=' pdd_v_12 '>");
+			out.println("			<li data-status-cliente='new' "+onClickguardarEstado+" class='pdd_h_10 pr' ><span class='mg_left_30'>Cliente nuevo</span><div data-class='sOK' class='divStatus sOK st_div_cli'></div></li>");
+			out.println("			<li data-status-cliente='old' "+onClickguardarEstado+" class='pdd_h_10 pr' ><span class='mg_left_30'>Cliente normal</span><div data-class='sPendiente' class='divStatus sPendiente st_div_cli'></div></li>");
+			out.println("			<li data-status-cliente='our' "+onClickguardarEstado+" class='pdd_h_10 pr' ><span class='mg_left_30'>Cliente YoSeo</span><div data-class='sYS' class='divStatus sYS st_div_cli'></div></li>");
+			out.println("		");
+			out.println("	</div>");
+			out.println("</td>");
 			//Columna WEB
 			out.println("	<td class='cCWebCliente'><input class='inLink' "+onInputWebCliente+" type='text' "+onChangeWebCliente+" value='"+cliente.getWeb()+"'></td>");
 			//Columna NOMBRE
@@ -474,28 +526,30 @@ public class Data_Clientes extends HttpServlet {
 			out.println("	</td>");
 			//Columna IDIOMA
 			out.println("	<td class='tdCat cCIdioma'>");
-			out.println("		<div class='tdCat tdWeb'>");
 			out.println("			<input "+onInputGuardar+" class='inLink' type='text' "+onChangeGuardarIdioma+" value='"+cliente.getIdioma()+"'>");				
-			out.println("		</div>");
 			out.println("	</td>");
 			//Columna USER
 			out.println("	<td class='tdCat cCUser pr' "+onClickOpenEmpleados+">");
 			out.println("		<div class='tdCat tdWeb'>");
-			out.println("			<span data-id-empleado='"+cliente.getId_empleado()+"' class='tdCat' type='text'>"+cliente.getName_empleado()+"</span>");
+			out.println("			<span data-id-empleado='"+cliente.getId_empleado()+"' data-tipo-empleado='"+cliente.getTipoEmpleado()+"' class='tdCat' type='text'>"+cliente.getName_empleado()+"</span>");
 			out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
-			out.println("		</div>");
+			out.println("		</div>"); 
 			out.println("		<ul class='slCt effect7 pop_up'>"+listaEmpleados+"</ul>");
 			out.println("	</td>");
 			//Destinos
 			out.println("	<td class='tdCat cell_destino pr text_center' "+onClickOpenDestinos+">");
 			out.println("			<i class='material-icons inner_pop_up'> directions </i>");
 			out.println("			<div data-id='lista_destinos' class='div_destinos pop_up effect7 inner_pop_up pop_up_move2left  text_left' >");
-			out.println("				<div class='nuevo_destino inner_pop_up'>");
+			out.println("				<div class='nuevo_destino inner_pop_up' onclick='stopPropagation()'>");
 			out.println("					<span class='inner_pop_up'>Destino: </span><input type='text' class='inLink inner_pop_up' value='' placeholder='Introduce una nueva url a atacar'><i "+onClickAddDestino+" class='material-icons inner_pop_up'>add</i>");
 			out.println("				</div>");
 			out.println("				<ul class='scroll_115 pdd_v_12 inner_pop_up'>");
 			for (String destino : destinos) {
-				out.println("				<li class='pdd_h_17 pr inner_pop_up' ><span>"+destino+"</span><i "+onClickDeleteDestino+" class='material-icons inner_pop_up'> remove </i></li>");
+				if(destino.equals(cliente.getWeb())) 
+					 out.println("			<li class='pdd_h_17 pr inner_pop_up' ><span>"+destino+"</span></li>");
+				else out.println("			<li class='pdd_h_17 pr inner_pop_up' ><span>"+destino+"</span><i "+onClickDeleteDestino+" class='material-icons inner_pop_up'> remove </i></li>");
+
+				
 			}
 			out.println("				</ul>");
 			out.println("			</div>");
@@ -543,7 +597,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("				</td>");
 		out.println("				<td class='tdCat cCUser pr' onclick='opentUser(this)'>");
 		out.println("					<div class='tdCat tdWeb'>");
-		out.println("						<span data-id-empleado='0' class='tdCat' data-list-user='' type='text'>-</span>");
+		out.println("						<span data-id-empleado='0' data-tipo-empleado='0' class='tdCat' data-list-user='' type='text'>-</span>");
 		out.println("						<i class='material-icons arrow'>arrow_drop_down</i>	");
 		out.println("					</div>");
 		out.println("					<ul class='slCt effect7 nuevaWeb margin_top_6'>"+listaEmpleados+"</ul>");

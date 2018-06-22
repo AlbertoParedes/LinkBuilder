@@ -1,6 +1,9 @@
 package Servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,7 +15,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import Classes.Webservice;
+import Objects.Gson.ClienteGson;
+import Objects.Gson.Empleado;
 
 
 
@@ -40,31 +48,17 @@ public class Login extends HttpServlet {
 		
 		Webservice ws = new Webservice();
 		String json = ws.getUser(user, "getUser.php");
-		
-		Object jsonObject =JSONValue.parse(json.toString());
-		JSONArray arrayData = (JSONArray)jsonObject;
-		System.out.println(json);
+		Empleado empleado = new Gson().fromJson(json.substring(1, json.length()-1), Empleado.class);
 		
 		
-		int id_user =-1;
-		String userName="null";
-		String userPassword="null";
-		String role="null";
-	
-		for(int i=0;i<arrayData.size();i++){
-			JSONObject row =(JSONObject)arrayData.get(i);
-			id_user = Integer.parseInt(row.get("id").toString());
-			userName = row.get("user").toString();
-			userPassword = row.get("password").toString();
-			role = row.get("role").toString();
-		}
 		
-		if(userName.equalsIgnoreCase(user)) {
-			if(userPassword.equalsIgnoreCase(password)) {
+		if(empleado.getUser().equalsIgnoreCase(user)) {
+			if(empleado.getPassword().equalsIgnoreCase(password)) {
 				HttpSession session = request.getSession();
-				session.setAttribute("id_user", id_user);
-				session.setAttribute("name_user", userName);
-				session.setAttribute("role_user", role);
+				session.setAttribute("id_user", empleado.getId());
+				session.setAttribute("name_user", empleado.getName());
+				session.setAttribute("role_user", empleado.getRole());
+				session.setAttribute("categoria_user", empleado.getCategoria());
 				response.sendRedirect("Data");
 			}else {
 				System.out.println("La contraseña no es esa");

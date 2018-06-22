@@ -118,20 +118,30 @@ function guardarIdioma(x){
 
 }
 function guardarEmpleado(x){
+	
+	
 	var id_cliente = $(x).closest('tr').attr('id');
 	var id_empleado_anterior = $(x).closest('td').children('div.tdWeb').children('span').attr('data-id-empleado');
 	var id_empleado_seleccionado = $(x).attr('data-id-empleado');
+	var tipo_empleado_seleccionado = $(x).attr('data-tipo-empleado');
 	
-	$.post('Data_Clientes', {
-		metodo : "guardarEmpleado",
-		id_cliente: id_cliente,
-		id_empleado_anterior:id_empleado_anterior,
-		id_empleado_seleccionado: id_empleado_seleccionado
-	}, function(){
-		$("#websGuardar").removeClass('cSave');
-		$(x).closest('td').children('div.tdWeb').children('span').attr('data-id-empleado',id_empleado_seleccionado);
-		$(x).closest('td').find('div span').text($(x).text());
-	});
+	$(x).closest('td').children('div.tdWeb').children('span').attr('data-id-empleado',id_empleado_seleccionado);
+	$(x).closest('td').children('div.tdWeb').children('span').attr('data-tipo-empleado',tipo_empleado_seleccionado);
+	$(x).closest('td').find('div span').text($(x).text());
+	
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente')){
+		$.post('Data_Clientes', {
+			metodo : "guardarEmpleado",
+			id_cliente: id_cliente,
+			id_empleado_anterior:id_empleado_anterior,
+			id_empleado_seleccionado: id_empleado_seleccionado,
+			tipo_empleado_seleccionado: tipo_empleado_seleccionado
+		}, function(){
+			$("#websGuardar").removeClass('cSave');
+			
+		});
+	}
+	
 	/*
 	var campo ="linkbuilder";
 	var id_cliente = $(x).closest('tr').attr('id');
@@ -173,6 +183,7 @@ function guardarNewCliente(x){
 	var blog = $(ob).find('td.cCBlog div label input').is(':checked') === true ? 1 : 0;
 	var idioma = $(ob).find('td.cCIdioma input').val();
 	var user = $(ob).find('td.cCUser .tdWeb span').attr('data-id-empleado');
+	var user_tipo = $(ob).find('td.cCUser .tdWeb span').attr('data-tipo-empleado');
 
 	
 	var text = "";
@@ -200,7 +211,8 @@ function guardarNewCliente(x){
 			anchor:anchor,
 			blog:blog,
 			idioma:idioma,
-			user:user
+			user:user,
+			user_tipo:user_tipo
 		}, function(rt){
 			var status = rt.status;
 			if(status==0){
@@ -406,18 +418,62 @@ function hidePopUpCoincidencias(x){
 
 
 function deleteDestino(x){
-	$(x).closest('li').remove();
+	
+	var url = $(x).closest('li').children('span').text();
+	var id_cliente = $(x).closest('tr').attr('id');
+	$.post('Data_Clientes', {
+		metodo : "removeDestino",
+		id_cliente: id_cliente,
+		url: url
+	}, function(rt){
+		$(x).closest('div').find('div input').val("");
+		$(x).closest('li').remove();
+	});
 }
 function addDestino(x){
 	var url = $(x).closest('div').children('input').val();
 	var id_cliente = $(x).closest('tr').attr('id');
-	$.post('Data', {
+	$.post('Data_Clientes', {
 		metodo : "addDestino",
 		id_cliente: id_cliente,
 		url: url
-	}, function(){
+	}, function(rt){
+		
+		$(x).closest('td').children('div').children('ul').append(rt.html);
 		$('div.pop_up').removeClass('visible');
 	});
+}
+
+function openEstadoCliente(x){
+	
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
+	if(!$(x).find("div.pop_up").attr('class').includes("visible")){
+		$(".slCt").removeClass("visible");
+		$(".pop_up").removeClass("visible");
+		$(".slT").removeClass("visible");
+		$(x).find('div.pop_up').addClass("visible");
+	}else{
+		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+		$(".slT").removeClass("visible");
+	}
+	
+	//if($(x).children('ul').attr('class').includes("nuevaWeb")){$(x).children('ul').css("width",$(x).css("width"))}
+	
+}
+function guardarEstadoCliente(x){
+	
+	$(x).closest('ul').find('li').removeClass("liActive");
+	$(x).addClass('liActive');
+	var clase = $(x).children('div').attr('data-class');
+	$(x).closest('td').children('div.divStatus').removeClass('sOK').removeClass('sPendiente').removeClass('sYS').addClass(clase);
+	
+	var id_cliente = $(x).closest('tr').attr('id');
+	var valor = $(x).attr('data-status-cliente');
+	var campo ="status";
+	
+	//if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
+	
 }
 
 function move2Left(x){

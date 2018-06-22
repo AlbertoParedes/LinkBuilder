@@ -43,10 +43,10 @@ public class Cliente {
 	private String linkbuilder;
 	@SerializedName("Editando")
 	@Expose
-	private String editando;
+	private int editando;
 	@SerializedName("userEditando")
 	@Expose
-	private String userEditando;
+	private int userEditando;
 	@SerializedName("Eliminado")
 	@Expose
 	private String eliminado;
@@ -63,10 +63,34 @@ public class Cliente {
 	@SerializedName("name_empleado")
 	@Expose
 	private String name_empleado;
+	
+	@SerializedName("tipo_empleado")
+	@Expose
+	private String tipoEmpleado;
+	
+	@SerializedName("status")
+	@Expose
+	private String status;
 
 	public Cliente() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getTipoEmpleado() {
+		return tipoEmpleado;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public void setTipoEmpleado(String tipoEmpleado) {
+		this.tipoEmpleado = tipoEmpleado;
 	}
 
 	public String getName_empleado() {
@@ -189,19 +213,19 @@ public class Cliente {
 		this.linkbuilder = linkbuilder;
 	}
 
-	public String getEditando() {
+	public int getEditando() {
 		return editando;
 	}
 
-	public void setEditando(String editando) {
+	public void setEditando(int editando) {
 		this.editando = editando;
 	}
 
-	public String getUserEditando() {
+	public int getUserEditando() {
 		return userEditando;
 	}
 
-	public void setUserEditando(String userEditando) {
+	public void setUserEditando(int userEditando) {
 		this.userEditando = userEditando;
 	}
 
@@ -219,6 +243,17 @@ public class Cliente {
 
 	public void setEnlacesDePago(String enlacesDePago) {
 		this.enlacesDePago = enlacesDePago;
+	}
+
+	@Override
+	public String toString() {
+		return "Cliente [idCliente=" + idCliente + ", web=" + web + ", nombre=" + nombre + ", servicio=" + servicio
+				+ ", follows=" + follows + ", nofollows=" + nofollows + ", anchor=" + anchor + ", blog=" + blog
+				+ ", idioma=" + idioma + ", followsDone=" + followsDone + ", nofollowsDone=" + nofollowsDone
+				+ ", linkbuilder=" + linkbuilder + ", editando=" + editando + ", userEditando=" + userEditando
+				+ ", eliminado=" + eliminado + ", enlacesDePago=" + enlacesDePago + ", id_empleado=" + id_empleado
+				+ ", urls_a_atacar=" + urls_a_atacar + ", name_empleado=" + name_empleado + ", tipoEmpleado="
+				+ tipoEmpleado + "]";
 	}
 
 }

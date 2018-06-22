@@ -97,7 +97,7 @@
 /*------------------------------------------*/
 
 .item:hover:not(.item_select) {border: solid;border-width: 3px;border-color: #d9d9d9;}
-.item:hover:not(.item_select) .line{background: transparent; }
+.item:hover:not(.item_select) .line{background: white; }
 .item:hover:not(.item_select) .nameItem, .item:hover .dominioItem{/*color: #fff*/}
 
 .item_select {border: solid;border-width: 3px;border-color: #e64a89;}
@@ -205,7 +205,7 @@ input:checked + .slider:before {-webkit-transform: translateX(11px);-ms-transfor
 .slCt li:hover{color:#4688F1}
 .liActive{color:#4688F1!important;}
 
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{font-family: gotham, helvetica, arial, sans-serif;height: 32px;font-size: 13px;color: #878787;    border-bottom: 1px solid #ececec;    padding-top: 6px;padding-bottom: 6px;    border-top: 0px;    vertical-align: middle;    padding: 0 9px;}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{font-family: gotham, helvetica, arial, sans-serif;height: 32px;font-size: 13px;color: #878787;    border-bottom: 0px solid #ececec;    padding-top: 6px;padding-bottom: 6px;    border-top: 0px;    vertical-align: middle;    padding: 0 9px;}
 .table span{font-family: gotham, helvetica, arial, sans-serif;font-size: 13px;}
 .cabeceraTable{font-family: gotham, helvetica, arial, sans-serif!important;color: #606060!important;font-size: 16px!important;line-height: 28px!important;padding-left: 9px!important;font-weight: 400;}
 .tdCat{cursor: pointer;    min-height: 19px;}
@@ -224,7 +224,7 @@ input:checked + .slider:before {-webkit-transform: translateX(11px);-ms-transfor
 
 .slWeb{
 overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width: 470px;    max-height: 400px;}
-.inLink{	    width: 100%;   outline: none;    border: 0;color: #878787;}
+.inLink{	    width: 100%;   outline: none;    border: 0;color: #878787;background: transparent;}
 .lf{    color: #4688F1; }
 .lnf{    color: #ea4335;}
 .pr{	position: relative;}
@@ -278,7 +278,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 .pzero{ padding-top: 0px!important;height: 17px;}
 
 
-.divStatus{height: 11px;width: 11px;border-radius: 50%;margin-left: 5px;}
+.divStatus{height: 11px;width: 11px;border-radius: 50%;margin-left: 5px;min-height: 11px;}
 .sOK{background-color: #0f9d58;}
 .sPendiente{background-color: #9e9e9e;}
 .sEliminado{background-color: red;}
@@ -485,11 +485,12 @@ textarea{color: #878787;}
 .cCReu{width: 10%;}
 .cCReq{width: 10%;}
 .cCFecha{width: 5%;}
-.cCIdioma{width: 80px;}
+.cCIdioma{    width: 60px;text-align: center;}
+.cCIdioma input{ text-align: center;}
 .cCUser{width: 75px;}
 .cCBlog{    width: 40px;}
-.cFollow{text-align: center;width: 100px;}
-.cNoFollow{text-align: center;width: 100px;}
+.cFollow{text-align: center;width: 30px;}
+.cNoFollow{text-align: center;width: 30px;}
 .cFollow input{text-align: center;}
 .cNoFollow input{text-align: center;}
 .anchorC{width: 20%;}
@@ -520,7 +521,7 @@ textarea{color: #878787;}
 .vistaClientes{background: #fff;position: absolute; width: 100%;height: 100%;}
 
 .slCtNuevo{display: none;position: absolute;background: white;border: solid;width: 100%;list-style-type: none;border-width: 1px;border-color: #ececec;padding: 10px 15px;margin-top: 6px;margin-left: -7px;position: absolute;z-index: 2; border-radius: 10px}
-
+.f_size26{    font-size: 25px;}
 .i_cancel{
 	color: #878787;
 	font-size: 20px
@@ -823,10 +824,14 @@ ul{list-style-type: none;margin: 0px!important;}
 .pdd_h_17{
 	padding: 0 17px;
 }
+.pdd_h_10{
+	padding: 0 10px;
+}
 .pdd_v_10{    
 	padding: 10px 0px;
 }
 /*----------------------------*/
+.mg_left_30{margin-left: 30px;}
 .scroll_115{
 	max-height: 115px;
     overflow: hidden;
@@ -1007,6 +1012,26 @@ ul{list-style-type: none;margin: 0px!important;}
 }
 
 .margin_top_6{margin-top: 6px!important;}
+
+tr{border-bottom: 1px solid #ececec;}
+tr:hover{
+	    background: #f3f3f3;
+}
+
+.div_Estado_Cliente{
+	width: 160px;
+	display: none;
+	background: white;
+	position: absolute;
+    z-index: 7;
+    border: 1px solid #ececec;
+    min-width: 160px;
+}
+
+.st_div_cli{position: absolute;
+    top: 7px;}
+    
+.sYS{    background-color: #e64a89;}
 
 .visible{display: block;}
 .fadeIn{

@@ -58,7 +58,7 @@ public class Data extends HttpServlet {
 
 	Webservice ws = new Webservice();
 
-	private ArrayList<ClienteGson> clientes = new ArrayList<ClienteGson>();
+	private ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 	private Cliente2 cliente = new Cliente2();
 	private ArrayList<ForoGson> foros = new ArrayList<ForoGson>();
 	public static ArrayList<CategoriaGson> categorias = new ArrayList<CategoriaGson>();

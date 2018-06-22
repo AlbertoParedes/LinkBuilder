@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="Objects.Gson.ClienteGson"%>
+<%@page import="Objects.Gson.Cliente"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
@@ -46,7 +46,7 @@
 	<body>
 		
 		<%	
-			ArrayList<ClienteGson> clientes = (ArrayList<ClienteGson>) request.getAttribute("clientes");
+			ArrayList<Cliente> clientes = (ArrayList<Cliente>) request.getAttribute("clientes");
 			String nameUser = (String) request.getAttribute("name_user");	
 			
 		%>
@@ -89,6 +89,9 @@
 											<div class="noti"><%= clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() %></div>
 										<%}%>
 										
+									<%}%>
+									<%if(clientes.get(i).getStatus().equals("our")){%>
+										<i class="material-icons" style=" position: absolute; top: -2px; left: 16px; "> bookmark </i>
 									<%}%>
 								</div>
 								<div class="blockClient <%if(clientes.get(i).getEditando()==1){%>visible<%}%>"><div class="lockDiv"><i class="material-icons lf blur"> lock </i></div></div>
