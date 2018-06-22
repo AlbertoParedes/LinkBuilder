@@ -91,7 +91,9 @@
 										
 									<%}%>
 									<%if(clientes.get(i).getStatus().equals("our")){%>
-										<i class="material-icons" style=" position: absolute; top: -2px; left: 16px; "> bookmark </i>
+										<div class="div_bookmark"><i class="material-icons div_i_bookmark sYS_color">bookmark</i><div class="div_line_bookmark sYS"></div></div>
+									<%} else if(clientes.get(i).getStatus().equals("new")){%>
+										<div class="div_bookmark"><i class="material-icons div_i_bookmark sOK_color">bookmark</i><div class="div_line_bookmark sOK"></div></div>
 									<%}%>
 								</div>
 								<div class="blockClient <%if(clientes.get(i).getEditando()==1){%>visible<%}%>"><div class="lockDiv"><i class="material-icons lf blur"> lock </i></div></div>
@@ -101,6 +103,7 @@
     								<div class="lockDiv"><i class="material-icons lf"> lock </i></div>
     								<div class="lockDiv" style="left:23px;"><i class="material-icons lf"> lock </i></div>
 								</div>
+								<div class="loader"><div id="d1"></div><div id="d2"></div><div id="d3"></div><div id="d4"></div><div id="d5"></div></div>
 							</div>
 						<% }%>
 						

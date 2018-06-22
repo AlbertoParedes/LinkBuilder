@@ -128,7 +128,7 @@ public class Data_Enlaces extends HttpServlet {
 		String id_client = request.getParameter("id_client");
 		String fecha = request.getParameter("fecha");
 
-		if(fecha.contains("undefined")) {//cuando obtenemos el año por javascript nos devueve siempre undefined si estamos en el mes correspondiente al dia de hoy
+		if(fecha.contains("undefined")) {//cuando obtenemos el aï¿½o por javascript nos devueve siempre undefined si estamos en el mes correspondiente al dia de hoy
 			Date today = new Date(); 
 			Calendar cal = Calendar.getInstance(); cal.setTime(today);
 			int month = cal.get(Calendar.MONTH)+1, year = cal.get(Calendar.YEAR);
@@ -418,7 +418,7 @@ public class Data_Enlaces extends HttpServlet {
 
 		}
 		
-		System.out.println(cliente.getFollows()-cliente.getFollowsDone()+"·");
+		System.out.println(cliente.getFollows()-cliente.getFollowsDone()+"ï¿½");
 
 
 		if(cliente.getFollows()-cliente.getFollowsDone()==0) {
@@ -587,11 +587,14 @@ public class Data_Enlaces extends HttpServlet {
 	private void buscarCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 
 		String k = request.getParameter("keyword").toLowerCase();
+		int clienteSeleccionado = Integer.parseInt(request.getParameter("clienteSeleccionado"));
 		System.out.println(k);
 		String html="";
 		for (int i = 0; i < clientes.size(); i++){
 			if(clientes.get(i).getNombre().toLowerCase().contains(k.toLowerCase()) || clientes.get(i).getWeb().toLowerCase().contains(k.toLowerCase())) {
-				html+="		<div id='"+clientes.get(i).getIdCliente()+"' onclick='enlaces_SelectClient(this.id, this)' class='item'>";
+				String itemSleccionado="";
+				if(clienteSeleccionado == clientes.get(i).getIdCliente()) {itemSleccionado="item_select";}
+				html+="		<div id='"+clientes.get(i).getIdCliente()+"' onclick='enlaces_SelectClient(this.id, this)' class='item "+itemSleccionado+"'>";
 				if(i!=0){html+="<div class='line'></div>";}
 				html+="			<div class='itemChild";if(clientes.get(i).getEditando()==1)html+=" blur"; html+="'>";
 				html+="				<div class='dominioItem'>";
@@ -605,6 +608,12 @@ public class Data_Enlaces extends HttpServlet {
 						html+="		<div class='noti'>"+(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone())+"</div>";
 					}
 
+				}
+				if(clientes.get(i).getStatus().equals("our")){ 		
+					html+="			<div class='div_bookmark'><i class='material-icons div_i_bookmark sYS_color'>bookmark</i><div class='div_line_bookmark sYS'></div></div>";
+				}
+				else if(clientes.get(i).getStatus().equals("new")){ 
+					html+="			<div class='div_bookmark'><i class='material-icons div_i_bookmark sOK_color'>bookmark</i><div class='div_line_bookmark sOK'></div></div>";
 				}
 				html+="			</div>";
 				html+="			<div class='blockClient"; if(clientes.get(i).getEditando()==1)html+="visible";html+="'><div class='lockDiv'><i class='material-icons lf blur'> lock </i></div></div>";

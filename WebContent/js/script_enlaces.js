@@ -1,5 +1,7 @@
-
+var clienteSeleccionado=0;
 function enlaces_SelectClient(id_client,x) {
+	//mostramos que estamos cargando la informacion
+	$(x).children('.loader').addClass('visible');
 	
 	var id_cliente_before = "";
 	var mes = $('.datedropper .picker [data-k="m"] .pick-sl').val();
@@ -25,8 +27,9 @@ function enlaces_SelectClient(id_client,x) {
 		}else if(response.blocked=="0"){
 			$('#uniqueClient').html(response.html);
 			changeThemeC(id_client);
+			clienteSeleccionado = id_client;
 		}
-		
+		$(x).children('.loader').removeClass('visible');
 		
 		
 	});
@@ -418,9 +421,15 @@ function searchC() {
 	
 	$.post('Data_Enlaces', {
 		metodo : 'enlaces_BuscarCliente',
-		keyword: k
+		keyword: k,
+		clienteSeleccionado:clienteSeleccionado
 	}, function(responseText) {
 		$('#lstC').html(responseText);
+		if(k == ""){
+			$('#lstC').animate({ 
+				scrollTop: $('#lstC').scrollTop() + $("#lstC .item_select").offset().top - $('#lstC').offset().top 
+				}, { duration: 1000, easing: 'linear'});
+		}
 	});
 	
 }

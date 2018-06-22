@@ -175,8 +175,8 @@ public class Data extends HttpServlet {
 		out.println("		<div id='lkkI' class='listItems'>");
 
 		for (int i = 1; i < categorias.size(); i++) {
-			if(i==1) {out.println("<div id='"+categorias.get(i).getIdCategoria()+"' posicion='"+i+"' onclick='selectCategoria(this)' class='item'><div class='itemChild childKey'><div class='nameItem nameKey'>"+categorias.get(i).getEnlace()+"</div></div></div>");
-			}else {out.println("<div id='"+categorias.get(i).getIdCategoria()+"' posicion='"+i+"' onclick='selectCategoria(this)' class='item'><div class='line'></div><div class='itemChild childKey'><div class='nameItem nameKey'>"+categorias.get(i).getEnlace()+"</div></div></div>");}
+			if(i==1) {out.println("<div id='"+categorias.get(i).getIdCategoria()+"' posicion='"+i+"' onclick='selectCategoria(this)' class='item'><div class='itemChild childKey'><div class='dominioItem'>"+categorias.get(i).getEnlace()+"</div></div></div>");
+			}else {out.println("<div id='"+categorias.get(i).getIdCategoria()+"' posicion='"+i+"' onclick='selectCategoria(this)' class='item'><div class='line'></div><div class='itemChild childKey'><div class='dominioItem'>"+categorias.get(i).getEnlace()+"</div></div></div>");}
 		}
 		out.println("		</div>");
 	}
