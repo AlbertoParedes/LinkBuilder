@@ -1055,21 +1055,23 @@ tr:hover{
 .sYS_color{color:#e64a89}
 
 
-.fadeIn{
-	visibility:visible;
-	opacity: 1;
-}
+
    
 
 /*Cargandooooo------------------------------------------------------*/
 .loader {
-	display: none;
+	    visibility: hidden;
+    opacity: 0;
 	width: 35px;
     height: 10px;
     position: absolute;
     left: 50%;
     bottom: 1px;
     margin: 0px -20px;
+    -webkit-transition: all 2s ease;
+    -moz-transition: all 2s ease;
+    -o-transition: all 2s ease;
+    transition: all 2s ease;
 }
 .loader div {
 	width: 5px;
@@ -1094,4 +1096,8 @@ tr:hover{
 }
 
 .visible{display: block;}
+.fadeIn{
+	visibility:visible;
+	opacity: 1;
+}
 

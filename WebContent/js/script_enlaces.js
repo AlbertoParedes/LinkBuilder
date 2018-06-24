@@ -1,7 +1,7 @@
 var clienteSeleccionado=0;
 function enlaces_SelectClient(id_client,x) {
 	//mostramos que estamos cargando la informacion
-	$(x).children('.loader').addClass('visible');
+	$(x).children('.loader').addClass("fadeIn");
 	
 	var id_cliente_before = "";
 	var mes = $('.datedropper .picker [data-k="m"] .pick-sl').val();
@@ -29,7 +29,12 @@ function enlaces_SelectClient(id_client,x) {
 			changeThemeC(id_client);
 			clienteSeleccionado = id_client;
 		}
+		
+		setTimeout(function () {
+			$(x).children('.loader').removeClass("fadeIn");
+	    }, 600);
 		$(x).children('.loader').removeClass('visible');
+		
 		
 		
 	});
@@ -268,12 +273,17 @@ function changeMonth(){
 	mes = mes <10 ? "0"+mes : mes;
 	var year = $(".picker .pick-y .pick-sl").val();
 
+	$('#lstC div.item_select').children('.loader').addClass('fadeIn');
+	
 	$.post('Data_Enlaces', {
 		metodo : 'enlaces_ResultadosMes',
 		mes: mes,
 		year: year,
 	}, function(responseText) {
 		$('#results_Client table tbody').html(responseText);
+		setTimeout(function () {
+			$('#lstC div.item_select').children('.loader').removeClass("fadeIn");
+	    }, 600);
 	});
 }
 
