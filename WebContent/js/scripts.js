@@ -605,6 +605,9 @@ function guardarNew(x){
 }
 
 
+function bloquearTodo(){
+	console.log("cargando datos");
+}
 
 
 //---------------------------

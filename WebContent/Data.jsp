@@ -79,7 +79,7 @@
 								<%if(i!=0){ %><div class="line"></div><%}%>
 								<div class="itemChild <%if(clientes.get(i).getEditando()==1){%>blur<%}%>">
 									<div class="dominioItem">
-										<span class="dominioItem" onmouseover="viewCampo(this)" onmouseout="restartCampo(this)" ><%= clientes.get(i).getWeb() %></span>
+										<span class="dominioItem" onmouseover="viewCampo(this)" onmouseout="restartCampo(this)" ><%= clientes.get(i).getDominio() %></span>
 									</div>
 									<div class="nameItem sName"><%= clientes.get(i).getNombre() %></div>
 									<%if(clientes.get(i).getEditando()==0){%>
@@ -103,7 +103,7 @@
     								<div class="lockDiv"><i class="material-icons lf"> lock </i></div>
     								<div class="lockDiv" style="left:23px;"><i class="material-icons lf"> lock </i></div>
 								</div>
-								<div class="loader"><div id="d1"></div><div id="d2"></div><div id="d3"></div><div id="d4"></div><div id="d5"></div></div>
+								<div class="loader"><div class="l_d1"></div><div class="l_d2"></div><div class="l_d3"></div><div class="l_d4"></div><div class="l_d5"></div></div>
 							</div>
 						<% }%>
 						
@@ -137,7 +137,9 @@
 						
 				</div> 
 		 	</div>
-		</div> 
+		</div>
+		
+		<div class="blockAll" onclick="bloquearTodo()"></div>
 		
 		<script type="text/javascript" src="js/scripts.js"></script>
 		<script type="text/javascript">

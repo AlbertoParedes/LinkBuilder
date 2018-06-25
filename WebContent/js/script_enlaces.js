@@ -1,7 +1,10 @@
 var clienteSeleccionado=0;
 function enlaces_SelectClient(id_client,x) {
 	//mostramos que estamos cargando la informacion
+	$('.loader').removeClass("fadeIn");
+	$('.blockAll').addClass('visible');
 	$(x).children('.loader').addClass("fadeIn");
+	
 	
 	var id_cliente_before = "";
 	var mes = $('.datedropper .picker [data-k="m"] .pick-sl').val();
@@ -19,10 +22,19 @@ function enlaces_SelectClient(id_client,x) {
 			
 			$(x).children('.pop_up_info_blocked').children('.msg_name_blocked').text(response.userEditando);
 			$(x).children('.pop_up_info_blocked').addClass("fadeIn");
+			$(x).children('.loader').removeClass("fadeIn");
 			
+			$('.blockAll').removeClass('visible');
 			setTimeout(function () {
 				$(x).children('.pop_up_info_blocked').removeClass("fadeIn");
 		    }, 5000);
+			
+			
+
+		}else if(response.blocked=="2"){
+			
+			$(x).children('.loader').removeClass("fadeIn");
+			$('.blockAll').removeClass('visible');
 
 		}else if(response.blocked=="0"){
 			$('#uniqueClient').html(response.html);
@@ -30,12 +42,7 @@ function enlaces_SelectClient(id_client,x) {
 			clienteSeleccionado = id_client;
 		}
 		
-		setTimeout(function () {
-			$(x).children('.loader').removeClass("fadeIn");
-	    }, 600);
-		$(x).children('.loader').removeClass('visible');
-		
-		
+		//setTimeout(function () {$(x).children('.loader').removeClass("fadeIn");}, 600);
 		
 	});
 }
@@ -273,8 +280,12 @@ function changeMonth(){
 	mes = mes <10 ? "0"+mes : mes;
 	var year = $(".picker .pick-y .pick-sl").val();
 
-	$('#lstC div.item_select').children('.loader').addClass('fadeIn');
-	
+	var item = $('#lstC').find('.loader.fadeIn').attr('class');
+	if(typeof item === 'undefined'){
+		$('#lstC div.item_select').children('.loader').addClass('fadeIn');
+		$('.blockAll').addClass('visible');
+	}
+		
 	$.post('Data_Enlaces', {
 		metodo : 'enlaces_ResultadosMes',
 		mes: mes,
@@ -282,8 +293,9 @@ function changeMonth(){
 	}, function(responseText) {
 		$('#results_Client table tbody').html(responseText);
 		setTimeout(function () {
-			$('#lstC div.item_select').children('.loader').removeClass("fadeIn");
+			$('.loader').removeClass("fadeIn");
 	    }, 600);
+		$('.blockAll').removeClass('visible');
 	});
 }
 

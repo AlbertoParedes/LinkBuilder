@@ -71,11 +71,64 @@ public class Cliente {
 	@SerializedName("status")
 	@Expose
 	private String status;
+	
+	private String dominio;
+	
+	
+	
+	public Cliente(int idCliente, String web, String nombre, String servicio, int follows, int nofollows, String anchor,
+			String blog, String idioma, int followsDone, int nofollowsDone, String linkbuilder, int editando,
+			int userEditando, String eliminado, String enlacesDePago, String id_empleado, String urls_a_atacar,
+			String name_empleado, String tipoEmpleado, String status, String dominio) {
+		super();
+		this.idCliente = idCliente;
+		this.web = web;
+		this.nombre = nombre;
+		this.servicio = servicio;
+		this.follows = follows;
+		this.nofollows = nofollows;
+		this.anchor = anchor;
+		this.blog = blog;
+		this.idioma = idioma;
+		this.followsDone = followsDone;
+		this.nofollowsDone = nofollowsDone;
+		this.linkbuilder = linkbuilder;
+		this.editando = editando;
+		this.userEditando = userEditando;
+		this.eliminado = eliminado;
+		this.enlacesDePago = enlacesDePago;
+		this.id_empleado = id_empleado;
+		this.urls_a_atacar = urls_a_atacar;
+		this.name_empleado = name_empleado;
+		this.tipoEmpleado = tipoEmpleado;
+		this.status = status;
+		this.dominio = dominio;
+	}
+
 
 	public Cliente() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+
+	public String getDominio() {
+		return dominio;
+	}
+
+
+
+
+	public void setDominio(String dominio) {
+		this.dominio = dominio;
+	}
+
+
+
+
+	
+	
+	
 
 	public String getTipoEmpleado() {
 		return tipoEmpleado;

@@ -491,3 +491,42 @@ function move2Left(x){
     	
     }
 }
+
+function clientes_ordenarByWeb(x){
+	var tipo = $(x).children('i.arrowOrdenar').text().trim();
+	if(tipo == "arrow_downward" )tipo = "des";
+	else tipo = "asc";
+	guardarOrdenar("web",tipo);
+}
+function clientes_ordenarByName(x){
+	var tipo = $(x).children('i.arrowOrdenar').text().trim();
+	if(tipo == "arrow_downward" ) tipo = "des";
+	else tipo = "asc";
+	guardarOrdenar("nombre",tipo);
+}
+function clientes_ordenarByServicio(x){
+	var tipo = $(x).children('i.arrowOrdenar').text().trim();
+	if(tipo == "arrow_downward" ) tipo = "des";
+	else tipo = "asc";
+	guardarOrdenar("servicio",tipo);
+}
+function clientes_ordenarByUser(x){
+	var tipo = $(x).children('i.arrowOrdenar').text().trim();
+	if(tipo == "arrow_downward" ) tipo = "des";
+	else tipo = "asc";
+	guardarOrdenar("user",tipo);
+}
+function guardarOrdenar(campo,tipo){
+	$.post('Data_Clientes', {
+		metodo : "ordenarListaClientes",
+		campo: campo,
+		tipo: tipo
+	}, function(responseText){
+		$('#divClientes').html(responseText);
+		if(tipo=="des"){
+			$('i.arrowOrdenar').text('arrow_upward');
+		}else {
+			$('i.arrowOrdenar').text('arrow_downward');
+		}
+	});
+}

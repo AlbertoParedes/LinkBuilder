@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -21,6 +23,8 @@ import org.json.simple.JSONValue;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import Classes.OrdenarObjetos;
+import Classes.ParsingJson;
 import Classes.ReadFactura;
 import Classes.Webservice;
 import Objects.Enlace;
@@ -36,27 +40,29 @@ import Objects.Gson.ForoGson;
 public class Data_Clientes extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	Webservice ws = new Webservice();
+	private ParsingJson pj = new ParsingJson();
+	private OrdenarObjetos ob = new OrdenarObjetos();
+	ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 
-    public Data_Clientes() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+	public Data_Clientes() {
+		super();
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		HttpSession session = request.getSession();
 		int id_user = Integer.parseInt(session.getAttribute("id_user").toString());
 		String role = session.getAttribute("role_user").toString();
 		String metodo = request.getParameter("metodo");
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
-		
+
 		if(metodo.equals("cargarListaClientes")) {
-			try {cargarListaClientes(request, response, out, id_user,role);} catch (ParseException e) {e.printStackTrace();}
+			try {cargarListaClientes(request, response, out, id_user,role, false, "web");} catch (ParseException e) {e.printStackTrace();}
 		}else if(metodo.equals("guardarValoresCliente")) {
 			guardarValoresCliente(request, response, out);
 		}else if(metodo.equals("guardarNuevoCliente")) {
@@ -73,26 +79,52 @@ public class Data_Clientes extends HttpServlet {
 			subirNuevaFactura(request, response, id_user, out);
 		}else if(metodo.equals("removeDestino")) {
 			removeDestino(request, response, out);
+		}else if((metodo.equals("ordenarListaClientes"))) {
+			try {ordenarListaClientes(request, response, out, id_user,role, true);} catch (ParseException e) {e.printStackTrace();}
+		}
+
+	}
+
+	private void ordenarListaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role, boolean ordenar) throws IOException, ParseException {
+
+		String campo = request.getParameter("campo");
+		String tipo = request.getParameter("tipo");
+		
+		
+		
+		if(campo.equals("web")) {
+			if(tipo.equals("asc")) ob.clientesByDomain(clientes);
+			else ob.clientesByDomainDes(clientes);
+		}else if(campo.equals("nombre")) {
+			if(tipo.equals("asc")) ob.clientesByName(clientes);
+			else ob.clientesByNameDes(clientes);
+		}else if(campo.equals("servicio")) {
+			if(tipo.equals("asc")) ob.clientesByServicio(clientes);
+			else ob.clientesByServicioDes(clientes);
+		}else if(campo.equals("user")) {
+			if(tipo.equals("asc")) ob.clientesByUser(clientes);
+			else ob.clientesByUserDes(clientes);
 		}
 		
+		cargarListaClientes(request, response, out, id_user, user_role, ordenar, campo);
 	}
 
 	private void removeDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
-		
+
 		response.setContentType("application/json");
 		out = response.getWriter();
 		JSONObject obj = new JSONObject();
-		
+
 		String id_cliente = request.getParameter("id_cliente");
 		String url = request.getParameter("url");
 
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente,url));
 		ws.clientes(wbList, "removeDestino", "clientes.php");
-		
+
 		out.print(obj);
 
 		System.out.println("Eliminado");
-		
+
 	}
 
 	private void guardarEmpleado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
@@ -100,12 +132,12 @@ public class Data_Clientes extends HttpServlet {
 		String id_empleado_anterior = request.getParameter("id_empleado_anterior");
 		String id_empleado_seleccionado = request.getParameter("id_empleado_seleccionado");
 		String tipo_empleado_seleccionado = request.getParameter("tipo_empleado_seleccionado");
-		
-		
+
+
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente,id_empleado_seleccionado, id_empleado_anterior, tipo_empleado_seleccionado));
 		String json = ws.clientes(wbList, "insertClienteEmpleado", "clientes.php");
 		System.out.println("->"+"   "+json);
-		
+
 	}
 
 	private void guardarValoresCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
@@ -117,26 +149,26 @@ public class Data_Clientes extends HttpServlet {
 
 		if(campo.equals("linkbuilder")) {
 			String empleadoAnterior = request.getParameter("empleado_anterior");
-			
+
 			ArrayList<String> wbList=new ArrayList<String>();wbList.add(id_cliente);wbList.add(valor);wbList.add(empleadoAnterior);
 			json = ws.clientes(wbList, "insertClienteEmpleado", "clientes.php");
 			System.out.println("->"+empleadoAnterior+"   "+json);
 		}
-		
-		
-		
+
+
+
 		System.out.println("guardado");
-		
-		
-		
-		
+
+
+
+
 	}
 	private void guardarNuevoCliente(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
+
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		JSONObject obj = new JSONObject();
-		
+
 		String web = request.getParameter("web");
 		String nombre = request.getParameter("nombre");
 		String servicio = request.getParameter("servicio");
@@ -148,7 +180,7 @@ public class Data_Clientes extends HttpServlet {
 		int user = Integer.parseInt(request.getParameter("user"));
 		String user_tipo = request.getParameter("user_tipo");
 		System.out.println(user_tipo+"+++");
-		
+
 		obj.put("status", "0");
 		if(!web.startsWith("http://") && !web.startsWith("http://")) {
 			obj.put("text", "Introuce una web correcta");
@@ -159,15 +191,15 @@ public class Data_Clientes extends HttpServlet {
 		}else if(user<1){
 			obj.put("text", "Selecciona un usuario");
 		}else {
-			
+
 			//comprobamos que el cliente ya esta insertado en la base de datos
 			String dominio = web.replace("http://", "").replace("https://","").replace("www.","");
 			if(!dominio.contains("/")) dominio=dominio+"/";
 			dominio = dominio.substring(0, dominio.indexOf("/"));
 			dominio = dominio.substring(0, dominio.lastIndexOf("."));
-			
-			
-			
+
+
+
 			String json = ws.getClienteByPieceDominio(dominio, "getClienteByPieceDominio.php");
 			System.out.println(dominio+"   "+json);
 			ArrayList<ClienteGson> clientesGson = new Gson().fromJson(json, new TypeToken<List<ClienteGson>>(){}.getType());
@@ -178,11 +210,11 @@ public class Data_Clientes extends HttpServlet {
 				if(c.getWeb().equals(web)) {coincidenciaExacta=true;break;
 				}else {coincidenciaParcial=c.getWeb();}
 			}
-			
+
 			String status="",text="";
 			if(clientesGson.size()==0) {//si esto es igual a 0 significa que en la bbdd no hay ningun cliente con este dominio
 				status="1";
-				
+
 				ArrayList<String> wbList = new ArrayList<>(Arrays.asList(web,nombre,servicio,follow,nofollow,anchor,blog,idioma,user+"",user_tipo));
 				json = ws.clientes(wbList, "insertNuevoCliente", "clientes.php");
 				//ws.nuevoCliente(web, nombre, servicio, follow, nofollow, anchor, blog, idioma, user, "insertNuevoCliente.php");
@@ -193,11 +225,11 @@ public class Data_Clientes extends HttpServlet {
 			obj.put("status", status);
 			obj.put("text", text);
 			obj.put("c", coincidenciaParcial);
-			
- 
+
+
 		}
 		out.print(obj);
-				
+
 	} 
 	private void eliminarCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String json = request.getParameter("json");
@@ -220,12 +252,12 @@ public class Data_Clientes extends HttpServlet {
 		response.setContentType("application/json");
 		out = response.getWriter();
 		JSONObject obj = new JSONObject();
-		
+
 		String id_cliente = request.getParameter("id_cliente");
 		String url = request.getParameter("url");
 
 		ws.addDestino(id_cliente, url, "addDestino.php");
-		
+
 		String html = "<li class='pdd_h_17 pr inner_pop_up'><span>"+url+"</span><i onclick='deleteDestino(this)' class='material-icons inner_pop_up'> remove </i></li>";
 		obj.put("html", html);
 		out.print(obj);
@@ -350,33 +382,9 @@ public class Data_Clientes extends HttpServlet {
 
 	}
 
-	private void cargarListaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role) throws IOException, ParseException {
 
-		String listaEmpleados = "";
-		String onClickEstado="", onClickguardarEstado="";
-		//web cliente
-		String onInputWebCliente="",onChangeWebCliente="";
-		//nombre cliente
-		String onInputNombreCliente="",onChangeNombreCliente="";
-		//servicio
-		String onClickServicio="", onClickGuardarServicio="";
-		//follows
-		String onChangeGuardarFollows="";
-		//nofollows
-		String onChangeGuardarNoFollows="";
-		//anchor
-		String onChangeGuardarAnchor="";
-		//blog
-		String onChangeGuardarBlog="";
-		//idioma
-		String onChangeGuardarIdioma="";
-		//empleados
-		String onClickOpenEmpleados="";
-		//destino
-		String onClickOpenDestinos = "", onClickAddDestino="",onClickDeleteDestino="";
-
-		String onInputGuardar=""; 
-
+	private void cargarListaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role, boolean ordenar, String campoOrdenar) throws IOException, ParseException {
+		String listaEmpleados = "",onClickEstado="", onClickguardarEstado="",onInputWebCliente="",onChangeWebCliente="",onInputNombreCliente="",onChangeNombreCliente="",onClickServicio="", onClickGuardarServicio="",onChangeGuardarFollows="",onChangeGuardarNoFollows="",onChangeGuardarAnchor="",onChangeGuardarBlog="",onChangeGuardarIdioma="",onClickOpenEmpleados="",onClickOpenDestinos = "", onClickAddDestino="",onClickDeleteDestino="",onInputGuardar=""; 
 		for (Empleado e : Data.empleados) {
 			if(user_role.equals("super_admin")) {
 				listaEmpleados += "<li>"+e.getName()+"</li>";
@@ -396,11 +404,11 @@ public class Data_Clientes extends HttpServlet {
 				onClickGuardarServicio="onclick='guardarServicio(this)'";
 				onClickEstado = "onclick='openEstadoCliente(this)'";
 				onClickguardarEstado="onclick='guardarEstadoCliente(this)'";
-				
+
 			}else if(user_role.equals("free_admin")) {
 				if(e.getCategoria().equals("free")) {
 					listaEmpleados += "<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' onclick='guardarEmpleado(this)'>"+e.getName()+"</li>";
-					
+
 					onInputWebCliente="oninput='showGuardar()'";onChangeWebCliente="onchange='guardarWebCliente(this)'";
 					onInputNombreCliente="oninput='showGuardar()'";onChangeNombreCliente="onchange='guardarNombreCliente(this)'";
 					onClickServicio = "onclick='openServicio(this)'";
@@ -434,38 +442,78 @@ public class Data_Clientes extends HttpServlet {
 				}
 			}
 		}
-		
-		//clientes por usuario///////////********************************************************************
-		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_user+"",user_role));
-		String json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
-		ArrayList<Cliente> clientes = new Gson().fromJson(json, new TypeToken<List<Cliente>>(){}.getType());
+		if(ordenar==false) {
+			//clientes por usuario///////////********************************************************************
+			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_user+"",user_role));
+			String json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
+			//ArrayList<Cliente> clientes = new Gson().fromJson(json, new TypeToken<List<Cliente>>(){}.getType());
+			ArrayList<Cliente> clientes = pj.parsearClientes(json);
+			this.clientes.clear();
+			this.clientes = clientes;
+			ob.clientesByDomain(this.clientes);
+
+		}
+
+		String arrowWeb="", arrowNombre="",arrowServicio="",arrowuser="";
+		if(campoOrdenar.equals("web")) {
+			arrowWeb = "<i class='material-icons arrowOrdenar'> arrow_downward </i>";
+		}else if(campoOrdenar.equals("nombre")) {
+			arrowNombre = "<i class='material-icons arrowOrdenar'> arrow_downward </i>";
+		}else if(campoOrdenar.equals("servicio")) {
+			arrowServicio = "<i class='material-icons arrowOrdenar'> arrow_downward </i>";
+		}else if(campoOrdenar.equals("user")) {
+			arrowuser = "<i class='material-icons arrowOrdenar' style='float: right; margin-left:0px;'> arrow_downward </i>";
+		}
 		//***************************************************************************************************
-		
+
 		String selectDelete = "<div class='pretty p-icon p-smooth div_select_cliente'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>";
 		//COMIENZA LA TABLA CLIENTES
 		out.println("<div class='infoClient'>");
 		out.println("	<div class='nameClient'>CLIENTES</div>");//"+categorias.get(posicion).getEnlace()+"
 		out.println("	<div class='btnAdd' onclick='openNewCliente(this)'>Nuevo cliente</div>");
 		out.println("</div>");
-		out.println("<div class='ctoolbar'><div onclick='deleteClient(this)' class='delete_client'><i class='material-icons gris'>delete_outline</i></div><div id='websGuardar' class='zoom'>guardar</div></div>");
+		out.println("<div class='ctoolbar'>"
+				+ "<div onclick='deleteClient(this)' class='delete_client'>"
+				+ "		<i class='material-icons gris'>delete_outline</i>"
+				+ "</div>"
+				+ "<div onclick='openFilter(this)' class='filter_client'>"
+				+ "		<i class='material-icons gris'>filter_list</i>"
+				+"		<div></div>"
+				+ "</div>"
+				
+				+ "<div id='websGuardar' class='zoom'>guardar</div></div>");
 		out.println("<div class='keywordsClient listaClientes'>");
 		out.println("	<div id='results_Client' class='contentTable'>");
 		out.println("		<table id='tClients' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable select_client '>"+selectDelete+"</th><th class='cabeceraTable cStatus'><div class=\"divStatus sPendiente\"></div></th><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable cCTipo'>Servicio</th><th class='cabeceraTable cFollow'><i class='material-icons lf'>link</i></th><th class='cabeceraTable cNoFollow'><i class='material-icons lnf'>link</i></th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog'>Blog</th><th class='cabeceraTable cCIdioma'><i class='material-icons'> g_translate </i></th><th class='cabeceraTable cCUser'><i class='material-icons f_size26'> account_circle </i></th><th class='cabeceraTable cell_destino'>Destinos</th></tr></thead>");
+		out.println("			<thead><tr>"
+				+ "					<th class='cabeceraTable select_client '>"+selectDelete+"</th>"
+				+ "					<th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></div></th>"
+				+ "					<th class='cabeceraTable cCWebCliente cursor_pointer' onclick='clientes_ordenarByWeb(this)'><span class='cabeceraTable spanCabecera' >Web</span>"+arrowWeb+"</th>"
+				+ "					<th class='cabeceraTable cCNombre cursor_pointer' onclick='clientes_ordenarByName(this)' ><span class='cabeceraTable spanCabecera' >Nombre</span>"+arrowNombre+"</th>"
+				+ "					<th class='cabeceraTable cCTipo cursor_pointer'  onclick='clientes_ordenarByServicio(this)'><span class='cabeceraTable spanCabecera' >Servicio</span>"+arrowServicio+"</th>"
+				+ "					<th class='cabeceraTable cFollow'><i class='material-icons lf'>link</i></th>"
+				+ "					<th class='cabeceraTable cNoFollow'><i class='material-icons lnf'>link</i></th>"
+				+ "					<th class='cabeceraTable anchorC'>Anchor</th>"
+				+ "					<th class='cabeceraTable cCBlog'>Blog</th>"
+				+ "					<th class='cabeceraTable cCIdioma'><i class='material-icons'> g_translate </i></th>"
+				+ "					<th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='clientes_ordenarByUser(this)'><i class='material-icons f_size26'>account_circle</i>"+arrowuser+"</th>"
+				+ "					<th class='cabeceraTable cell_destino'>Destinos</th>"
+				+ "				</tr></thead>");
 		out.println("			<tbody>");
 		String htmlServicio="",htmlUserFinal="";
 
-
+		System.out.println(clientes.size());
+		System.out.println("# "+clientes.toString());
 		for (int c = 0; c < clientes.size(); c++) {
 			Cliente cliente = clientes.get(c);
-			
+
 			ArrayList<String> destinos = new ArrayList<>(Arrays.asList((cliente.getUrls_a_atacar()+",").split(",")));;
 			String status = "sPendiente";
 			if(cliente.getStatus().equals("new"))status = "sOK";
 			else if(cliente.getStatus().equals("old"))status = "sPendiente";
 			if(cliente.getStatus().equals("our"))status = "sYS";
-			
-			
+
+
 			int id_cliente = cliente.getIdCliente();//este es el ID REAL DE LA BBDD
 			//------------DESPLEGABLE COLUMNA SERVICIO-----------------
 			String claseLite="",clasePro="",clasePremium="", claseMedida="", readonly="";
@@ -489,7 +537,7 @@ public class Data_Clientes extends HttpServlet {
 			out.println("		</div>");
 			out.println("	</td>");
 			//columna Estado del cliente
-			
+
 			out.println("<td class='cStatus pr tdCat' "+onClickEstado+">");
 			out.println("	<div class='divStatus "+status+" tdCat'></div>");
 			out.println("	<div class='div_Estado_Cliente pop_up effect7 text_left' >");
@@ -529,10 +577,10 @@ public class Data_Clientes extends HttpServlet {
 			out.println("			<input "+onInputGuardar+" class='inLink' type='text' "+onChangeGuardarIdioma+" value='"+cliente.getIdioma()+"'>");				
 			out.println("	</td>");
 			//Columna USER
-			out.println("	<td class='tdCat cCUser pr' "+onClickOpenEmpleados+">");
-			out.println("		<div class='tdCat tdWeb'>");
+			out.println("	<td class='tdCat cCUser pr txt_center_mg_0' "+onClickOpenEmpleados+">");
+			out.println("		<div class='tdCat tdWeb txt_center_mg_0'>");
 			out.println("			<span data-id-empleado='"+cliente.getId_empleado()+"' data-tipo-empleado='"+cliente.getTipoEmpleado()+"' class='tdCat' type='text'>"+cliente.getName_empleado()+"</span>");
-			out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
+			//out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
 			out.println("		</div>"); 
 			out.println("		<ul class='slCt effect7 pop_up'>"+listaEmpleados+"</ul>");
 			out.println("	</td>");
@@ -546,10 +594,10 @@ public class Data_Clientes extends HttpServlet {
 			out.println("				<ul class='scroll_115 pdd_v_12 inner_pop_up'>");
 			for (String destino : destinos) {
 				if(destino.equals(cliente.getWeb())) 
-					 out.println("			<li class='pdd_h_17 pr inner_pop_up' ><span>"+destino+"</span></li>");
+					out.println("			<li class='pdd_h_17 pr inner_pop_up' ><span>"+destino+"</span></li>");
 				else out.println("			<li class='pdd_h_17 pr inner_pop_up' ><span>"+destino+"</span><i "+onClickDeleteDestino+" class='material-icons inner_pop_up'> remove </i></li>");
 
-				
+
 			}
 			out.println("				</ul>");
 			out.println("			</div>");
@@ -560,8 +608,8 @@ public class Data_Clientes extends HttpServlet {
 		out.println("		</table>");
 		out.println("	</div>");
 		out.println("</div>");
-		
-		
+
+
 		out.println("<div class='newSomething effect7'>");
 		out.println(	"<div class='cancelNew' onclick='cancelNewCliente(this)' ><i class='material-icons i_cancel'> clear </i></div>");
 		out.println(	"<table id='tNuevoCliente' class='table'>");
@@ -598,7 +646,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("				<td class='tdCat cCUser pr' onclick='opentUser(this)'>");
 		out.println("					<div class='tdCat tdWeb'>");
 		out.println("						<span data-id-empleado='0' data-tipo-empleado='0' class='tdCat' data-list-user='' type='text'>-</span>");
-		out.println("						<i class='material-icons arrow'>arrow_drop_down</i>	");
+		//out.println("						<i class='material-icons arrow'>arrow_drop_down</i>	");
 		out.println("					</div>");
 		out.println("					<ul class='slCt effect7 nuevaWeb margin_top_6'>"+listaEmpleados+"</ul>");
 		out.println("				</td>");
@@ -608,7 +656,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println(	"<div class='guardarNew' onclick='guardarNewCliente(this)'>guardar</div>");
 		out.println("</div>");
 		out.println("<div class='divBlockClientes'></div>");
-		
+
 	}
 
 }
