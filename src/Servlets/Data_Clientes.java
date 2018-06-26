@@ -73,8 +73,6 @@ public class Data_Clientes extends HttpServlet {
 			eliminarCliente(request, response, out);
 		}else if(metodo.equals("addDestino")) {
 			addDestino(request, response, out);
-		}else if(metodo.equals("guardarValoresCliente")) {
-			guardarValoresCliente(request, response, out);
 		}else if(metodo.equals("guardarEmpleado")) {
 			guardarEmpleado(request, response, out); 
 		}else if(metodo.equals("uploadFactura")) {
@@ -120,8 +118,6 @@ public class Data_Clientes extends HttpServlet {
 		String campo = request.getParameter("campo");
 		String tipo = request.getParameter("tipo");
 
-
-
 		if(campo.equals("web")) {
 			if(tipo.equals("asc")) ob.clientesByDomain(clientes);
 			else ob.clientesByDomainDes(clientes);
@@ -159,6 +155,7 @@ public class Data_Clientes extends HttpServlet {
 
 	private void guardarEmpleado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String id_cliente = request.getParameter("id_cliente");
+		int cliente_posicion = Integer.parseInt(request.getParameter("cliente_posicion"));
 		String id_empleado_anterior = request.getParameter("id_empleado_anterior");
 		String id_empleado_seleccionado = request.getParameter("id_empleado_seleccionado");
 		String tipo_empleado_seleccionado = request.getParameter("tipo_empleado_seleccionado");
@@ -174,23 +171,32 @@ public class Data_Clientes extends HttpServlet {
 		String valor = request.getParameter("valor");
 		String campo = request.getParameter("campo");
 		String id_cliente = request.getParameter("id_cliente");
+		int posicion = Integer.parseInt(request.getParameter("posicion"));
 		System.out.println(valor+"  "+campo+"   "+id_cliente);
-		String json = ws.updateCliente(id_cliente, campo, valor, "updateCliente.php");
-
-		if(campo.equals("linkbuilder")) {
-			String empleadoAnterior = request.getParameter("empleado_anterior");
-
-			ArrayList<String> wbList=new ArrayList<String>();wbList.add(id_cliente);wbList.add(valor);wbList.add(empleadoAnterior);
-			json = ws.clientes(wbList, "insertClienteEmpleado", "clientes.php");
-			System.out.println("->"+empleadoAnterior+"   "+json);
+		ws.updateCliente(id_cliente, campo, valor, "updateCliente.php");
+		
+		if(campo.equals("web")) {
+			clientes.get(posicion).setWeb(valor);
+			clientes.get(posicion).setDominio(valor.replace("https://", "").replace("http://", "").replace("www.", ""));
+		}else if(campo.equals("nombre")) {
+			clientes.get(posicion).setNombre(valor);
+		}else if(campo.equals("follows")) {
+			clientes.get(posicion).setFollows(Integer.parseInt(valor));
+		}else if(campo.equals("nofollows")) {
+			clientes.get(posicion).setNofollows(Integer.parseInt(valor));
+		}else if(campo.equals("anchor")) {
+			clientes.get(posicion).setAnchor(valor);
+		}else if(campo.equals("blog")) {
+			clientes.get(posicion).setBlog(valor);
+		}else if(campo.equals("idioma")) {
+			clientes.get(posicion).setIdioma(valor);
+		}else if(campo.equals("servicio")) {
+			clientes.get(posicion).setServicio(valor);;
 		}
-
-
-
-		System.out.println("guardado");
-
-
-
+		
+		System.out.println("guardado, posicion: "+posicion);
+		
+		
 
 	}
 	private void guardarNuevoCliente(HttpServletRequest request, HttpServletResponse response) throws IOException {

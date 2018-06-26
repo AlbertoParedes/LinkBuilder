@@ -40,16 +40,27 @@ function openServicio(x){
 function opentUser(x){
 	
 	
-	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
+	$(".rotArrow").removeClass("rotArrow");
+	$("i.description_enlace").removeClass("lf");
+	
+	$(".slCt").removeClass("visible");
+	$(".pop_up").removeClass("visible");
+	$(".slT").removeClass("visible");
+	
 	if(!$(x).find("ul").attr('class').includes("visible")){
-		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
-		$(".slT").removeClass("visible");
+		
 		$(x).children('ul').addClass("visible");
+		$(x).children('ul').find('li').removeClass("liActive");
 		$(x).find('div i.arrow').addClass('rotArrow');
-	}else{
-		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+		
+		var empleado_seleccionado = $(x).find('div.tdWeb span').attr('data-id-empleado');
+		$(x).children('ul').children('li[data-id-empleado="'+empleado_seleccionado+'"]').addClass("liActive");
+		
+	}/*else{
+		$(".slCt").removeClass("visible");
+		$(".pop_up").removeClass("visible");
 		$(".slT").removeClass("visible");
-	}
+	}*/
 	
 	if($(x).children('ul').attr('class').includes("nuevaWeb")){$(x).children('ul').css("width",$(x).css("width"))}
 }
@@ -121,6 +132,7 @@ function guardarEmpleado(x){
 	
 	
 	var id_cliente = $(x).closest('tr').attr('id');
+	var cliente_posicion = $(x).closest('tr').attr('posicion');
 	var id_empleado_anterior = $(x).closest('td').children('div.tdWeb').children('span').attr('data-id-empleado');
 	var id_empleado_seleccionado = $(x).attr('data-id-empleado');
 	var tipo_empleado_seleccionado = $(x).attr('data-tipo-empleado');
@@ -133,6 +145,7 @@ function guardarEmpleado(x){
 		$.post('Data_Clientes', {
 			metodo : "guardarEmpleado",
 			id_cliente: id_cliente,
+			cliente_posicion:cliente_posicion,
 			id_empleado_anterior:id_empleado_anterior,
 			id_empleado_seleccionado: id_empleado_seleccionado,
 			tipo_empleado_seleccionado: tipo_empleado_seleccionado
@@ -267,11 +280,13 @@ function cancelNewCliente(x){
 
 
 function guardarValoresCliente(id_cliente,campo,valor){
+	var posicion = $('#tClients tr#'+id_cliente).attr('posicion');
 	$.post('Data_Clientes', {
 		metodo : "guardarValoresCliente",
 		id_cliente: id_cliente,
 		campo:campo,
-		valor: valor
+		valor: valor,
+		posicion:posicion
 	}, function(){
 		$("#websGuardar").removeClass('cSave');
 	});
