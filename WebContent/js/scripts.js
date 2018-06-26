@@ -630,7 +630,8 @@ window.addEventListener('click', function(e){
 	}else if(clase.includes("inner_pop_up")){
 		//ignorar click dentro del popup
 	}else {
-		$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
+		$(".rotArrow").removeClass("rotArrow");
+		$("i.description_enlace").removeClass("lf");
 		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
 		$('.paid_inputs').removeClass('open_inputs');
 		

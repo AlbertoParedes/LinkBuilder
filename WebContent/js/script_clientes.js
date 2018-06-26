@@ -492,41 +492,85 @@ function move2Left(x){
     }
 }
 
-function clientes_ordenarByWeb(x){
-	var tipo = $(x).children('i.arrowOrdenar').text().trim();
-	if(tipo == "arrow_downward" )tipo = "des";
-	else tipo = "asc";
-	guardarOrdenar("web",tipo);
-}
-function clientes_ordenarByName(x){
-	var tipo = $(x).children('i.arrowOrdenar').text().trim();
-	if(tipo == "arrow_downward" ) tipo = "des";
-	else tipo = "asc";
-	guardarOrdenar("nombre",tipo);
-}
-function clientes_ordenarByServicio(x){
-	var tipo = $(x).children('i.arrowOrdenar').text().trim();
-	if(tipo == "arrow_downward" ) tipo = "des";
-	else tipo = "asc";
-	guardarOrdenar("servicio",tipo);
-}
-function clientes_ordenarByUser(x){
-	var tipo = $(x).children('i.arrowOrdenar').text().trim();
-	if(tipo == "arrow_downward" ) tipo = "des";
-	else tipo = "asc";
-	guardarOrdenar("user",tipo);
-}
-function guardarOrdenar(campo,tipo){
+
+function aplicarFiltro(x){
+	
+	
+	var filtros = [];
+	var obj = {};
+	$(x).closest('div#divClientes').find('.ctoolbar div.txt_opciones_filter input:checked').each(function(){
+		var tipo = $(this).closest('div.txt_opciones_filter').attr('data-filter');
+		var valor = $(this).closest('div.txt_opciones_filter').attr('data-valor');
+		obj = {	'tipo': tipo, 'valor': valor}
+		filtros.push(obj);
+	});
+	var json = JSON.stringify(filtros);
+	
+	var clase = $(x).attr('class');
+	if(clase.includes('cabeceraTable')){
+		var tipo = $(x).children('i.arrowOrdenar').text().trim();
+		if(tipo == "arrow_downward" ) tipo = "des";
+		else tipo = "asc";
+		var campo = $(x).attr('data-tipo');
+	}else if(clase.includes('btn_filter')){
+		var tipo = "";
+		var campo = "";
+	}
+	
+	
 	$.post('Data_Clientes', {
 		metodo : "ordenarListaClientes",
 		campo: campo,
-		tipo: tipo
+		tipo: tipo,
+		json: json
 	}, function(responseText){
-		$('#divClientes').html(responseText);
-		if(tipo=="des"){
-			$('i.arrowOrdenar').text('arrow_upward');
-		}else {
-			$('i.arrowOrdenar').text('arrow_downward');
+		$('#tClients tbody').html(responseText);
+		if(clase.includes('cabeceraTable')){
+			if(tipo=="des"){$(x).children('i.arrowOrdenar').text('arrow_upward');}
+			else {$(x).children('i.arrowOrdenar').text('arrow_downward');}
+			
+			$('#tClients thead i.arrowOrdenar').removeClass('visible');
+			$(x).children('i.arrowOrdenar').addClass('visible');
+			$('#tClients thead i.arrowOrdenar:not(.visible)').text('arrow_upward');
+		}else if(clase.includes('btn_filter')){
+			viewFilters(filtros);
 		}
+		
 	});
+}
+function openFilter(x){
+	$(x).children('div.pop_up').addClass('visible');
+}
+
+function viewFilters(filtros){
+	var html="", texto="";
+	var contenedor = $('#divClientes div.ctoolbar div.div_group_filter');
+	for (var i = 0; i < filtros.length; i++){
+		var obj = filtros[i];
+		if(obj.valor=="pro")texto="seo pro";
+		else if(obj.valor=="lite")texto="seo lite";
+		else if(obj.valor=="pro")texto="seo pro";
+		else if(obj.valor=="premium")texto="seo premium";
+		else if(obj.valor=="medida")texto="seo a medida";
+		else texto=obj.valor;
+		html+="<div class='item_filter_group' data-filter='"+obj.tipo+"' data-valor='"+obj.valor+"'>"+texto+"<svg onclick='deteleItemFilter(this)' class='delete_item_filter' height='24' viewBox='0 0 24 24' width='17'><path class='btn_detele_item_filter' d='M12 2c-5.53 0-10 4.47-10 10s4.47 10 10 10 10-4.47 10-10-4.47-10-10-10zm5 13.59l-1.41 1.41-3.59-3.59-3.59 3.59-1.41-1.41 3.59-3.59-3.59-3.59 1.41-1.41 3.59 3.59 3.59-3.59 1.41 1.41-3.59 3.59 3.59 3.59z'></path></svg></div>";
+		console.log(obj.tipo+" - "+obj.valor);
+	}
+	$(contenedor).html(html);
+	
+	$('.pop_up').removeClass('visible');
+	
+}
+
+function deteleItemFilter(x){
+	var data_filter = $(x).closest('div.item_filter_group').attr('data-filter');
+	var data_valor = $(x).closest('div.item_filter_group').attr('data-valor');
+	
+	//desmarcar checkbox del filtro
+	
+	$(x).closest('.ctoolbar').find('.filter_client .div_filtro div.txt_opciones_filter[data-filter="'+data_filter+'"][data-valor="'+data_valor+'"] input').prop('checked', false);
+	$(x).closest('.ctoolbar').find('.filter_client .div_filtro .btn_filter').click();
+	$('.pop_up').removeClass('visible');
+	//alert(texto);
+	
 }
