@@ -549,6 +549,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("					<th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='aplicarFiltro(this)' data-tipo='user'><i class='material-icons f_size26'>account_circle</i>"+arrowuser+"</th>");
 		out.println("					<th class='cabeceraTable cell_destino txt_center_mg_0'>Destinos</th>");
 		out.println("				</tr>");
+		
 		out.println("			</thead>");
 		out.println("			<tbody>");
 		for (int c = 0; c < clientes.size(); c++) {

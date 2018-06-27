@@ -243,6 +243,9 @@ public class Data extends HttpServlet {
 
 		int id_categoria = Integer.parseInt(request.getParameter("id_categoria"));
 		int posicion = Integer.parseInt(request.getParameter("posicion"));
+		
+		
+		String head="			<thead><tr><th class='cabeceraTable cCWeb'>Web</th><th class='cabeceraTable cCDR'>DR</th><th class='cabeceraTable cCDA'>DA</th><th class='cabeceraTable cCTem'>Tem&aacute;tica</th><th class='cabeceraTable cCDesc'>Descripci&oacute;n</th><th class='cabeceraTable cCReut'>Reutilizable</th><th class='cabeceraTable cCRegi'>Requiere</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
 
 		//obtenemos los foros de la categoria seleccionada
 		String json = ws.getForosByCategoria(id_categoria+"", "getForosByCategoria.php");
@@ -269,10 +272,11 @@ public class Data extends HttpServlet {
 		out.println("</div>");
 		out.println("<div class='ctoolbar'>"+form+"<div id='websGuardar' class='zoom'>guardar</div></div>");
 
-		out.println("<div class='keywordsClient'>");
+		out.println("<div class='div_table'>");
 		out.println("	<div id='results_Foros' class='contentTable'>");
+		//out.println("		<table>"+head+"<tbody></tbody></table>");
 		out.println("		<table id='tCategorias' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable cCWeb'>Web</th><th class='cabeceraTable cCDR'>DR</th><th class='cabeceraTable cCDA'>DA</th><th class='cabeceraTable cCTem'>Tem&aacute;tica</th><th class='cabeceraTable cCDesc'>Descripci&oacute;n</th><th class='cabeceraTable cCReut'>Reutilizable</th><th class='cabeceraTable cCRegi'>Requiere</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>");
+		out.println(			head);
 		out.println("			<tbody>");
 
 		for(int i = 0; i < foros.size(); i++) {

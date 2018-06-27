@@ -137,7 +137,7 @@ public class Data_Enlaces extends HttpServlet {
 		String id_client = request.getParameter("id_client");
 		String fecha;//= request.getParameter("fecha");
 
-		//if(fecha.contains("undefined")) {//cuando obtenemos el año por javascript nos devueve siempre undefined si estamos en el mes correspondiente al dia de hoy
+		//if(fecha.contains("undefined")) {//cuando obtenemos el aï¿½o por javascript nos devueve siempre undefined si estamos en el mes correspondiente al dia de hoy
 			Date today = new Date(); 
 			Calendar cal = Calendar.getInstance(); cal.setTime(today);
 			int month = cal.get(Calendar.MONTH)+1, year = cal.get(Calendar.YEAR);
@@ -241,15 +241,15 @@ public class Data_Enlaces extends HttpServlet {
 		//barra de herramientas
 		html+="<div class='ctoolbar'><div id='cGuardar' class='zoom'>guardar</div></div>";
 
-		html+="<div class='keywordsClient'>";
+		html+="<div class='div_table'>";
 		//html+="	<div class='titleTable'>Keywords<div class='horDiv'></div></div>";
 		html+="	<div id='results_Client' class='contentTable'>";
 		//tabla
 		html+="		<table id='tClientes' class='table'>";
 		if(!empleado_role.equals("user_paid")) {
-			html+="			<thead class='head_fixed'><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Medio</th><th class='cabeceraTable cLink'>Enlace</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
+			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Medio</th><th class='cabeceraTable cLink'>Enlace</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
 		}else {
-			html+="			<thead class='head_fixed'><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>";
+			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>";
 		}
 		html+="			<tbody>";
 		html+="			</tbody>"; 
@@ -338,7 +338,7 @@ public class Data_Enlaces extends HttpServlet {
 				if(!e.getDescripcionForo().trim().equals("")) {
 					botonDescripcion="<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>";
 				}
-
+ 
 				//TABLA----------------------
 				out.println("<tr id='"+id_resultado+"' posicion='"+i+"'>");
 				out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");

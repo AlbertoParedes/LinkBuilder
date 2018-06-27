@@ -459,8 +459,7 @@ function searchC() {
 }
 
 function resize_head_table_enlaces(){
-	alert('hola');
-	var tr = $('#tClientes tbody tr:first-child');
+	/*var tr = $('#tClientes tbody tr:first-child');
 	
 	$('#tClientes tbody tr:first-child td').each(function(i) {
 		var position = i+1;
@@ -468,7 +467,7 @@ function resize_head_table_enlaces(){
 		//alert(position+" -  "+w);
 		$('#tClientes thead tr th:nth-child('+position+')').width(w);
 	});
-	
+	*/
 }
 
 

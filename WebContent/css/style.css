@@ -223,9 +223,9 @@ input:checked + .slider:before {-webkit-transform: translateX(11px);-ms-transfor
 
 .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{font-family: gotham, helvetica, arial, sans-serif;height: 32px;font-size: 13px;color: #878787;    border-bottom: 0px solid #ececec;    padding-top: 6px;padding-bottom: 6px;    border-top: 0px;    vertical-align: middle;    padding: 0 9px;}
 .table span{font-family: gotham, helvetica, arial, sans-serif;font-size: 13px;}
-.cabeceraTable{font-family: gotham, helvetica, arial, sans-serif!important;color: #606060!important;font-size: 16px!important;line-height: 28px!important;padding-left: 9px!important;font-weight: 400;overflow: hidden;
+.cabeceraTable{font-family: gotham, helvetica, arial, sans-serif!important;color: #606060!important;font-size: 16px!important;line-height: 28px!important;padding-left: 9px!important;font-weight: 400;/*overflow: hidden;
     display: inline-block;
-    white-space: nowrap;}
+    white-space: nowrap;*/}
 .tdCat{cursor: pointer;    min-height: 19px;}
 .inCal{position: absolute;
     top: 0;
@@ -249,13 +249,13 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 
 .arrow{position: absolute;right: 0;}
 
-.cStatus{ width: 35px;max-width: 35px;}
+.cStatus{ width: 35px;}
 .cLink{ width: 25%;}
 .cDest{width: 18%;}
 .cAnchor{width: 12%;}
 .cWeb{width: 18%;}
 .cTipo{ width: 50px; min-width: 50px;   text-align: center;}
-.cCateg{width: 210px;max-width: 210px;}
+.cCateg{width: 210px;}
 .pa{position: absolute;background: white;    z-index: 1;    top: 0;}
 .noti{border: solid;    font-family: 'Lato', sans-serif;    border-width: 1px;    position: absolute;    right: 25px;    top: 36px;    font-size: 11px;    border-color: #ea4335;    color: #ea4335;    text-align: center;    border-radius: 50px;    padding: 1px 6px;background: white;}  
 .notiPos{    border-color: white;
@@ -1189,6 +1189,14 @@ tr:hover{
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);}
+.div_table{position: absolute;
+    top: 130px;
+    width: 100%;
+    height: calc(100% - 130px);
+    padding-right: 50px;
+    padding-left: 50px;
+    padding-top: 31px;
+    padding-bottom: 20px;}
 
 .visible{display: block;}
 .fadeIn{visibility:visible;opacity: 1;}

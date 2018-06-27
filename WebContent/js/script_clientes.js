@@ -597,8 +597,6 @@ function deteleItemFilter(x){
 
 
 function resize_head_table_clientes(){
-	//alert('adios');
-
 	var tr = $('#tClients tbody tr:first-child');
 	
 	//$('#tClients thead').width($(tr).outerWidth());
