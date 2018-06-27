@@ -132,10 +132,11 @@ function guardarEmpleado(x){
 	
 	
 	var id_cliente = $(x).closest('tr').attr('id');
-	var cliente_posicion = $(x).closest('tr').attr('posicion');
+	var posicion = $(x).closest('tr').attr('posicion');
 	var id_empleado_anterior = $(x).closest('td').children('div.tdWeb').children('span').attr('data-id-empleado');
 	var id_empleado_seleccionado = $(x).attr('data-id-empleado');
 	var tipo_empleado_seleccionado = $(x).attr('data-tipo-empleado');
+	var nombre_empleado_seleccionado = $(x).text();
 	
 	$(x).closest('td').children('div.tdWeb').children('span').attr('data-id-empleado',id_empleado_seleccionado);
 	$(x).closest('td').children('div.tdWeb').children('span').attr('data-tipo-empleado',tipo_empleado_seleccionado);
@@ -145,10 +146,11 @@ function guardarEmpleado(x){
 		$.post('Data_Clientes', {
 			metodo : "guardarEmpleado",
 			id_cliente: id_cliente,
-			cliente_posicion:cliente_posicion,
+			posicion:posicion,
 			id_empleado_anterior:id_empleado_anterior,
 			id_empleado_seleccionado: id_empleado_seleccionado,
-			tipo_empleado_seleccionado: tipo_empleado_seleccionado
+			tipo_empleado_seleccionado: tipo_empleado_seleccionado,
+			nombre_empleado_seleccionado:nombre_empleado_seleccionado
 		}, function(){
 			$("#websGuardar").removeClass('cSave');
 			
@@ -567,6 +569,9 @@ function viewFilters(filtros){
 		else if(obj.valor=="pro")texto="seo pro";
 		else if(obj.valor=="premium")texto="seo premium";
 		else if(obj.valor=="medida")texto="seo a medida";
+		else if(obj.valor=="new")texto="clientes nuevos";
+		else if(obj.valor=="old")texto="clientes normales";
+		else if(obj.valor=="our")texto="clientes yoseo";
 		else texto=obj.valor;
 		html+="<div class='item_filter_group' data-filter='"+obj.tipo+"' data-valor='"+obj.valor+"'>"+texto+"<svg onclick='deteleItemFilter(this)' class='delete_item_filter' height='24' viewBox='0 0 24 24' width='17'><path class='btn_detele_item_filter' d='M12 2c-5.53 0-10 4.47-10 10s4.47 10 10 10 10-4.47 10-10-4.47-10-10-10zm5 13.59l-1.41 1.41-3.59-3.59-3.59 3.59-1.41-1.41 3.59-3.59-3.59-3.59 1.41-1.41 3.59 3.59 3.59-3.59 1.41 1.41-3.59 3.59 3.59 3.59z'></path></svg></div>";
 		console.log(obj.tipo+" - "+obj.valor);
@@ -589,3 +594,49 @@ function deteleItemFilter(x){
 	//alert(texto);
 	
 }
+
+
+function resize_head_table_clientes(){
+	//alert('adios');
+
+	var tr = $('#tClients tbody tr:first-child');
+	
+	//$('#tClients thead').width($(tr).outerWidth());
+	
+	$('#tClients tbody tr:first-child td').each(function(i) {
+		var position = i+1;
+		var w = $(this).width();
+		//alert(position+" -  "+w);
+		$('#tClients thead tr th:nth-child('+position+')').width(w);
+	});
+	
+	
+	
+	$('.resize_head_table_clientes').remove();
+	
+}
+
+window.onresize = function() {
+	resize_head_table_clientes();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

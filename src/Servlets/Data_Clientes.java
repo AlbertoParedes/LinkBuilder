@@ -89,7 +89,7 @@ public class Data_Clientes extends HttpServlet {
 	
 	private void filtrarLista(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String json = request.getParameter("json");
-		String servicios="", usuarios="";
+		String servicios="", usuarios="", estados="";
 		Object jsonObject =JSONValue.parse(json.toString());
 		JSONArray arrayData = (JSONArray)jsonObject;
 		for(int i=0;i<arrayData.size();i++){
@@ -97,19 +97,45 @@ public class Data_Clientes extends HttpServlet {
 			String tipo = row.get("tipo").toString(), valor = row.get("valor").toString();
 			if(tipo.equals("servicio"))servicios += valor+";";
 			if(tipo.equals("empleado"))usuarios += valor+";";
+			if(tipo.equals("estado"))estados += valor+";";
 		}
-		System.out.println("**"+json);
+		System.out.println("filtrar por: -> "+json);
 		for (int c = 0; c < clientes.size(); c++) {
 			Cliente cliente = clientes.get(c);
-			if(servicios.equals("") && usuarios.equals("")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
-			}else if(servicios.contains(cliente.getServicio()+";") && usuarios.equals("")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
-			}else if(servicios.equals("") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
-			}else if(servicios.contains(cliente.getServicio()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")) {
+			
+			// si no hay ningun filtro se mostran otravez todos
+			if(servicios.equals("") && usuarios.equals("") && estados.equals("")) { 
 				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
 			}
+			// si los tres tipos de filtros esta llenos por algo hacemos este if
+			else if(servicios.contains(cliente.getServicio()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";") && estados.contains(cliente.getStatus()+";")) {
+				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+			}
+			//si estado y servicios estan llenos y usuarios esta vacio
+			else if(estados.contains(cliente.getStatus()+";") && servicios.contains(cliente.getServicio()+";")			&& usuarios.equals("")) {
+				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+			}
+			//si estado y usuarios estan llenos y servicios esta vacio
+			else if(estados.contains(cliente.getStatus()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")			&& servicios.equals("")) {
+				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+			}
+			//si servicios y usuarios estan llenos y estado esta vacio
+			else if(servicios.contains(cliente.getServicio()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")			&& estados.equals("")) {
+				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+			}
+			//si estado esta lleno y lo demas vacio
+			else if(estados.contains(cliente.getStatus()+";")		&& servicios.equals("") && usuarios.equals("")) {
+				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+			}
+			//si servicios esta lleno y lo demas vacio
+			else if(servicios.contains(cliente.getServicio()+";")		&& estados.equals("") && usuarios.equals("")) {
+				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+			}
+			//si empleados esta lleno y lo demas vacio
+			else if(usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")			&& estados.equals("") && servicios.equals("")) {
+				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+			}
+
 		}
 	}
 
@@ -155,14 +181,17 @@ public class Data_Clientes extends HttpServlet {
 
 	private void guardarEmpleado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String id_cliente = request.getParameter("id_cliente");
-		int cliente_posicion = Integer.parseInt(request.getParameter("cliente_posicion"));
+		int posicion = Integer.parseInt(request.getParameter("posicion"));
 		String id_empleado_anterior = request.getParameter("id_empleado_anterior");
 		String id_empleado_seleccionado = request.getParameter("id_empleado_seleccionado");
 		String tipo_empleado_seleccionado = request.getParameter("tipo_empleado_seleccionado");
+		String nombre_empleado_seleccionado = request.getParameter("nombre_empleado_seleccionado");
 
 
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente,id_empleado_seleccionado, id_empleado_anterior, tipo_empleado_seleccionado));
 		String json = ws.clientes(wbList, "insertClienteEmpleado", "clientes.php");
+		System.out.println(nombre_empleado_seleccionado);
+		clientes.get(posicion).setName_empleado(nombre_empleado_seleccionado);
 		System.out.println("->"+"   "+json);
 
 	}
@@ -191,7 +220,9 @@ public class Data_Clientes extends HttpServlet {
 		}else if(campo.equals("idioma")) {
 			clientes.get(posicion).setIdioma(valor);
 		}else if(campo.equals("servicio")) {
-			clientes.get(posicion).setServicio(valor);;
+			clientes.get(posicion).setServicio(valor);
+		}else if(campo.equals("status")) {
+			clientes.get(posicion).setStatus(valor);
 		}
 		
 		System.out.println("guardado, posicion: "+posicion);
@@ -429,7 +460,7 @@ public class Data_Clientes extends HttpServlet {
 
 		listaEmpleados = ""; 
 		for (Empleado e : Data.empleados) {
-			if(empleado.getCategoria().equals("free")) {
+			if(e.getCategoria().equals("free")) {
 				listaEmpleados += "<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+e.getName()+"</li>";
 			}
 		}
@@ -471,14 +502,29 @@ public class Data_Clientes extends HttpServlet {
 		out.println("		<i class='tdCat material-icons gris'>filter_list</i>");
 		out.println("		<div class='div_filtro effect7 pop_up' onclick='stopPropagation()'>");
 		out.println("			<div class='title_filter'>Filtros <i class='material-icons i_title_filter'> clear </i></div>");
-		out.println("			<div class='section_filter'>Servicios</div>");
-		out.println("			<div data-filter='servicio' data-valor='lite' class='txt_opciones_filter'>SEO Lite<div class='pretty p-icon p-smooth chkbx_filter '><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
-		out.println("			<div data-filter='servicio' data-valor='pro' class='txt_opciones_filter'>SEO Pro<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
-		out.println("			<div data-filter='servicio' data-valor='premium' class='txt_opciones_filter'>SEO Premium<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
-		out.println("			<div data-filter='servicio' data-valor='medida' class='txt_opciones_filter'>SEO a medida<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
-		out.println("			<div class='section_filter'>Empleados</div>");
-		out.println("			<div data-filter='empleado' data-valor='nini' class='txt_opciones_filter'>Nini<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
-		out.println("			<div data-filter='empleado' data-valor='vane' class='txt_opciones_filter'>Vane<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		
+		out.println("				<div class='float_left'>");
+		out.println("					<div class='section_filter'>Estado cliente</div>");
+		out.println("					<div data-filter='estado' data-valor='new' class='txt_opciones_filter'>Cliente nuevo<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='estado' data-valor='old' class='txt_opciones_filter'>Cliente normal<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='estado' data-valor='our' class='txt_opciones_filter'>Cliente YoSEO<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("				</div>");
+		
+		out.println("				<div class='float_left'>");
+		out.println("					<div class='section_filter'>Servicios</div>");
+		out.println("					<div data-filter='servicio' data-valor='lite' class='txt_opciones_filter'>SEO Lite<div class='pretty p-icon p-smooth chkbx_filter '><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='servicio' data-valor='pro' class='txt_opciones_filter'>SEO Pro<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='servicio' data-valor='premium' class='txt_opciones_filter'>SEO Premium<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='servicio' data-valor='medida' class='txt_opciones_filter'>SEO a medida<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("				</div>");
+
+		out.println("				<div class='float_left'>");
+		out.println("					<div class='section_filter'>Empleados</div>");
+		out.println("					<div data-filter='empleado' data-valor='nini' class='txt_opciones_filter'>Nini<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='empleado' data-valor='vane' class='txt_opciones_filter'>Vane<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("				</div>");
+		
+		
 		out.println("			<div class='btn_filter' onclick='aplicarFiltro(this)'>Aplicar</div>");
 		out.println("		</div>");
 		out.println("	</div>");
@@ -488,7 +534,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("<div class='keywordsClient listaClientes'>");
 		out.println("	<div id='results_Client' class='contentTable'>");
 		out.println("		<table id='tClients' class='table'>");
-		out.println("			<thead>");
+		out.println("			<thead class='head_fixed'>");
 		out.println("				<tr>");
 		out.println("					<th class='cabeceraTable select_client '>"+selectDelete+"</th>");
 		out.println("					<th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></div></th>");
@@ -498,10 +544,10 @@ public class Data_Clientes extends HttpServlet {
 		out.println("					<th class='cabeceraTable cFollow'><i class='material-icons lf'>link</i></th>");
 		out.println("					<th class='cabeceraTable cNoFollow'><i class='material-icons lnf'>link</i></th>");
 		out.println("					<th class='cabeceraTable anchorC'>Anchor</th>");
-		out.println("					<th class='cabeceraTable cCBlog'>Blog</th>");
+		out.println("					<th class='cabeceraTable cCBlog txt_center_mg_0'>Blog</th>");
 		out.println("					<th class='cabeceraTable cCIdioma'><i class='material-icons'> g_translate </i></th>");
 		out.println("					<th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='aplicarFiltro(this)' data-tipo='user'><i class='material-icons f_size26'>account_circle</i>"+arrowuser+"</th>");
-		out.println("					<th class='cabeceraTable cell_destino'>Destinos</th>");
+		out.println("					<th class='cabeceraTable cell_destino txt_center_mg_0'>Destinos</th>");
 		out.println("				</tr>");
 		out.println("			</thead>");
 		out.println("			<tbody>");
@@ -514,10 +560,11 @@ public class Data_Clientes extends HttpServlet {
 		out.println("	</div>");
 		out.println("</div>");
 		//nuevo cliente****************************************************************************************************************************************************
+		
 		out.println("<div class='newSomething effect7'>");
 		out.println("	<div class='cancelNew' onclick='cancelNewCliente(this)' ><i class='material-icons i_cancel'> clear </i></div>");
 		out.println("	<table id='tNuevoCliente' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable tipoNew'>Servicio</th><th class='cabeceraTable cFollow'>Follow</th><th class='cabeceraTable cNoFollow'>NoFollow</th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th><th class='cabeceraTable cCUser'>User</th></tr></thead>");
+		out.println("			<thead><tr><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable tipoNew'>Servicio</th><th class='cabeceraTable cFollow wdth_45'><i class='material-icons lf'>link</i></th><th class='cabeceraTable cNoFollow wdth_45'><i class='material-icons lnf'>link</i></th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog txt_center_mg_0'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th><th class='cabeceraTable cCUser'>User</th></tr></thead>");
 		out.println("			<tbody>");
 		out.println("				<td class='cCWebCliente'><input class='inLink'  placeholder='Introduce una web' type='text' value=''></td>");
 		out.println("				<td class='cCNombre'><input class='inLink' placeholder='Introduce un nombre' type='text' value=''></td>");
@@ -533,8 +580,8 @@ public class Data_Clientes extends HttpServlet {
 		out.println("			   	<td class='cFollow'><input class='inLink' type='text' onchange='guardarFollows(this)' value='0'></td>");			
 		out.println("   		   	<td class='cNoFollow'><input class='inLink' type='text' onchange='guardarNoFollows(this)' value='0'></td>");
 		out.println("				<td class='anchorC'><input type='text' class='inLink' placeholder='Introduce un anchor' onchange='guardarAnchorCliente(this)' value=''></td>");
-		out.println("				<td class='tdCat cCBlog pr'>");
-		out.println("					<div class='tdCat tdWeb ckBlog'><label  class='switch'><input class='slT' type='checkbox' onchange='guardarBlog(this)'><span class='slider round'></span></label></div>");
+		out.println("				<td class='tdCat cCBlog txt_center_mg_0 pr'>");
+		out.println("					<div class='tdCat tdWeb'><label  class='switch label_switch'><input class='slT' type='checkbox' onchange='guardarBlog(this)'><span class='slider round'></span></label></div>");
 		out.println("				</td>");
 		out.println("				<td class='tdCat cCIdioma'><input class='inLink' type='text' onchange='guardarIdioma(this)' value='ESP'></td>");
 		out.println("				<td class='tdCat cCUser pr' onclick='opentUser(this)'>");
@@ -548,6 +595,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("</div>");
 		//********************************************************************************************************************************************************************
 		out.println("<div class='divBlockClientes'></div>");
+		out.println("<div class='resize_head_table_clientes'><script> resize_head_table_clientes() </script></div>");
 		System.out.println("pagina cargada");
 		
 	}
@@ -614,9 +662,9 @@ public class Data_Clientes extends HttpServlet {
 		//Columna ANCHOR
 		out.println("	<td class='anchorC'><input type='text' "+empleado.getClientesAnchor().get("onInput")+" class='inLink' "+empleado.getClientesAnchor().get("onChange")+" value='"+cliente.getAnchor()+"' "+empleado.getClientesAnchor().get("estado")+"></td>");
 		//Columna BLOG
-		out.println("	<td class='tdCat cCBlog pr'>");
-		out.println("		<div class='tdCat tdWeb ckBlog'>");
-		out.println("			<label  class='switch'><input class='slT' type='checkbox' "+empleado.getClientesBlog().get("onChange")+" "+blogChecked+" "+empleado.getClientesBlog().get("estado")+"><span class='slider round'></span></label>");
+		out.println("	<td class='tdCat cCBlog txt_center_mg_0 pr'>");
+		out.println("		<div class='tdCat tdWeb'>");
+		out.println("			<label  class='switch label_switch'><input class='slT' type='checkbox' "+empleado.getClientesBlog().get("onChange")+" "+blogChecked+" "+empleado.getClientesBlog().get("estado")+"><span class='slider round'></span></label>");
 		out.println("		</div>");
 		out.println("	</td>");
 		//Columna IDIOMA
