@@ -266,7 +266,7 @@ overflow: hidden;overflow-y: scroll;   /* height: auto; */width: 100%;max-width:
 .rotArrow{transform: rotate(180deg);color: #4688F1!important; transition: all 0.7s;}
 .spanWeb{    position: absolute;/* min-width: 50px; */overflow: hidden;overflow-wrap: break-word;text-overflow: ellipsis;white-space: nowrap;width: calc(100% - 40px);}
 
-#tClientes{/*table-layout:fixed*/}
+#tClientes{table-layout:fixed}
 #tClientes td{white-space: nowrap;overflow: visible;}
 .tdWeb{    white-space: nowrap;
     overflow: hidden;
@@ -971,7 +971,7 @@ ul{list-style-type: none;margin: 0px!important;}
 .text_center{text-align: center;}
 .text_left{text-align: left!important;} 
 
-.goLink:hover{color:#4688F1}
+.goLink:hover{/*color:#4688F1*/}
 
 .pop_up_info_blocked{
     width: auto;
@@ -1206,6 +1206,9 @@ tr:hover{
 }
 .opacity_0{opacity: 0}
 .bkgd_white{background: white;}
+
+.activeGoLink{    color: #4688F1;
+    cursor: pointer;}
 
 .visible{display: block;}
 .fadeIn{visibility:visible;opacity: 1;}

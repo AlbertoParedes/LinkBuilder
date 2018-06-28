@@ -300,6 +300,7 @@ public class Data_Clientes extends HttpServlet {
 	} 
 	private void eliminarCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String json = request.getParameter("json");
+		System.out.println(json);
 
 		Object jsonObject =JSONValue.parse(json.toString());
 		JSONArray arrayData = (JSONArray)jsonObject;

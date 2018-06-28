@@ -170,6 +170,9 @@ $(document).ready(function(){
 
 var timer;
 function viewCampo(x){
+	
+	hoverGoLinkIn(x);
+	
 	timer = setTimeout(function () {
 		var superw = $(x).parents().width();
 		var w = $(x).width();
@@ -192,17 +195,12 @@ function viewCampo(x){
 }
 
 function restartCampo(x){
+	
+	hoverGoLinkOut(x);
+	
 	clearTimeout(timer);
 	$(x).stop();
 	$(x).removeAttr("style");
-}
-
-function openUrl(x, event){
-	event.stopPropagation();
-	var url = $(x).text();
-	if(!url.startsWith("http")) url = "http://"+url;
-	var win = window.open(url, '_blank');
-	win.focus();
 }
 
 
@@ -661,7 +659,71 @@ window.onresize = function() {
 }
 
 
+var cntrlIsPressed = false;
+$(document).keydown(function(event){
+    if(event.which=="17")cntrlIsPressed = true;
+});
+$(document).keyup(function(){
+    cntrlIsPressed = false;
+});
 
+
+
+function openUrl(x, event){
+	if(cntrlIsPressed){
+		
+		
+		event.stopPropagation();
+		var url = $(x).text();
+		if(!url.startsWith("http")) url = "http://"+url;
+		var win = window.open(url, '_blank');
+		win.focus();
+		
+		cntrlIsPressed = false;
+	}
+	
+	
+	
+	
+}
+
+
+function goLink(x){
+	if(cntrlIsPressed){
+		var element = $(x).prop("tagName");
+		
+		if(element=="INPUT"){
+			var url = $(x).val();
+			var win = window.open(url, '_blank');
+			win.focus();
+		}
+      	cntrlIsPressed = false;
+	}
+	
+}
+
+
+function hoverGoLinkIn(x){
+	if(cntrlIsPressed){
+		var element = $(x).prop("tagName");
+		
+		if(element=="INPUT"){
+			$(x).addClass('activeGoLink');
+		}else if(element=="SPAN"){
+			$(x).addClass('activeGoLink');
+		}
+	}
+}
+function hoverGoLinkOut(x){
+	var element = $(x).prop("tagName");
+	
+	if(element=="INPUT"){
+		$(x).removeClass('activeGoLink');
+	}else if(element=="SPAN"){
+		$(x).removeClass('activeGoLink');
+	}
+	
+}
 
 
 

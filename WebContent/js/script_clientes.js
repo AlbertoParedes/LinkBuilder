@@ -333,9 +333,10 @@ function eliminarClientesSeleccionados(x){
 	    
 	    console.log(obj.id_cliente+"  "+obj.web_cliente);
 	}*/
+	alert(clientes);
 	if(clientes.length>0){
 		var json = JSON.stringify(clientes);
-		$.post('Data', {
+		$.post('Data_Clientes', {
 			metodo : "eliminarCliente",
 			json: json
 		}, function(){

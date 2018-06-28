@@ -303,11 +303,15 @@ public class Data_Enlaces extends HttpServlet {
 		
 		if(respuesta){
 			String urlsAAtacarLi="";
+			
+			String onHoverGoLink="onmouseover='hoverGoLinkIn(this)' onmouseout='hoverGoLinkOut(this)'";
+			
 			for (int i = 0; i < enlaces.get(0).getUrlsAAtacar().size(); i++) {
 				urlsAAtacarLi += "<li onclick='enlaces_guradarDestino(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+enlaces.get(0).getUrlsAAtacar().get(i)+"</span></li>";
 			}
 
 			ob.enlacesByTipo(enlaces);
+			
 
 			for (int i = 0; i < enlaces.size(); i++) {
 				Enlace e = enlaces.get(i);
@@ -379,7 +383,7 @@ public class Data_Enlaces extends HttpServlet {
 				out.println("	</td>");
 
 				out.println("	<td class='cLink'>");
-				out.println("		<input class='inLink' onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)' type='text' value='"+e.getEnlace()+"'>");
+				out.println("		<input class='inLink' onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)' onclick='goLink(this)' "+onHoverGoLink+"  type='text' value='"+e.getEnlace()+"'>");
 				out.println("	</td>");
 
 				out.println("	<td class='cAnchor'><input class='inLink' onchange='guardarAnchor(this)' oninput='saveClient(this)' type='text' value='"+e.getAnchor()+"'></td>");
