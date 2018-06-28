@@ -611,16 +611,15 @@ public class Data_Enlaces extends HttpServlet {
 				if(i!=0){html+="<div class='line'></div>";}
 				html+="			<div class='itemChild";if(clientes.get(i).getEditando()==1)html+=" blur"; html+="'>";
 				html+="				<div class='dominioItem'>";
-				html+="					<span class='dominioItem' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+clientes.get(i).getWeb()+"</span>";
+				html+="					<span class='dominioItem' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+clientes.get(i).getDominio()+"</span>";
 				html+="				</div>";
 				html+="				<div class='nameItem sName'>"+clientes.get(i).getNombre()+"</div>";
-				if(clientes.get(i).getEditando()==0){
-					if(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() == 0){
-						html+="		<div class='noti notiPos'><i class='material-icons lf'>done</i></div>";
-					}else{
-						html+="		<div class='noti'>"+(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone())+"</div>";
-					}
-
+				String opacity="";
+				if(clientes.get(i).getEditando()==1){opacity="opacity_0";}
+				if(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() == 0){
+					html+="		<div class='noti notiPos opacity'><i class='material-icons lf'>done</i></div>";
+				}else{
+					html+="		<div class='noti opacity'>"+(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone())+"</div>";
 				}
 				if(clientes.get(i).getStatus().equals("our")){ 		
 					html+="			<div class='div_bookmark'><i class='material-icons div_i_bookmark sYS_color'>bookmark</i><div class='div_line_bookmark sYS'></div></div>";

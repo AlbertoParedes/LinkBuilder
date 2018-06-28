@@ -82,14 +82,14 @@
 										<span class="dominioItem" onmouseover="viewCampo(this)" onmouseout="restartCampo(this)" ><%= clientes.get(i).getDominio() %></span>
 									</div>
 									<div class="nameItem sName"><%= clientes.get(i).getNombre() %></div>
-									<%if(clientes.get(i).getEditando()==0){%>
-										<%if(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() == 0){%>
-											<div class="noti notiPos"><i class="material-icons lf">done</i></div>
-										<%}else{%>
-											<div class="noti"><%= clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() %></div>
-										<%}%>
-										
+									
+									<%if(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() == 0){%>
+										<div class="noti notiPos <%if(clientes.get(i).getEditando()==1){%>opacity_0<%}%>"><i class="material-icons lf">done</i></div>
+									<%}else{%>
+										<div class="noti <%if(clientes.get(i).getEditando()==1){%>opacity_0<%}%>"><%= clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() %></div>
 									<%}%>
+										
+									
 									<%if(clientes.get(i).getStatus().equals("our")){%>
 										<div class="div_bookmark"><i class="material-icons div_i_bookmark sYS_color">bookmark</i><div class="div_line_bookmark sYS"></div></div>
 									<%} else if(clientes.get(i).getStatus().equals("new")){%>

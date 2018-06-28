@@ -245,7 +245,7 @@ public class Data extends HttpServlet {
 		int posicion = Integer.parseInt(request.getParameter("posicion"));
 		
 		
-		String head="			<thead><tr><th class='cabeceraTable cCWeb'>Web</th><th class='cabeceraTable cCDR'>DR</th><th class='cabeceraTable cCDA'>DA</th><th class='cabeceraTable cCTem'>Tem&aacute;tica</th><th class='cabeceraTable cCDesc'>Descripci&oacute;n</th><th class='cabeceraTable cCReut'>Reutilizable</th><th class='cabeceraTable cCRegi'>Requiere</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
+		String head="			<thead><tr class='bkgd_white'><th class='cabeceraTable cCWeb'>Web</th><th class='cabeceraTable cCDR'>DR</th><th class='cabeceraTable cCDA'>DA</th><th class='cabeceraTable cCTem'>Tem&aacute;tica</th><th class='cabeceraTable cCDesc'>Descripci&oacute;n</th><th class='cabeceraTable cCReut'>Reutilizable</th><th class='cabeceraTable cCRegi'>Requiere</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
 
 		//obtenemos los foros de la categoria seleccionada
 		String json = ws.getForosByCategoria(id_categoria+"", "getForosByCategoria.php");
@@ -266,7 +266,7 @@ public class Data extends HttpServlet {
 
 
 
-		out.println("<div class='infoClient'>");
+		out.println("<div class='infoClient'>"); 
 		out.println("	<div class='nameClient'>"+categorias.get(posicion).getEnlace()+"</div>");
 		out.println("	<div class='btnAdd' onclick='openNewWeb(this)'>Nueva web</div>");
 		out.println("</div>");
@@ -274,9 +274,11 @@ public class Data extends HttpServlet {
 
 		out.println("<div class='div_table'>");
 		out.println("	<div id='results_Foros' class='contentTable'>");
-		//out.println("		<table>"+head+"<tbody></tbody></table>");
+		
+		out.println("		<table id='table_head_medio' class='table p_a table_fixed'>"+head+"<tbody></tbody></table>");
+		
 		out.println("		<table id='tCategorias' class='table'>");
-		out.println(			head);
+		out.println("			<thead class='opacity_0'><tr><th class='cabeceraTable cCWeb'>Web</th><th class='cabeceraTable cCDR'>DR</th><th class='cabeceraTable cCDA'>DA</th><th class='cabeceraTable cCTem'>Tem&aacute;tica</th><th class='cabeceraTable cCDesc'>Descripci&oacute;n</th><th class='cabeceraTable cCReut'>Reutilizable</th><th class='cabeceraTable cCRegi'>Requiere</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>");
 		out.println("			<tbody>");
 
 		for(int i = 0; i < foros.size(); i++) {
@@ -441,6 +443,7 @@ public class Data extends HttpServlet {
 		out.println(	"<div class='infoNew'></div>"); 
 		out.println(	"<div class='guardarNew' onclick='guardarNew(this)'>guardar</div>");
 		out.println("</div>");
+		out.println("<div><script>resize_head_table_medios()</script></div>");
 		out.println("<div class='divBlock'></div>");
 	}
 

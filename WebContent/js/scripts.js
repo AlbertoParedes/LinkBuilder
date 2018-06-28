@@ -641,6 +641,25 @@ window.addEventListener('click', function(e){
 });
 
 
+function resize_head_table_medios(){
+	var tr = $('#tCategorias thead tr');
+	var withTable = $('#tCategorias').width();
+	$('#table_head_medio').width(withTable);
+	
+	$(tr).find('th').each(function(i) {
+		var position = i+1;
+		var w = $(this).width();
+		$('#table_head_medio thead tr th:nth-child('+position+')').width(w);
+	});
+	
+	
+}
+
+window.onresize = function() {
+	resize_head_table_clientes();
+	resize_head_table_medios();
+}
+
 
 
 

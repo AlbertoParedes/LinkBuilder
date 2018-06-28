@@ -553,6 +553,12 @@ function aplicarFiltro(x){
 			viewFilters(filtros);
 		}
 		
+		//hacer scrrol hacia arriba de la tabla
+		
+		$('#divClientes').find('div.contentTable').animate({ 
+			scrollTop: $('#divClientes').scrollTop()
+			}, { duration: 600, easing: 'linear'});
+		
 	});
 }
 function openFilter(x){
@@ -614,9 +620,8 @@ function resize_head_table_clientes(){
 	
 }
 
-window.onresize = function() {
-	resize_head_table_clientes();
-}
+
+
 
 
 

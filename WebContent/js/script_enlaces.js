@@ -29,7 +29,10 @@ function enlaces_SelectClient(id_client,x) {
 				$(x).children('.pop_up_info_blocked').removeClass("fadeIn");
 		    }, 5000);
 			
-			
+			//cambiar vista a bloqueada
+			$(x).children('.blockClient').removeClass('visible').addClass('visible');
+			$(x).children('.itemChild').removeClass('blur').addClass('blur');
+			$(x).children('.itemChild').children('.noti').removeClass('opacity_0').addClass('opacity_0');
 
 		}else if(response.blocked=="2"){
 			
@@ -40,6 +43,10 @@ function enlaces_SelectClient(id_client,x) {
 			$('#uniqueClient').html(response.html);
 			changeThemeC(id_client);
 			clienteSeleccionado = id_client;
+			
+			$(x).children('.blockClient').removeClass('visible');
+			$(x).children('.itemChild').removeClass('blur');
+			$(x).children('.itemChild').children('.noti').removeClass('opacity_0');
 		}
 		
 		//setTimeout(function () {$(x).children('.loader').removeClass("fadeIn");}, 600);
