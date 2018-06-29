@@ -1209,6 +1209,10 @@ tr:hover{
 
 .activeGoLink{    color: #4688F1;
     cursor: pointer;}
+.txt_algn_left{    text-align: left;}
+.cbx_users{margin-left: 0px;
+    margin-right: 10px;}
+.f_s_12{font-size: 12px!important}    
 
 .visible{display: block;}
 .fadeIn{visibility:visible;opacity: 1;}

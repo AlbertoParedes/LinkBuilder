@@ -1,5 +1,7 @@
 package Objects.Gson;
 
+import java.util.HashMap;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -75,6 +77,10 @@ public class Cliente {
 	private String dominio;
 	
 	
+	//------------------
+	private HashMap<String, Empleado> empleados;
+	
+	
 	
 	public Cliente(int idCliente, String web, String nombre, String servicio, int follows, int nofollows, String anchor,
 			String blog, String idioma, int followsDone, int nofollowsDone, String linkbuilder, int editando,
@@ -104,6 +110,39 @@ public class Cliente {
 		this.status = status;
 		this.dominio = dominio;
 	}
+	
+	
+
+
+	public Cliente(int idCliente, String web, String nombre, String servicio, int follows, int nofollows, String anchor,
+			String blog, String idioma, int followsDone, int nofollowsDone, String linkbuilder, int editando,
+			int userEditando, String eliminado, String enlacesDePago, String urls_a_atacar,String name_empleado, String status,
+			String dominio, HashMap<String, Empleado> empleados) {
+		super();
+		this.idCliente = idCliente;
+		this.web = web;
+		this.nombre = nombre;
+		this.servicio = servicio;
+		this.follows = follows;
+		this.nofollows = nofollows;
+		this.anchor = anchor;
+		this.blog = blog;
+		this.idioma = idioma;
+		this.followsDone = followsDone;
+		this.nofollowsDone = nofollowsDone;
+		this.linkbuilder = linkbuilder;
+		this.editando = editando;
+		this.userEditando = userEditando;
+		this.eliminado = eliminado;
+		this.enlacesDePago = enlacesDePago;
+		this.urls_a_atacar = urls_a_atacar;
+		this.name_empleado = name_empleado;
+		this.status = status;
+		this.dominio = dominio;
+		this.empleados = empleados;
+	}
+
+
 
 
 	public Cliente() {
@@ -297,6 +336,22 @@ public class Cliente {
 	public void setEnlacesDePago(String enlacesDePago) {
 		this.enlacesDePago = enlacesDePago;
 	}
+	
+	
+
+	public HashMap<String, Empleado> getEmpleados() {
+		return empleados;
+	}
+
+
+
+
+	public void setEmpleados(HashMap<String, Empleado> empleados) {
+		this.empleados = empleados;
+	}
+
+
+
 
 	@Override
 	public String toString() {

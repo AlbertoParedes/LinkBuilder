@@ -38,6 +38,7 @@ import Objects.Gson.Categoria;
 import Objects.Gson.CategoriaGson;
 import Objects.Gson.Cliente;
 import Objects.Gson.ClienteGson;
+import Objects.Gson.Empleado;
 import Objects.Gson.Enlace;
 import Objects.Gson.Foro;
 import Objects.Gson.ForoGson;
@@ -52,6 +53,7 @@ public class Data_Enlaces extends HttpServlet {
 	private ParsingJson pj = new ParsingJson();
 	private Cliente cliente = new Cliente();
 	private OrdenarObjetos ob = new OrdenarObjetos();
+	private Empleado empleado = new Empleado();
 
 
 	private ArrayList<Enlace> enlaces =  new ArrayList<Enlace>();
@@ -68,11 +70,23 @@ public class Data_Enlaces extends HttpServlet {
 		String nick_empleado = session.getAttribute("name_user").toString();
 		String role_empleado = session.getAttribute("role_user").toString();
 
+		
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_empleado+""));
+		String json = ws.clientes(wbList, "getClientesEmpleadoAndUser", "clientes.php");
+		String[] jsonArray = json.split(";;");
+		System.out.println("0- :"+jsonArray[0]);
+		System.out.println("1- :"+jsonArray[1]);
+		empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
+		System.out.println(empleado.toString());
+		System.out.println("wwe__:"+json);
+		
+		
+		
 
 		System.out.println("Metodo get");
 		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
-		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_empleado+"",role_empleado));
-		String json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
+		wbList = new ArrayList<>(Arrays.asList(id_empleado+"",role_empleado));
+		json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
 		System.out.println(json);
 		
 		//ArrayList<Cliente> clientesGson = new Gson().fromJson(json, new TypeToken<List<Cliente>>(){}.getType());

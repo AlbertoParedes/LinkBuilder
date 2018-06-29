@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -180,18 +181,26 @@ public class Data_Clientes extends HttpServlet {
 	}
 
 	private void guardarEmpleado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-		String id_cliente = request.getParameter("id_cliente");
+		/*String id_cliente = request.getParameter("id_cliente");
 		int posicion = Integer.parseInt(request.getParameter("posicion"));
 		String id_empleado_anterior = request.getParameter("id_empleado_anterior");
 		String id_empleado_seleccionado = request.getParameter("id_empleado_seleccionado");
 		String tipo_empleado_seleccionado = request.getParameter("tipo_empleado_seleccionado");
 		String nombre_empleado_seleccionado = request.getParameter("nombre_empleado_seleccionado");
-
-
-		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente,id_empleado_seleccionado, id_empleado_anterior, tipo_empleado_seleccionado));
-		String json = ws.clientes(wbList, "insertClienteEmpleado", "clientes.php");
-		System.out.println(nombre_empleado_seleccionado);
-		clientes.get(posicion).setName_empleado(nombre_empleado_seleccionado);
+*/
+		String id_cliente = request.getParameter("id_cliente");
+		int posicion = Integer.parseInt(request.getParameter("posicion"));
+		String estado = request.getParameter("estado");
+		String id_empleado = request.getParameter("id_empleado");
+		String tipo_empleado = request.getParameter("tipo_empleado");
+		
+		System.out.println(id_cliente+" - "+posicion+" - "+estado+" - "+id_empleado+" - "+tipo_empleado+" - ");
+		
+		
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente,estado, id_empleado, tipo_empleado));
+		String json = ws.clientes(wbList, "insertOrDeleteClienteEmpleado", "clientes.php");
+		//System.out.println(nombre_empleado_seleccionado);
+		//clientes.get(posicion).setName_empleado(nombre_empleado_seleccionado);
 		System.out.println("->"+"   "+json);
 
 	}
@@ -451,6 +460,15 @@ public class Data_Clientes extends HttpServlet {
 	private void cargarListaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role, String campoOrdenar) throws IOException, ParseException {
 
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_user+""));
+		String json = ws.clientes(wbList, "getClientes", "clientes.php");
+		String[] jsonArray = json.split(";;");
+		System.out.println("0- :"+jsonArray[0]);
+		System.out.println("1- :"+jsonArray[1]);
+		empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
+		//System.out.println(empleado.toString());
+		
+		/*
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_user+""));
 		String json = ws.clientes(wbList, "getClientesEmpleadoAndUser", "clientes.php");
 		String[] jsonArray = json.split(";;");
 		System.out.println("0- :"+jsonArray[0]);
@@ -458,11 +476,12 @@ public class Data_Clientes extends HttpServlet {
 		empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
 		System.out.println(empleado.toString());
 		//System.out.println(json);
-
+*/
+		String combobox = "<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input class='slT' type='checkbox'><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>";
 		listaEmpleados = ""; 
 		for (Empleado e : Data.empleados) {
 			if(e.getCategoria().equals("free")) {
-				listaEmpleados += "<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+e.getName()+"</li>";
+				listaEmpleados += "<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+combobox+"<span class='f_s_12'>"+e.getName()+"</span></li>";
 			}
 		}
 
@@ -471,7 +490,7 @@ public class Data_Clientes extends HttpServlet {
 		//wbList = new ArrayList<>(Arrays.asList(id_user+"",user_role));
 		//json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
 		
-		ArrayList<Cliente> clientes = pj.parsearClientes(jsonArray[1]);
+		ArrayList<Cliente> clientes = pj.parsearClientesMap(jsonArray[1]);
 		this.clientes.clear();
 		this.clientes = clientes;
 		ob.clientesByDomain(this.clientes);
@@ -599,10 +618,27 @@ public class Data_Clientes extends HttpServlet {
 		out.println("<div class='divBlockClientes'></div>");
 		out.println("<div class='resize_head_table_clientes'><script> resize_head_table_clientes() </script></div>");
 		System.out.println("pagina cargada");
-		
+		 
 	}
 
 	private void setContenidoTabla (Empleado empleado, String listaEmpleados, int c,Cliente cliente, PrintWriter out) {
+		
+		listaEmpleados="";
+		//obtenemos los empleados que participan en el cliente
+		for (int i = 0; i < Data.empleados.size(); i++) {
+			Empleado e = Data.empleados.get(i);
+			String checked="";
+			if(cliente.getEmpleados().get(e.getId()) != null)checked="checked";
+			if(e.getCategoria().equals("free")) {
+				listaEmpleados += 
+				"<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+
+					"<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input class='slT' type='checkbox' "+checked+"><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>"+
+					"<span class='f_s_12'>"+e.getName()+"</span>"+ 
+				"</li>";
+			}
+		}
+		
+		
 		String htmlServicio;
 		ArrayList<String> destinos = new ArrayList<>(Arrays.asList((cliente.getUrls_a_atacar()+",").split(",")));
 		String status = "sPendiente";
@@ -677,7 +713,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("			<span data-id-empleado='"+cliente.getId_empleado()+"' data-tipo-empleado='"+cliente.getTipoEmpleado()+"' class='tdCat' type='text'>"+cliente.getName_empleado()+"</span>");
 		//out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
 		out.println("		</div>"); 
-		out.println("		<ul class='slCt effect7 pop_up'>"+listaEmpleados+"</ul>");
+		out.println("		<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"</ul>");
 		out.println("	</td>");
 		//Destinos
 		out.println("	<td class='tdCat cell_destino pr text_center' onclick='openDestinos(this)'>");

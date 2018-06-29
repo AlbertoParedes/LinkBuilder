@@ -69,6 +69,31 @@ public class Empleado {
 	@SerializedName("clientes_eliminar")
 	@Expose
 	private int clientesEliminar;
+	
+	
+	private int n_follows;
+	
+	
+
+	public Empleado() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Empleado(String id, String name, int n_follows) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.n_follows = n_follows;
+	}
+
+	public int getN_follows() {
+		return n_follows;
+	}
+
+	public void setN_follows(int n_follows) {
+		this.n_follows = n_follows;
+	}
 
 	public String getId() {
 		return id;

@@ -130,9 +130,29 @@ function guardarIdioma(x){
 }
 function guardarEmpleado(x){
 	
-	
 	var id_cliente = $(x).closest('tr').attr('id');
 	var posicion = $(x).closest('tr').attr('posicion');
+	var estado = $(x).find('input[type=checkbox]').prop('checked');
+	var id_empleado = $(x).attr('data-id-empleado');
+	var tipo_empleado = $(x).attr('data-tipo-empleado');
+	
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente')){
+		$.post('Data_Clientes', {
+			metodo : "guardarEmpleado",
+			id_cliente: id_cliente,
+			posicion:posicion,
+			estado:estado,
+			id_empleado: id_empleado,
+			tipo_empleado: tipo_empleado,
+		}, function(){
+			$("#websGuardar").removeClass('cSave');
+			
+		});
+	}
+	
+	/*
+	
+	
 	var id_empleado_anterior = $(x).closest('td').children('div.tdWeb').children('span').attr('data-id-empleado');
 	var id_empleado_seleccionado = $(x).attr('data-id-empleado');
 	var tipo_empleado_seleccionado = $(x).attr('data-tipo-empleado');
@@ -155,7 +175,20 @@ function guardarEmpleado(x){
 			$("#websGuardar").removeClass('cSave');
 			
 		});
-	}
+	}*/
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/*
 	var campo ="linkbuilder";
