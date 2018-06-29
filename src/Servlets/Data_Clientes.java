@@ -106,35 +106,35 @@ public class Data_Clientes extends HttpServlet {
 			
 			// si no hay ningun filtro se mostran otravez todos
 			if(servicios.equals("") && usuarios.equals("") && estados.equals("")) { 
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+				setContenidoTabla(empleado, c, cliente, out);
 			}
 			// si los tres tipos de filtros esta llenos por algo hacemos este if
 			else if(servicios.contains(cliente.getServicio()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";") && estados.contains(cliente.getStatus()+";")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+				setContenidoTabla(empleado, c, cliente, out);
 			}
 			//si estado y servicios estan llenos y usuarios esta vacio
 			else if(estados.contains(cliente.getStatus()+";") && servicios.contains(cliente.getServicio()+";")			&& usuarios.equals("")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+				setContenidoTabla(empleado, c, cliente, out);
 			}
 			//si estado y usuarios estan llenos y servicios esta vacio
 			else if(estados.contains(cliente.getStatus()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")			&& servicios.equals("")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+				setContenidoTabla(empleado, c, cliente, out);
 			}
 			//si servicios y usuarios estan llenos y estado esta vacio
 			else if(servicios.contains(cliente.getServicio()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")			&& estados.equals("")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+				setContenidoTabla(empleado, c, cliente, out);
 			}
 			//si estado esta lleno y lo demas vacio
 			else if(estados.contains(cliente.getStatus()+";")		&& servicios.equals("") && usuarios.equals("")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+				setContenidoTabla(empleado, c, cliente, out);
 			}
 			//si servicios esta lleno y lo demas vacio
 			else if(servicios.contains(cliente.getServicio()+";")		&& estados.equals("") && usuarios.equals("")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+				setContenidoTabla(empleado, c, cliente, out);
 			}
 			//si empleados esta lleno y lo demas vacio
 			else if(usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")			&& estados.equals("") && servicios.equals("")) {
-				setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+				setContenidoTabla(empleado, c, cliente, out);
 			}
 
 		}
@@ -574,7 +574,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("			<tbody>");
 		for (int c = 0; c < clientes.size(); c++) {
 			Cliente cliente = clientes.get(c);
-			setContenidoTabla(empleado, listaEmpleados, c, cliente, out);
+			setContenidoTabla(empleado, c, cliente, out);
 		}
 		out.println("			</tbody>");
 		out.println("		</table>");
@@ -621,14 +621,17 @@ public class Data_Clientes extends HttpServlet {
 		 
 	}
 
-	private void setContenidoTabla (Empleado empleado, String listaEmpleados, int c,Cliente cliente, PrintWriter out) {
-		
-		listaEmpleados="";
+	private void setContenidoTabla (Empleado empleado, int c,Cliente cliente, PrintWriter out) {
+		String n_follows="<div class='count-input space-bottom'<a class='incr-btn' data-action='decrease' href='#'>–</a><input class='quantity' type='text' name='quantity' value='1'/><a class='incr-btn' data-action='increase' href='#'>&plus;</a></div>";
+		String listaEmpleados="", listaEnlacesEmpleado="<div class='div_elem_empl'>";
 		//obtenemos los empleados que participan en el cliente
 		for (int i = 0; i < Data.empleados.size(); i++) {
 			Empleado e = Data.empleados.get(i);
 			String checked="";
-			if(cliente.getEmpleados().get(e.getId()) != null)checked="checked";
+			if(cliente.getEmpleados().get(e.getId()) != null) {
+				checked="checked";//cliente.getEmpleados().get(e.getId()).getN_follows()
+				listaEnlacesEmpleado += "<div class='pr mg_top_10'><span>"+e.getName()+"</span>"+"<div class='div_n_follows'><div class='n_follows_remove'><i class='material-icons f_size_17'> remove </i></div><input class='input_n_follows' type='number' ><div class='n_follows_add'><i class='material-icons f_size_17'> add </i></div></div>"+"</div>"; 
+			}
 			if(e.getCategoria().equals("free")) {
 				listaEmpleados += 
 				"<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+
@@ -637,7 +640,7 @@ public class Data_Clientes extends HttpServlet {
 				"</li>";
 			}
 		}
-		
+		listaEnlacesEmpleado+="</div>";
 		
 		String htmlServicio;
 		ArrayList<String> destinos = new ArrayList<>(Arrays.asList((cliente.getUrls_a_atacar()+",").split(",")));
@@ -669,7 +672,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("<tr id='"+id_cliente+"' posicion='"+c+"' class='pr'>");
 		out.println("	<td class='select_client'>");
 		out.println("		<div class='pretty p-icon p-smooth div_select_cliente'>");
-		out.println("			<input class='slT' type='checkbox'/>");
+		out.println("			<input class='slT' type='checkbox'/>"); 
 		out.println("			<div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div>");
 		out.println("		</div>");
 		out.println("	</td>");
@@ -713,7 +716,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("			<span data-id-empleado='"+cliente.getId_empleado()+"' data-tipo-empleado='"+cliente.getTipoEmpleado()+"' class='tdCat' type='text'>"+cliente.getName_empleado()+"</span>");
 		//out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
 		out.println("		</div>"); 
-		out.println("		<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"</ul>");
+		out.println("		<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more'> more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
 		out.println("	</td>");
 		//Destinos
 		out.println("	<td class='tdCat cell_destino pr text_center' onclick='openDestinos(this)'>");

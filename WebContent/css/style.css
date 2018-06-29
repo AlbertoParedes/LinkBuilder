@@ -1213,6 +1213,53 @@ tr:hover{
 .cbx_users{margin-left: 0px;
     margin-right: 10px;}
 .f_s_12{font-size: 12px!important}    
+.i_more{    line-height: 3px;
+    margin-top: 5px;}
+.algn_center{text-align: center;}
+.div_elem_empl{    position: absolute;
+    top: 0;
+    right: 100%;
+    background: white;
+    border: solid;
+    height: 100%;
+    border-color: #ececec;
+    border-width: 1px;    width: 200px;
+    padding-left: 19px;
+    text-transform: uppercase;
+    padding-right: 20px;}
+.mg_top_10{    margin-top: 10px;}
+    
+/*Input number styles*/
+.div_n_follows{border: solid;
+    border-width: 1px;
+    border-radius: 4px;
+    position: absolute;
+    width: 80px;
+    top: 0;
+    right: 0px;
+    padding: 0px 25px;
+    height: 18px;}
+.n_follows_remove{position: absolute;
+    left: 0px;
+    height: 16px;
+    border-right: 1px solid blue;
+    width: 25px;
+    top: 0px;
+    padding-left: 4px;}
+.input_n_follows{height: 16px;
+    font-size: 12px;
+    text-align: center;    width: 30px;}
+.n_follows_add{
+	position: absolute;
+    right: 0px;
+    top: -1px;
+    height: 16px;
+    border-left: 1px solid blue;
+    width: 25px;
+    padding-left: 4px;
+}
+.f_size_17{    font-size: 17px;}
+/*----------------------------------------*/
 
 .visible{display: block;}
 .fadeIn{visibility:visible;opacity: 1;}
