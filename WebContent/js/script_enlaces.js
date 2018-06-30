@@ -1,3 +1,16 @@
+
+function cargarVistaEnlaces(){
+	$.post('Data_Enlaces', {
+		metodo : 'cargarVistaEnlaces',
+	}, function (response){
+		$('#vistaEnlaces').html(response);
+	});
+}
+
+
+
+
+
 var clienteSeleccionado=0;
 function enlaces_SelectClient(id_client,x) {
 	//mostramos que estamos cargando la informacion

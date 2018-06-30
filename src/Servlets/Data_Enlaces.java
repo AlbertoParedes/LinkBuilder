@@ -65,17 +65,24 @@ public class Data_Enlaces extends HttpServlet {
 	public Data_Enlaces() {super();}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		empleado = (Empleado) request.getAttribute("empleado");
+		
+		System.out.println("-------->"+empleado.getName());
+		
+		/*
 		HttpSession session = request.getSession();
 		int id_empleado = Integer.parseInt(session.getAttribute("id_user").toString());
 		String nick_empleado = session.getAttribute("name_user").toString();
 		String role_empleado = session.getAttribute("role_user").toString();
+		*/
 
-		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_empleado+""));
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(empleado.getId()+""));
 		String json = ws.clientes(wbList, "getClientes", "clientes.php");
 		String[] jsonArray = json.split(";;");
 		System.out.println("0- :"+jsonArray[0]);
 		System.out.println("1- :"+jsonArray[1]);
-		empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
+		//empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
 
 		
 		ArrayList<Cliente> clientes = pj.parsearClientesMap(jsonArray[1]);
@@ -83,14 +90,9 @@ public class Data_Enlaces extends HttpServlet {
 		this.clientes = clientes;
 		ob.clientesByDomain(this.clientes);
 
-		String f = nick_empleado.substring(0, 1).toUpperCase();nick_empleado = f + nick_empleado.substring(1,nick_empleado.length()).toLowerCase();
-
-		ob.clientesByDomain(clientes);
-		request.setAttribute("clientes", clientes);//pasamos la lista de clientes
-		request.setAttribute("name_user", nick_empleado);
-
-		PrintWriter out = response.getWriter();
-		out.println("<script>alert('Hola')</script>");
+		//request.setAttribute("clientes", clientes);//pasamos la lista de clientes
+		request.setAttribute("name_user", empleado.getName());
+		request.setAttribute("ventana",empleado.getPanel());
 		request.getRequestDispatcher("Data.jsp").forward(request, response);
 		
 		//doPost(request,response);
@@ -106,7 +108,9 @@ public class Data_Enlaces extends HttpServlet {
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 
-		if(metodo.equals("enlaces_SelectClient")) { 
+		if(metodo.equals("cargarVistaEnlaces")) {
+			cargarVistaEnlaces(request, response, out);
+		}else if(metodo.equals("enlaces_SelectClient")) { 
 			try {selectClient(request, response, out,id_empleado, role_empleado);} catch (ParseException e) {}
 		}else if(metodo.equals("enlaces_CheckClients")) {
 			//try {checkClients(request, response, out,id_user,role);} catch (ParseException e) {}
@@ -134,6 +138,66 @@ public class Data_Enlaces extends HttpServlet {
 			buscarCliente(request, response, out);
 		}
 
+	}
+
+	private void cargarVistaEnlaces(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		
+		String html="";
+		int clienteSeleccionado=-1;
+		for (int i = 0; i < clientes.size(); i++){
+				String itemSleccionado="";
+				if(clienteSeleccionado == clientes.get(i).getIdCliente()) {itemSleccionado="item_select";}
+				html+="		<div id='"+clientes.get(i).getIdCliente()+"' onclick='enlaces_SelectClient(this.id, this)' class='item "+itemSleccionado+"'>";
+				if(i!=0){html+="<div class='line'></div>";}
+				html+="			<div class='itemChild";if(clientes.get(i).getEditando()==1)html+=" blur"; html+="'>";
+				html+="				<div class='dominioItem'>";
+				html+="					<span class='dominioItem' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+clientes.get(i).getDominio()+"</span>";
+				html+="				</div>";
+				html+="				<div class='nameItem sName'>"+clientes.get(i).getNombre()+"</div>";
+				String opacity="";
+				if(clientes.get(i).getEditando()==1){opacity="opacity_0";}
+				if(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone() == 0){
+					html+="		<div class='noti notiPos "+opacity+"'><i class='material-icons lf'>done</i></div>";
+				}else{
+					html+="		<div class='noti "+opacity+"'>"+(clientes.get(i).getFollows() - clientes.get(i).getFollowsDone())+"</div>";
+				}
+				if(clientes.get(i).getStatus().equals("our")){ 		
+					html+="			<div class='div_bookmark'><i class='material-icons div_i_bookmark sYS_color'>bookmark</i><div class='div_line_bookmark sYS'></div></div>";
+				}
+				else if(clientes.get(i).getStatus().equals("new")){ 
+					html+="			<div class='div_bookmark'><i class='material-icons div_i_bookmark sOK_color'>bookmark</i><div class='div_line_bookmark sOK'></div></div>";
+				}
+				html+="			</div>";
+				html+="			<div class='blockClient"; if(clientes.get(i).getEditando()==1)html+="visible";html+="'><div class='lockDiv'><i class='material-icons lf blur'> lock </i></div></div>";
+				html+="			<div class='pop_up_info_blocked'>";
+				html+="				<div class='msg_blocked'>Editando cliente por</div>";
+				html+="				<div class='msg_name_blocked'>Guillermo</div>";
+				html+="				<div class='lockDiv'><i class='material-icons lf'> lock </i></div>";
+				html+="				<div class='lockDiv' style='left:23px;'><i class='material-icons lf'> lock </i></div>";
+				html+="			</div>";
+				html+="			<div class='loader'><div class='l_d1'></div><div class='l_d2'></div><div class='l_d3'></div><div class='l_d4'></div><div class='l_d5'></div></div>";
+				html+="		</div>";
+		}
+		
+		out.println("<div id='lcc' class='listClients'>");
+		out.println("	<div class='titleCategory'>");
+		out.println("		<div class='titleInner'>Clientes<div class='horDiv wa'><div id='addC' class='addK'><i class='material-icons addKi'>add</i></div><div onclick='searchCliente(event)'><div id='ipCLient' onclick='stopPropagation()' class='srchI'><i onclick='searchCliente(event)' class='material-icons addKi'>search</i><input id='searchC' class='searchI' type='text' oninput='searchC()'></div></div></div></div>");
+		out.println("	</div>");
+		out.println("	<div class='infoCategory'>");
+		out.println("		<div  class='info'>"+clientes.size()+" clientes</div>");
+		out.println("	</div>");
+		out.println("	<div id='lstC' class='listItems'>");
+		out.println(		html);
+		out.println("	</div>");
+		out.println("</div>");
+		out.println("	<div id='uniqueClient' class='uniqueClient'>");
+		out.println("		<div class='containerApp'>");
+		out.println("			<div class='msgSaludo'>Hola "+empleado.getName()+", </div>");
+		out.println("			<div><span class='msg'>Selecciona un cliente.</span></div>");
+		out.println("		</div>");
+		
+		out.println("	</div>");
+		
 	}
 
 	private void selectClient(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_empleado, String user_role) throws IOException, ParseException {

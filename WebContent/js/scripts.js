@@ -10,16 +10,21 @@ function changePanel(id) {
 	$(".circleIcono i").removeClass("btnSelected");
 
 	if(id == "btnClientes"){
-		$(".allClients").css('display', "block");
+		$("#vistaEnlaces").css('display', "block");
 		$("#"+id).addClass("btnSelected");
 		$("#"+id+" i").addClass("btnSelected");
+		
+		if (typeof $('#lcc').attr('id') === 'undefined'){
+			cargarVistaEnlaces();
+		}
+		
 	}else if(id == "btnKeywords"){
 		$(".allKeywords").css('display', 'block');
 		$("#"+id).addClass("btnSelected");
 		$("#"+id+" i").addClass("btnSelected");
 		if(websInicio==false){cargarCategorias();}
 		
-	}else if(btnListaClientes = "btnListaClientes"){
+	}else if(id = "btnListaClientes"){
 		$(".allClientes").css('display', 'block');
 		$("#"+id).addClass("btnSelected");
 		$("#"+id+" i").addClass("btnSelected");
