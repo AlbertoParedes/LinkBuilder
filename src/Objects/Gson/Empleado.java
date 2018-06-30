@@ -73,6 +73,11 @@ public class Empleado {
 	
 	private int n_follows;
 	
+	//sesion
+	@SerializedName("panel")
+	@Expose
+	private String panel;
+	
 	
 
 	public Empleado() {
@@ -152,6 +157,18 @@ public class Empleado {
 	}
 	
 	
+	
+	
+	
+	
+
+	public String getPanel() {
+		return panel;
+	}
+
+	public void setPanel(String panel) {
+		this.panel = panel;
+	}
 
 	public Map getClientesEstado() {
 		Map<String, String> map = new HashMap<String, String>();

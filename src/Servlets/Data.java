@@ -81,29 +81,40 @@ public class Data extends HttpServlet {
 	}
 
 	@SuppressWarnings("static-access")
-	private void cargarPage(HttpServletRequest request, HttpServletResponse response, int id_user, String name_user, String role) throws ServletException, IOException, ParseException {
-		System.out.println(id_user+" "+name_user);
-		ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
-
-
-		//ontenemos todas las categorias
-		String json = ws.getJSON("getCategorias.php");
-		ArrayList<CategoriaGson> categorias = new Gson().fromJson(json, new TypeToken<List<CategoriaGson>>(){}.getType());
-		this.categorias.clear();
-		if(categorias.get(0).getIdCategoria()==0) categorias.remove(0);
-		this.categorias = categorias;
+	private void cargarPage(HttpServletRequest request, HttpServletResponse response, int idEmpleado, String name_user, String role) throws ServletException, IOException, ParseException {
 		
-		json = ws.getJSON("getEmpleados.php");
-		ArrayList<Empleado> empleados = new Gson().fromJson(json, new TypeToken<List<Empleado>>(){}.getType());
+		//obtenemos todos los datos comunes: categorias, empleados, tematicas
+		
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(idEmpleado+""));
+		String json = ws.data(wbList, "getCommonData", "data.php");
+		//System.out.println(json);
+		String[] jsonArray = json.split(";;");
+		System.out.println("0-Categorias :"+jsonArray[0]);
+		System.out.println("1-Tematicas :"+jsonArray[1]);
+		System.out.println("2-Empleados :"+jsonArray[2]);
+		System.out.println("3-Mis datos :"+jsonArray[3]);
+		
+		this.categorias.clear();
+		this.categorias = new Gson().fromJson(jsonArray[0], new TypeToken<List<CategoriaGson>>(){}.getType());
+		if(categorias.get(0).getIdCategoria()==0) categorias.remove(0);
+		
+		this.tematicas.clear();
+		this.tematicas = new Gson().fromJson(jsonArray[1], new TypeToken<List<TematicaGson>>(){}.getType());
+
 		this.empleados.clear();
-		this.empleados = empleados;
-
-		//obtenemos las tematicas
-		json = ws.getJSON("getTematica.php");
-		ArrayList<TematicaGson> tematicasGson = new Gson().fromJson(json, new TypeToken<List<TematicaGson>>(){}.getType());
-		this.tematicas = tematicasGson;
-
-		obtenemosForos();
+		this.empleados = new Gson().fromJson(jsonArray[2], new TypeToken<List<Empleado>>(){}.getType());
+		
+		Empleado empleado = new Gson().fromJson(jsonArray[3].substring(1, jsonArray[3].length()-1), Empleado.class);
+		
+		if(empleado.getPanel().equals("enlaces")) {
+			System.out.println("enlaces");
+		}else if(empleado.getPanel().equals("medios")) {
+			System.out.println("medios");
+		}else if(empleado.getPanel().equals("clientes")) {
+			System.out.println("clientes");
+		}
+		
+		//obtenemosForos();
 		request.getRequestDispatcher("Data_Enlaces").forward(request, response);
 	}
 

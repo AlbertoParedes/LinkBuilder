@@ -84,10 +84,34 @@ public class Data_Clientes extends HttpServlet {
 			try {ordenarListaClientes(request, response, out, id_user,role);} catch (ParseException e) {e.printStackTrace();}
 		}else if((metodo.equals("filtrarLista"))) {
 			filtrarLista(request, response, out);
+		}else if(metodo.equals("modificarEnlacesEmpleado")) {
+			modificarEnlacesEmpleado(request, response, out);
 		}
 
 	}
 	
+	private void modificarEnlacesEmpleado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		
+		String json = request.getParameter("json");
+		System.out.println(json);
+		Object jsonObject =JSONValue.parse(json.toString());
+		JSONArray arrayData = (JSONArray)jsonObject;
+		for(int i=0;i<arrayData.size();i++){
+			JSONObject row =(JSONObject)arrayData.get(i);
+			int id_cliente = Integer.parseInt(row.get("id_cliente").toString());
+			int id_empleado = Integer.parseInt(row.get("id_empleado").toString());
+			int valor = Integer.parseInt(row.get("valor").toString());
+			String tipo_empleado = row.get("tipo_empleado").toString();
+			
+			System.out.println(id_cliente+"  "+id_empleado+"  "+valor +"   "+tipo_empleado);
+			
+			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente+"",id_empleado+"",tipo_empleado,valor+""));
+			json = ws.clientes(wbList, "updateEmpleadoEnlaces", "clientes.php");
+			System.out.println(json);
+		}
+		
+	}
+
 	private void filtrarLista(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String json = request.getParameter("json");
 		String servicios="", usuarios="", estados="";
@@ -477,13 +501,13 @@ public class Data_Clientes extends HttpServlet {
 		System.out.println(empleado.toString());
 		//System.out.println(json);
 */
-		String combobox = "<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input class='slT' type='checkbox'><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>";
+		/*String combobox = "<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input class='slT' type='checkbox'><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>";
 		listaEmpleados = ""; 
 		for (Empleado e : Data.empleados) {
 			if(e.getCategoria().equals("free")) {
 				listaEmpleados += "<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+combobox+"<span class='f_s_12'>"+e.getName()+"</span></li>";
 			}
-		}
+		}*/
 
 		
 		//clientes por usuario///////////********************************************************************
@@ -506,12 +530,6 @@ public class Data_Clientes extends HttpServlet {
 
 		String selectDelete = "<div class='pretty p-icon p-smooth div_select_cliente'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>";
 
-
-		
-		
-
-		
-		
 		out.println("<div class='infoClient'>");
 		out.println("	<div class='nameClient'>CLIENTES</div>");//"+categorias.get(posicion).getEnlace()+"
 		out.println("	<div class='btnAdd' onclick='openNewCliente(this)'>Nuevo cliente</div>");
@@ -622,17 +640,18 @@ public class Data_Clientes extends HttpServlet {
 	}
 
 	private void setContenidoTabla (Empleado empleado, int c,Cliente cliente, PrintWriter out) {
-		String n_follows="<div class='count-input space-bottom'<a class='incr-btn' data-action='decrease' href='#'>–</a><input class='quantity' type='text' name='quantity' value='1'/><a class='incr-btn' data-action='increase' href='#'>&plus;</a></div>";
-		String listaEmpleados="", listaEnlacesEmpleado="<div class='div_elem_empl'>";
+		String listaEmpleados="", listaEnlacesEmpleado="<div onclick='stopPropagation()' class='div_elem_empl'>";
 		//obtenemos los empleados que participan en el cliente
 		for (int i = 0; i < Data.empleados.size(); i++) {
 			Empleado e = Data.empleados.get(i);
 			String checked="";
 			if(cliente.getEmpleados().get(e.getId()) != null) {
 				checked="checked";//cliente.getEmpleados().get(e.getId()).getN_follows()
-				listaEnlacesEmpleado += "<div class='pr mg_top_10'><span>"+e.getName()+"</span>"+"<div class='div_n_follows'><div class='n_follows_remove'><i class='material-icons f_size_17'> remove </i></div><input class='input_n_follows' type='number' ><div class='n_follows_add'><i class='material-icons f_size_17'> add </i></div></div>"+"</div>"; 
+				listaEnlacesEmpleado += "<div class='pr mg_top_10'><span>"+e.getName()+"</span>"+"<div class='div_n_follows'><div class='n_follows_remove' onclick='modifyEnlacesEmpleado(this)' data-action='decrease'><i class='material-icons f_size_17 noselect'> remove </i></div>"
+						+ "<input class='input_n_follows inLink noselect' type='number' data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' value='"+cliente.getEmpleados().get(e.getId()).getN_follows()+"' readonly >"
+				+ "<div class='n_follows_add' onclick='modifyEnlacesEmpleado(this)' data-action='increase'><i class='material-icons f_size_17 noselect'> add </i></div></div>"+"</div>"; 
 			}
-			if(e.getCategoria().equals("free")) {
+			if(e.getCategoria().equals("free")) { 
 				listaEmpleados += 
 				"<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+
 					"<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input class='slT' type='checkbox' "+checked+"><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>"+
@@ -640,7 +659,7 @@ public class Data_Clientes extends HttpServlet {
 				"</li>";
 			}
 		}
-		listaEnlacesEmpleado+="</div>";
+		listaEnlacesEmpleado+="<div class='btn_guardar_n_follows' onclick='saveEnlacesEmpleado(this)'>guardar</div></div>";
 		
 		String htmlServicio;
 		ArrayList<String> destinos = new ArrayList<>(Arrays.asList((cliente.getUrls_a_atacar()+",").split(",")));
@@ -716,7 +735,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("			<span data-id-empleado='"+cliente.getId_empleado()+"' data-tipo-empleado='"+cliente.getTipoEmpleado()+"' class='tdCat' type='text'>"+cliente.getName_empleado()+"</span>");
 		//out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
 		out.println("		</div>"); 
-		out.println("		<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more'> more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
+		out.println("		<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'> more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
 		out.println("	</td>");
 		//Destinos
 		out.println("	<td class='tdCat cell_destino pr text_center' onclick='openDestinos(this)'>");

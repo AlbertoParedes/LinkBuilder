@@ -725,7 +725,11 @@ function hoverGoLinkOut(x){
 	
 }
 
-
+function closeAllPopUps(){
+	$(".slCt").removeClass("visible");
+	$(".pop_up").removeClass("visible");
+	$(".slWeb").removeClass("visible");
+}
 
 
 

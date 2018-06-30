@@ -728,6 +728,16 @@ input[type=number]::-webkit-outer-spin-button {
 
 
 
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
 /*info_div*/
 /* info_div container - can be anything you want */
 .info_div {
@@ -1216,17 +1226,22 @@ tr:hover{
 .i_more{    line-height: 3px;
     margin-top: 5px;}
 .algn_center{text-align: center;}
-.div_elem_empl{    position: absolute;
-    top: 0;
+.div_elem_empl{
+	display: none;
+	position: absolute;
+    top: -1px;
     right: 100%;
     background: white;
     border: solid;
-    height: 100%;
     border-color: #ececec;
-    border-width: 1px;    width: 200px;
+    border-width: 1px;
+    width: 190px;
     padding-left: 19px;
     text-transform: uppercase;
-    padding-right: 20px;}
+    padding-right: 20px;
+    min-height: calc(100% + 2px);
+    padding-bottom: 25px;
+        padding-top: 11px;}
 .mg_top_10{    margin-top: 10px;}
     
 /*Input number styles*/
@@ -1238,13 +1253,14 @@ tr:hover{
     top: 0;
     right: 0px;
     padding: 0px 25px;
-    height: 18px;}
+    height: 18px;
+    border-color: #878787;}
 .n_follows_remove{position: absolute;
     left: 0px;
     height: 16px;
-    border-right: 1px solid blue;
+    border-right: 1px solid #878787;
     width: 25px;
-    top: 0px;
+    top: -0.5px;
     padding-left: 4px;}
 .input_n_follows{height: 16px;
     font-size: 12px;
@@ -1252,13 +1268,20 @@ tr:hover{
 .n_follows_add{
 	position: absolute;
     right: 0px;
-    top: -1px;
-    height: 16px;
-    border-left: 1px solid blue;
+    top: -0.5px;
+    height: 17px;
+    border-left: 1px solid #878787;
     width: 25px;
     padding-left: 4px;
 }
-.f_size_17{    font-size: 17px;}
+.f_size_17{font-size: 16px;
+    color: #878787;}
+.btn_guardar_n_follows{
+	font-size: 9px;
+    position: absolute;
+    bottom: 5px;
+    right: 22px;}
+.div_elem_empl div:hover {color: #1090f7}
 /*----------------------------------------*/
 
 .visible{display: block;}

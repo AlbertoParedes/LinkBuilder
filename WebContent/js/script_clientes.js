@@ -462,6 +462,7 @@ function hidePopUpCoincidencias(x){
 	clearTimeout(timerCoincidencia);
 	$(x).stop();
 	$(x).closest('ul').children('div.popup').removeClass("show");
+	
 }
 
 
@@ -633,6 +634,64 @@ function deteleItemFilter(x){
 	$('.pop_up').removeClass('visible');
 	//alert(texto);
 	
+}
+
+function modifyEnlacesEmpleado(x){
+	
+	var maxValue = parseFloat($(x).closest('tr').find('td.cFollow input').val());
+	
+	var action = $(x).attr('data-action');
+	var oldValue = $(x).siblings('input[type="number"]').val();
+	
+	
+	//obtenemos todos los valores de todos los inputs
+	var sumaValores = 0;
+	$(x).closest('.div_elem_empl').find('input[type="number"]').each(function(i) {sumaValores += parseFloat($(this).val());});
+	var newVal = oldValue;
+	if(action == "increase"){
+		if(sumaValores < maxValue){
+			newVal = parseFloat(oldValue) + 1;
+		}
+	}else if(action == "decrease"){
+		if(oldValue>0){
+			newVal = parseFloat(oldValue) - 1;
+		}
+		
+	}
+	
+	$(x).siblings('input[type="number"]').val(newVal);
+	
+	//alert(oldValue);
+}
+
+function openEmpleadoEnlaces(x){
+	stopPropagation();
+	$(x).closest('div').siblings('div.div_elem_empl').addClass('visible');
+}
+
+function saveEnlacesEmpleado(x){
+	
+	var empleados = [];
+	var obj = {};
+	var id_cliente = $(x).closest('tr').attr('id');
+	$(x).closest('.div_elem_empl').find('input[type="number"]').each(function(i) {
+		var valor = $(this).val();
+		var id_empleado = $(this).attr('data-id-empleado');
+		var tipo_empleado = $(this).attr('data-tipo-empleado');
+		obj = {	'id_cliente': id_cliente, 'id_empleado': id_empleado, 'tipo_empleado': tipo_empleado, 'valor':valor}
+		empleados.push(obj);
+	});
+	
+	if(empleados.length>0){
+		var json = JSON.stringify(empleados);
+		$.post('Data_Clientes', {
+			metodo : "modificarEnlacesEmpleado",
+			json: json
+		}, function(){
+			//$('#btnListaClientes').click();
+			closeAllPopUps();
+		});
+	}
 }
 
 

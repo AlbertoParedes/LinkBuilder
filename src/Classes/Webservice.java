@@ -401,6 +401,21 @@ public class Webservice {
 
 		return response.toString();
 	}
+	
+	public String data(ArrayList<String> elementos, String metodo, String fichero) {
+		StringBuffer response = new StringBuffer();
+		JSONObject jsonObj = new JSONObject();
+		for (int i = 0; i < elementos.size(); i++) {
+			jsonObj.put("elemento_"+(i+1), elementos.get(i));
+		}
+		jsonObj.put("metodo", metodo);
+		List<JSONObject>  l = new LinkedList<JSONObject>();
+		l.addAll(Arrays.asList(jsonObj));
+		String jsonString = JSONValue.toJSONString(l);
+		sendPost(fichero, response, jsonString);
+
+		return response.toString();
+	}
 
 
 

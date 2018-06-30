@@ -62,7 +62,7 @@
 		
 		<div class="content-page">
 		
-			<!-- Clientes -->
+			<!-- Enlaces -->
 			<div class="allClients">
 				<div id="lcc" class="listClients">
 					<div class="titleCategory">
@@ -74,7 +74,7 @@
 					
 					<!-- lkc = listKeywordsClient -->
 					<div id="lstC" class="listItems">
-						<% for (int i = 0; i < clientes.size(); i++){%>
+						<!--<% for (int i = 0; i < clientes.size(); i++){%>
 							<div id="<%=clientes.get(i).getIdCliente()%>" onclick="enlaces_SelectClient(this.id, this)" class="item">
 								<%if(i!=0){ %><div class="line"></div><%}%>
 								<div class="itemChild <%if(clientes.get(i).getEditando()==1){%>blur<%}%>">
@@ -106,65 +106,39 @@
 								<div class="loader"><div class="l_d1"></div><div class="l_d2"></div><div class="l_d3"></div><div class="l_d4"></div><div class="l_d5"></div></div>
 							</div>
 						<% }%>
-						
+						-->
 					</div>
-					
 				</div>
-				
+				<!--  
 				<div id="uniqueClient" class="uniqueClient">
-					
-					
 					<div class="containerApp">	
 						<div class="msgSaludo">Hola <%= nameUser %>, </div>
 						<div><span class="msg">Selecciona un cliente.</span></div>							
 					</div>	
 				</div>
+				-->
 			</div>
 		
-			<!-- Keywords -->
+			<!-- Medios -->
 			<div class="allKeywords keyCont">
 				<div id="lkk" class="listClients"></div>
-				
-				<div id="kywData" class="uniqueClient">
-				
-					
-				</div> 
+				<div id="kywData" class="uniqueClient"></div> 
 			</div>	
 		 
-		 	<!-- lista clientes -->
+		 	<!-- Clientes -->
 		 	<div class="allClientes keyCont">		 		
-		 		<div id="divClientes" class="vistaClientes">
-						
-				</div> 
+		 		<div id="divClientes" class="vistaClientes"></div> 
 		 	</div>
 		</div>
 		
 		<div class="blockAll" onclick="bloquearTodo()"></div>
 		
 		<script type="text/javascript" src="js/scripts.js"></script>
-		<script type="text/javascript">
-			
-			/*window.ityped.init(document.querySelector('.msg'),{
-				strings : ['Selecciona un cliente.'],
-				disableBackTyping: true,
-				loop : false
-			})*/
-			
-			
-							
-		</script>
 
-	<script type="text/javascript">
-
-		
-		
-	</script>
-	<iframe name="null" style="display:none"></iframe>
+		<iframe name="null" style="display:none"></iframe>
 		<div id="panelConfirmacion" class="panelConfirmacion">
 			<div class="tableRow">
-				<div class="tableCell">
-					
-				</div>
+				<div class="tableCell"></div>
 			</div>
 		</div>
 	

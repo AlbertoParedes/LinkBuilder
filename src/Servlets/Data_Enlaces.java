@@ -70,30 +70,18 @@ public class Data_Enlaces extends HttpServlet {
 		String nick_empleado = session.getAttribute("name_user").toString();
 		String role_empleado = session.getAttribute("role_user").toString();
 
-		
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_empleado+""));
-		String json = ws.clientes(wbList, "getClientesEmpleadoAndUser", "clientes.php");
+		String json = ws.clientes(wbList, "getClientes", "clientes.php");
 		String[] jsonArray = json.split(";;");
 		System.out.println("0- :"+jsonArray[0]);
 		System.out.println("1- :"+jsonArray[1]);
 		empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
-		System.out.println(empleado.toString());
-		System.out.println("wwe__:"+json);
-		
-		
-		
 
-		System.out.println("Metodo get");
-		//Obtenemos los clientes del usuario ------------------------------------------------------------------------
-		wbList = new ArrayList<>(Arrays.asList(id_empleado+"",role_empleado));
-		json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
-		System.out.println(json);
 		
-		//ArrayList<Cliente> clientesGson = new Gson().fromJson(json, new TypeToken<List<Cliente>>(){}.getType());
-		ArrayList<Cliente> clientesGson = pj.parsearClientes(json);
-		
+		ArrayList<Cliente> clientes = pj.parsearClientesMap(jsonArray[1]);
 		this.clientes.clear();
-		this.clientes = clientesGson;
+		this.clientes = clientes;
+		ob.clientesByDomain(this.clientes);
 
 		String f = nick_empleado.substring(0, 1).toUpperCase();nick_empleado = f + nick_empleado.substring(1,nick_empleado.length()).toLowerCase();
 
@@ -101,8 +89,10 @@ public class Data_Enlaces extends HttpServlet {
 		request.setAttribute("clientes", clientes);//pasamos la lista de clientes
 		request.setAttribute("name_user", nick_empleado);
 
-
+		PrintWriter out = response.getWriter();
+		out.println("<script>alert('Hola')</script>");
 		request.getRequestDispatcher("Data.jsp").forward(request, response);
+		
 		//doPost(request,response);
 	}
 
