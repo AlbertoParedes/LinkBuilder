@@ -84,11 +84,9 @@ public class Data_Enlaces extends HttpServlet {
 		System.out.println("1- :"+jsonArray[1]);
 		//empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
 
-		
-		ArrayList<Cliente> clientes = pj.parsearClientesMap(jsonArray[1]);
 		this.clientes.clear();
-		this.clientes = clientes;
-		ob.clientesByDomain(this.clientes);
+		clientes = pj.parsearClientesMap(jsonArray[1]);
+		ob.clientesByDomain(clientes);
 
 		//request.setAttribute("clientes", clientes);//pasamos la lista de clientes
 		request.setAttribute("name_user", empleado.getName());
@@ -203,8 +201,8 @@ public class Data_Enlaces extends HttpServlet {
 	private void selectClient(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_empleado, String user_role) throws IOException, ParseException {
 		System.out.println();
 		String id_client = request.getParameter("id_client");
-		String fecha;//= request.getParameter("fecha");
-
+		String fecha;
+		
 		//if(fecha.contains("undefined")) {//cuando obtenemos el a�o por javascript nos devueve siempre undefined si estamos en el mes correspondiente al dia de hoy
 			Date today = new Date(); 
 			Calendar cal = Calendar.getInstance(); cal.setTime(today);
@@ -255,7 +253,7 @@ public class Data_Enlaces extends HttpServlet {
 
 			mostrarResultados(request, response, out, user_role, obj);
 
-
+			
 
 		}else if(disponibilidad==2) {
 			obj.put("blocked", "2");
@@ -297,6 +295,7 @@ public class Data_Enlaces extends HttpServlet {
 		 */
 
 		//out = response.getWriter();
+
 		String html="",blocked="0";
 
 		html+="<div class='infoClient'>";
@@ -315,9 +314,9 @@ public class Data_Enlaces extends HttpServlet {
 		//tabla
 		html+="		<table id='tClientes' class='table'>";
 		if(!empleado_role.equals("user_paid")) {
-			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Medio</th><th class='cabeceraTable cLink'>Enlace</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
+			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer'><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Medio</th><th class='cabeceraTable cLink'>Enlace</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
 		}else {
-			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>";
+			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer'><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>";
 		}
 		html+="			<tbody>";
 		html+="			</tbody>"; 
@@ -415,6 +414,13 @@ public class Data_Enlaces extends HttpServlet {
 				out.println("<tr id='"+id_resultado+"' posicion='"+i+"'>");
 				out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");
 
+				out.println("	<td class='tdCat cCUser pr txt_center_mg_0' onclick='opentUser(this)'>");
+				out.println("		<div class='tdCat tdWeb txt_center_mg_0'>");
+				out.println("			<span class='tdCat' type='text'>"+e.getNameEmpleado()+"</span>");
+				out.println("		</div>"); 
+				out.println("	</td>");
+				
+				
 				out.println("	<td class='tdCat cell_destino pr' onclick='openDestinos(this)'>");
 				out.println("		<div class='tdCat tdWeb'>");
 				out.println("			<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>"+e.getDestino()+"</span>");
@@ -714,6 +720,7 @@ public class Data_Enlaces extends HttpServlet {
 
 		out.println(html+"<script type='text/javascript'>setC();</script>");
 	}
+
 
 
 }

@@ -79,7 +79,7 @@ public ArrayList<Cliente> parsearClientesMap(String json) {
 		String nombres ="";
 		for (String e : arrayEmpleados) {
 			String[] datosAux = e.split(",");
-			Empleado empleado = new Empleado(datosAux[0], datosAux[1], toInt(datosAux[2]));			
+			Empleado empleado = new Empleado(Integer.parseInt(datosAux[0]), datosAux[1], toInt(datosAux[2]));			
 			empleados.put(datosAux[0], empleado);
 			nombres += empleado.getName()+",";
 		}

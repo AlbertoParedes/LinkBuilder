@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -513,11 +514,12 @@ public class Data_Clientes extends HttpServlet {
 		//clientes por usuario///////////********************************************************************
 		//wbList = new ArrayList<>(Arrays.asList(id_user+"",user_role));
 		//json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
-		
-		ArrayList<Cliente> clientes = pj.parsearClientesMap(jsonArray[1]);
 		this.clientes.clear();
-		this.clientes = clientes;
+		clientes = pj.parsearClientesMap(jsonArray[1]);
+		
 		ob.clientesByDomain(this.clientes);
+		
+		
 
 
 		String arrowWeb="", arrowNombre="",arrowServicio="",arrowuser="";
@@ -635,6 +637,9 @@ public class Data_Clientes extends HttpServlet {
 		//********************************************************************************************************************************************************************
 		out.println("<div class='divBlockClientes'></div>");
 		out.println("<div class='resize_head_table_clientes'><script> resize_head_table_clientes() </script></div>");
+		
+		reseatValores(request, response, out, id_user, user_role, campoOrdenar);
+		
 		System.out.println("pagina cargada");
 		 
 	}
@@ -645,10 +650,12 @@ public class Data_Clientes extends HttpServlet {
 		for (int i = 0; i < Data.empleados.size(); i++) {
 			Empleado e = Data.empleados.get(i);
 			String checked="";
-			if(cliente.getEmpleados().get(e.getId()) != null) {
+			
+
+			if(cliente.getEmpleados().get(e.getId()+"") != null) {
 				checked="checked";//cliente.getEmpleados().get(e.getId()).getN_follows()
 				listaEnlacesEmpleado += "<div class='pr mg_top_10'><span>"+e.getName()+"</span>"+"<div class='div_n_follows'><div class='n_follows_remove' onclick='modifyEnlacesEmpleado(this)' data-action='decrease'><i class='material-icons f_size_17 noselect'> remove </i></div>"
-						+ "<input class='input_n_follows inLink noselect' type='number' data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' value='"+cliente.getEmpleados().get(e.getId()).getN_follows()+"' readonly >"
+						+ "<input class='input_n_follows inLink noselect' type='number' data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' value='"+cliente.getEmpleados().get(e.getId()+"").getN_follows()+"' readonly >"
 				+ "<div class='n_follows_add' onclick='modifyEnlacesEmpleado(this)' data-action='increase'><i class='material-icons f_size_17 noselect'> add </i></div></div>"+"</div>"; 
 			}
 			if(e.getCategoria().equals("free")) { 
@@ -748,6 +755,53 @@ public class Data_Clientes extends HttpServlet {
 		out.println("			</div>");
 		out.println("		</td>");
 		out.println("</tr>");
+		
+		
 	}
 
+	private void reseatValores(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role, String campoOrdenar) {
+		/*
+		for (int i = 0; i < clientes.size(); i++) {
+			Cliente c = clientes.get(i);
+			System.out.println(c.getWeb());
+			
+			for (Map.Entry<String, Empleado> empleado : c.getEmpleados().entrySet()) {
+				int enlaces = empleado.getValue().getN_follows();
+				int idEmpleado = empleado.getValue().getId();
+				ArrayList<String> wbList = new ArrayList<>(Arrays.asList(c.getIdCliente()+"", idEmpleado+"", enlaces+"", "2018-07", 0+""));
+				String json = ws.clientes(wbList, "resetearValoresMensuales", "clientes.php");
+			    System.out.println("\t"+idEmpleado+"  "+empleado.getValue().getName()+"  "+enlaces);
+			}
+			
+			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(c.getIdCliente()+"", 0+"", 0+"", "2018-07", 1+""));
+			String json = ws.clientes(wbList, "resetearValoresMensuales", "clientes.php");
+			
+		}
+		*/
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

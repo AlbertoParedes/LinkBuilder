@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 public class Empleado {
 	@SerializedName("id")
 	@Expose
-	private String id;
+	private int id;
 	@SerializedName("name")
 	@Expose
 	private String name;
@@ -85,7 +85,7 @@ public class Empleado {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Empleado(String id, String name, int n_follows) {
+	public Empleado(int id, String name, int n_follows) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -100,11 +100,11 @@ public class Empleado {
 		this.n_follows = n_follows;
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

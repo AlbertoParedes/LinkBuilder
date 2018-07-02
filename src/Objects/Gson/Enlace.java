@@ -89,7 +89,23 @@ public class Enlace {
 	@Expose
 	private String descripcionForo;
 	
+	@SerializedName("id_empleado")
+	@Expose
+	private String idEmpleado;
 	
+	@SerializedName("name")
+	@Expose
+	private String nameEmpleado;
+	
+	
+
+	public String getIdEmpleado() {
+		return idEmpleado;
+	}
+
+	public void setIdEmpleado(String idEmpleado) {
+		this.idEmpleado = idEmpleado;
+	}
 
 	public String getDescripcionForo() {
 		return descripcionForo;
@@ -264,6 +280,14 @@ public class Enlace {
 
 	public void setUserEditando(String userEditando) {
 		this.userEditando = userEditando;
+	}
+
+	public String getNameEmpleado() {
+		return nameEmpleado;
+	}
+
+	public void setNameEmpleado(String nameEmpleado) {
+		this.nameEmpleado = nameEmpleado;
 	}
 	
 	
