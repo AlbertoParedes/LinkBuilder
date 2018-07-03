@@ -92,7 +92,7 @@ public class Data_Clientes extends HttpServlet {
 	}
 	
 	private void modificarEnlacesEmpleado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-		
+		int idCliente = 0;
 		String json = request.getParameter("json");
 		System.out.println(json);
 		Object jsonObject =JSONValue.parse(json.toString());
@@ -103,13 +103,19 @@ public class Data_Clientes extends HttpServlet {
 			int id_empleado = Integer.parseInt(row.get("id_empleado").toString());
 			int valor = Integer.parseInt(row.get("valor").toString());
 			String tipo_empleado = row.get("tipo_empleado").toString();
+			idCliente = id_cliente;
+
+			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente+"", id_empleado+"", valor+"", "2018-07", 0+""));
+			ws.clientes(wbList, "resetearValoresMensuales", "clientes.php");
 			
-			System.out.println(id_cliente+"  "+id_empleado+"  "+valor +"   "+tipo_empleado);
-			
-			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente+"",id_empleado+"",tipo_empleado,valor+""));
-			json = ws.clientes(wbList, "updateEmpleadoEnlaces", "clientes.php");
-			System.out.println(json);
+			wbList = new ArrayList<>(Arrays.asList(id_cliente+"",id_empleado+"",tipo_empleado,valor+""));
+			ws.clientes(wbList, "updateEmpleadoEnlaces", "clientes.php");
 		}
+		if(idCliente>0) {
+			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(idCliente+"", 0+"", 0+"", "2018-07", 1+""));
+			ws.clientes(wbList, "resetearValoresMensuales", "clientes.php");
+		}
+		
 		
 	}
 
@@ -206,27 +212,53 @@ public class Data_Clientes extends HttpServlet {
 	}
 
 	private void guardarEmpleado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
-		/*String id_cliente = request.getParameter("id_cliente");
-		int posicion = Integer.parseInt(request.getParameter("posicion"));
-		String id_empleado_anterior = request.getParameter("id_empleado_anterior");
-		String id_empleado_seleccionado = request.getParameter("id_empleado_seleccionado");
-		String tipo_empleado_seleccionado = request.getParameter("tipo_empleado_seleccionado");
-		String nombre_empleado_seleccionado = request.getParameter("nombre_empleado_seleccionado");
-*/
+
 		String id_cliente = request.getParameter("id_cliente");
 		int posicion = Integer.parseInt(request.getParameter("posicion"));
+		int enlacesDisponibles = Integer.parseInt(request.getParameter("enlacesDisponibles"));
 		String estado = request.getParameter("estado");
 		String id_empleado = request.getParameter("id_empleado");
 		String tipo_empleado = request.getParameter("tipo_empleado");
+		String nameEmpleado = request.getParameter("nameEmpleado");
+		String json = request.getParameter("json");
 		
-		System.out.println(id_cliente+" - "+posicion+" - "+estado+" - "+id_empleado+" - "+tipo_empleado+" - ");
+		
+		Object jsonObject =JSONValue.parse(json.toString());
+		JSONArray arrayData = (JSONArray)jsonObject;
+		for(int i=0;i<arrayData.size();i++){
+			JSONObject row =(JSONObject)arrayData.get(i);
+			int idEmpleado = Integer.parseInt(row.get("id_empleado").toString()), enlaces = Integer.parseInt(row.get("enlaces").toString());
+			String tipoEmpleado = row.get("tipo_empleado").toString();
+			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente+"", idEmpleado+"", enlaces+"", "2018-07", 0+""));
+			ws.clientes(wbList, "resetearValoresMensuales", "clientes.php");
+		}
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente+"", 0+"", 0+"", "2018-07", 1+""));
+		ws.clientes(wbList, "resetearValoresMensuales", "clientes.php");
 		
 		
-		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente,estado, id_empleado, tipo_empleado));
-		String json = ws.clientes(wbList, "insertOrDeleteClienteEmpleado", "clientes.php");
-		//System.out.println(nombre_empleado_seleccionado);
-		//clientes.get(posicion).setName_empleado(nombre_empleado_seleccionado);
-		System.out.println("->"+"   "+json);
+		if(estado.equals("true")) {
+			
+			wbList = new ArrayList<>(Arrays.asList(id_cliente,estado, id_empleado, tipo_empleado,"2018-07",enlacesDisponibles+""));
+			ws.clientes(wbList, "insertOrDeleteClienteEmpleado", "clientes.php");
+			
+			out.println("<div data-id-empleado='"+id_empleado+"' data-tipo-empleado='"+tipo_empleado+"' class='pr mg_top_10'>"
+					+ "		<span>"+nameEmpleado+"</span>"
+					+ "		<div class='div_n_follows'>"
+					+ "			<div class='n_follows_remove' onclick='modifyEnlacesEmpleado(this)' data-action='decrease'>"
+					+ "				<i class='material-icons f_size_17 noselect'> remove </i>"
+					+ "			</div>"
+					+ "			<input class='input_n_follows inLink noselect' type='number' data-id-empleado='"+id_empleado+"' data-tipo-empleado='"+tipo_empleado+"' value='"+enlacesDisponibles+"' readonly=''>"
+					+ "			<div class='n_follows_add' onclick='modifyEnlacesEmpleado(this)' data-action='increase'>"
+					+ "				<i class='material-icons f_size_17 noselect'> add </i>"
+					+ "			</div>"
+					+ "		</div>"
+					+ "	</div>");
+		}else {
+			wbList = new ArrayList<>(Arrays.asList(id_cliente,estado, id_empleado, tipo_empleado,"2018-07",0+""));
+			ws.clientes(wbList, "insertOrDeleteClienteEmpleado", "clientes.php");
+		}
+		
+		System.out.println(json);
 
 	}
 
@@ -654,7 +686,7 @@ public class Data_Clientes extends HttpServlet {
 
 			if(cliente.getEmpleados().get(e.getId()+"") != null) {
 				checked="checked";//cliente.getEmpleados().get(e.getId()).getN_follows()
-				listaEnlacesEmpleado += "<div class='pr mg_top_10'><span>"+e.getName()+"</span>"+"<div class='div_n_follows'><div class='n_follows_remove' onclick='modifyEnlacesEmpleado(this)' data-action='decrease'><i class='material-icons f_size_17 noselect'> remove </i></div>"
+				listaEnlacesEmpleado += "<div data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' class='pr mg_top_10'><span>"+e.getName()+"</span>"+"<div class='div_n_follows'><div class='n_follows_remove' onclick='modifyEnlacesEmpleado(this)' data-action='decrease'><i class='material-icons f_size_17 noselect'> remove </i></div>"
 						+ "<input class='input_n_follows inLink noselect' type='number' data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' value='"+cliente.getEmpleados().get(e.getId()+"").getN_follows()+"' readonly >"
 				+ "<div class='n_follows_add' onclick='modifyEnlacesEmpleado(this)' data-action='increase'><i class='material-icons f_size_17 noselect'> add </i></div></div>"+"</div>"; 
 			}
@@ -775,7 +807,7 @@ public class Data_Clientes extends HttpServlet {
 			
 			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(c.getIdCliente()+"", 0+"", 0+"", "2018-07", 1+""));
 			String json = ws.clientes(wbList, "resetearValoresMensuales", "clientes.php");
-			
+			break;
 		}
 		*/
 		

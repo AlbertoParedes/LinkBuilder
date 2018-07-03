@@ -358,17 +358,15 @@ public class Empleado {
 		return clientesVerTodos+"";
 	}
 
-
 	@Override
 	public String toString() {
 		return "Empleado [id=" + id + ", name=" + name + ", user=" + user + ", password=" + password + ", role=" + role
-				+ ", categoria=" + categoria + ", idEmpleado=" + idEmpleado + ", clientesWeb=" + clientesWeb
-				+ ", clientesNombre=" + clientesNombre + ", clientesServicio=" + clientesServicio + ", clientesFolows="
-				+ clientesFolows + ", clientesNofollows=" + clientesNofollows + ", clientesAnchor=" + clientesAnchor
-				+ ", clientesBlog=" + clientesBlog + ", clientesIdioma=" + clientesIdioma + ", clientesEmpleado="
-				+ clientesEmpleado + ", clientesDestinos=" + clientesDestinos + ", clientesVerTodos=" + clientesVerTodos
-				+ "]";
+				+ ", categoria=" + categoria + ", idEmpleado=" + idEmpleado + ", n_follows=" + n_follows + ", panel="
+				+ panel + "]";
 	}
+
+
+	
 	
 	
 

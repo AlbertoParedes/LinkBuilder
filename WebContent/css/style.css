@@ -105,7 +105,14 @@
 
 /*------------------------------------------*/
 
-.listItems{overflow: hidden;overflow-y: scroll;height: calc(100% - 102px);width: 350px;position: fixed;    padding-bottom: 15px;}
+.listItems{    overflow: hidden;
+    overflow-y: scroll;
+    height: calc(100% - 102px);
+    width: 350px;
+    position: fixed;
+    padding-bottom: 15px;
+    background: white;
+    border-right: 1px solid #ececec;}
 .uniqueClient{background: white;position: absolute; width: calc(100% - 350px);height: 100%;margin-left: 350px;}
 
 .infoClient{width: calc(100% - 100px); border-bottom: 1px solid #ececec;position: absolute;    padding-bottom: 5px;top: 45px;margin-left: 50px;}
@@ -207,7 +214,8 @@ input:checked + .slider:before {-webkit-transform: translateX(11px);-ms-transfor
 
 /*Empiza un nuevo css de esta aplicacion*/
 
-.effect7{position:relative;-webkit-box-shadow:0 10px 55px rgba(0, 0, 0, 0.1), 0 0 40px rgba(0, 0, 0, 0.0) inset;-moz-box-shadow:0 10px 55px rgba(0, 0, 0, 0.1), 0 0 40px rgba(0, 0, 0, 0.0) inset;box-shadow:0 10px 55px rgba(0, 0, 0, 0.1), 0 0 40px rgba(0, 0, 0, 0.0) inset;}
+.effect7{position:relative;-webkit-box-shadow:0 10px 55px rgba(0, 0, 0, 0.1);-moz-box-shadow:0 10px 55px rgba(0, 0, 0, 0.1);box-shadow:0 10px 55px rgba(0, 0, 0, 0.1)}
+.effect7_insset{position:relative;-webkit-box-shadow:0 0 40px rgba(0, 0, 0, 0.1) inset;-moz-box-shadow:0 0 40px rgba(0, 0, 0, 0.1) inset;box-shadow:0 0 40px rgba(0, 0, 0, 0.1) inset;}
 
 .slCt{display: none;position: absolute;background: white;border: solid;width: 100%;list-style-type: none;border-width: 1px;border-color: #ececec;padding: 10px 15px;margin-top: 6px;margin-left: -7px!important;position: absolute;z-index: 2;}
 
@@ -1123,7 +1131,7 @@ tr:hover{
 .div_filtro{
 	display: none;
     position: absolute;
-    width: 415px;
+    width: 500px;
     height: auto;
     background: white;
     border: 1px solid #ececec;
@@ -1149,10 +1157,11 @@ tr:hover{
 .i_title_filter{    float: right;
     font-size: 26px;
     margin-right: 14px;}
-.section_filter{    padding: 8px 25px;
+.section_filter{    padding: 8px 30px;
     color: #1090f7;
-    padding-bottom: 2px;
-    font-size: 13px;}
+    padding-bottom: 5px;
+    font-size: 14px;
+    text-transform: uppercase;}
 
 .btn_filter{    position: absolute;
     width: 80px;
@@ -1283,6 +1292,23 @@ tr:hover{
     right: 22px;}
 .div_elem_empl div:hover {color: #1090f7}
 /*----------------------------------------*/
+
+.fil_enl{position: absolute;
+    top: -4px;
+    right: 25px;}
+.filtros_Enlaces{
+	height: 275px;
+    background: white;
+    padding-top: 15px;
+    padding-left: 8px;
+    position: absolute;
+    
+}
+.pdd_left_5{padding-left: 5px;}
+.pdd_top_15{    padding-top: 15px;}
+
+.showDown{margin-top: 275px;}
+
 
 .visible{display: block;}
 .fadeIn{visibility:visible;opacity: 1;}

@@ -136,7 +136,33 @@ function guardarEmpleado(x){
 	var id_empleado = $(x).attr('data-id-empleado');
 	var tipo_empleado = $(x).attr('data-tipo-empleado');
 	
+	if(estado == false){
+		$(x).siblings('.div_elem_empl').find('div[data-id-empleado="'+id_empleado+'"][data-tipo-empleado="'+tipo_empleado+'"]').remove();
+	}
+	
+	var empleados = [];
+	var obj = {};
+	
+	//obtenemos en numero de enlaces que quedan libres para poder asignarselos a el nuevo cliente seleccionado
+	var n_follows = $(x).closest('tr').find('td.cFollow input').val();
+	var n_follows_selec = 0;
+	$(x).siblings('.div_elem_empl').find('input[type="number"]').each(function(){
+		n_follows_selec = parseInt(n_follows_selec) + parseInt($(this).val());
+		obj = {	'id_empleado': $(this).attr('data-id-empleado'), 'tipo_empleado':  $(this).attr('data-tipo-empleado'), 'enlaces':  $(this).val()}
+		empleados.push(obj);
+	});
+	var enlacesDisponibles = n_follows - n_follows_selec;
+	var nameEmpleado = $(x).children('span').text();
+	//-----------------------------------------------------------------------------------------------------------
+	if(estado == true){
+		obj = {	'id_empleado': id_empleado+"", 'tipo_empleado':  tipo_empleado+"", 'enlaces':  enlacesDisponibles+""}
+		empleados.push(obj);
+	}
+	
+	
+	
 	if(!$(x).closest('table').attr('id').includes('tNuevoCliente')){
+		var json = JSON.stringify(empleados);
 		$.post('Data_Clientes', {
 			metodo : "guardarEmpleado",
 			id_cliente: id_cliente,
@@ -144,8 +170,18 @@ function guardarEmpleado(x){
 			estado:estado,
 			id_empleado: id_empleado,
 			tipo_empleado: tipo_empleado,
-		}, function(){
+			enlacesDisponibles: enlacesDisponibles,
+			nameEmpleado: nameEmpleado,
+			json: json
+		}, function(rt){
 			$("#websGuardar").removeClass('cSave');
+			
+			if(estado == false){
+				$(x).siblings('.div_elem_empl').find('div[data-id-empleado="'+id_empleado+'"][data-tipo-empleado="'+tipo_empleado+'"]').remove();
+			}else {
+				$(x).siblings('.div_elem_empl').append(rt);
+			}
+			
 			
 		});
 	}

@@ -304,8 +304,10 @@ function guardarWebForo(x){
 
 //--CAMPO TIPO-------------------------------------------
 function openTipo(x){
-	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
-	$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+	$(".rotArrow").removeClass("rotArrow");
+	$("i.description_enlace").removeClass("lf");
+	$(".slCt").removeClass("visible");
+	$(".pop_up").removeClass("visible");
 	var ul = $(x).children('ul');
 	$(ul).addClass('visible');	
 	
@@ -348,10 +350,12 @@ function openTematica(x){
 	var ul = $(x).children('ul');
 	// si el ul ya es visible lo cerramos
 	if($(ul).attr('class').includes("visible")){
-		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+		$(".slCt").removeClass("visible");
+		$(".pop_up").removeClass("visible");
 		$(".slT").removeClass("visible");
 	}else{
-		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+		$(".slCt").removeClass("visible");
+		$(".pop_up").removeClass("visible");
 		$(x).children('div').children('i.arrow').addClass('rotArrow');
 		
 		$(ul).addClass("visible");
@@ -406,10 +410,12 @@ function openReutilizable(x){
 	
 	if($(ul).attr('class').includes("visible")){
 		//cerrar las ventanitas que esten abiertas
-		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+		$(".slCt").removeClass("visible");
+		$(".pop_up").removeClass("visible");
 		$(".slT").removeClass("visible");
 	}else{
-		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+		$(".slCt").removeClass("visible");
+		$(".pop_up").removeClass("visible");
 		$(x).children('div').children('i.arrow').addClass('rotArrow');
 		$(ul).addClass('visible');
 		$(ul).children('li').removeClass('liActive');
@@ -439,12 +445,14 @@ function openDescripcion(x){
 	var textarea = $(x).children('.taWeb');
 
 	if($(textarea).attr('class').includes("visible")){
-		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+		$(".slCt").removeClass("visible");
+		$(".pop_up").removeClass("visible");
 		$(".slT").removeClass("visible");
 	}else{
 		$("#websGuardar").removeClass('cSave');
 		//cerrar las ventanitas que esten abiertas
-		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+		$(".slCt").removeClass("visible");
+		$(".pop_up").removeClass("visible");
 		if (editando == 0) $(x).children('div').children('i.arrow').addClass('rotArrow');
 		$(textarea).addClass("visible");
 		resizeta(textarea,1);
@@ -476,8 +484,10 @@ function resizeta(x,e){
 function openRequiere(x){
 	var ul = $(x).children('ul');
 	//cerrar las ventanitas que esten abiertas
-	$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
-	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
+	$(".slCt").removeClass("visible");
+	$(".pop_up").removeClass("visible");
+	$(".rotArrow").removeClass("rotArrow");
+	$("i.description_enlace").removeClass("lf");
 	$(ul).addClass("visible");
 }
 function guardarRequiere(x){
@@ -635,7 +645,8 @@ window.addEventListener('click', function(e){
 	}else {
 		$(".rotArrow").removeClass("rotArrow");
 		$("i.description_enlace").removeClass("lf");
-		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
+		$(".slCt").removeClass("visible");
+		$(".pop_up").removeClass("visible");
 		$('.paid_inputs').removeClass('open_inputs');
 		
 		$('.pop_up').removeClass("visible");

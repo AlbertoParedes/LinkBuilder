@@ -73,10 +73,14 @@ public ArrayList<Cliente> parsearClientesMap(String json) {
 
 		
 		HashMap<String, Empleado> empleados = new HashMap<String,Empleado>();
-		//obtenemos todos los empleados que etsan utilizando este cliente
+		//obtenemos todos los empleados que etsan utilizando este client
+		String nombres ="";
+		try {
+			
+		
 		String es = c.get("ids_empleados").toString().replaceAll(";,", ";");
 		String[] arrayEmpleados = es.split(";");
-		String nombres ="";
+		
 		for (String e : arrayEmpleados) {
 			String[] datosAux = e.split(",");
 			Empleado empleado = new Empleado(Integer.parseInt(datosAux[0]), datosAux[1], toInt(datosAux[2]));			
@@ -85,6 +89,9 @@ public ArrayList<Cliente> parsearClientesMap(String json) {
 		}
 		nombres+=";";nombres = nombres.replace(",;", "");
 		
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		Cliente cliente = new Cliente(
 				toInt(c.get("id_cliente").toString()), 
 				c.get("web").toString(), 

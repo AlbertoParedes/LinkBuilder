@@ -478,6 +478,34 @@ function searchC() {
 	
 }
 
+function aplicarFiltroEnlaces(x){
+	
+	var filtros = [];
+	var obj = {};
+	$(x).closest('div.filtros_Enlaces ').find('div.txt_opciones_filter input:checked').each(function(){
+		var tipo = $(this).closest('div.txt_opciones_filter').attr('data-filter');
+		var valor = $(this).closest('div.txt_opciones_filter').attr('data-valor');
+		obj = {	'tipo': tipo, 'valor': valor}
+		filtros.push(obj);
+	});
+	
+	alert(filtros);
+	
+}
+
+function openFilterEnlaces(x){
+	
+	if(!$(x).attr("class").includes('liActive')){
+		$(x).closest('#lcc').find('#lstC').addClass('showDown', 1000);
+		$(x).addClass('liActive');
+	}else{
+		$(x).closest('#lcc').find('#lstC').removeClass('showDown', 1000);
+		$(x).removeClass('liActive');
+	}
+	
+	
+}
+
 function resize_head_table_enlaces(){
 	/*var tr = $('#tClientes tbody tr:first-child');
 	

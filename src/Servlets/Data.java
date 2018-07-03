@@ -109,6 +109,7 @@ public class Data extends HttpServlet {
 		if(empleado.getPanel().equals("enlaces")) {
 			System.out.println("enlaces");
 			request.setAttribute("empleado", empleado);
+			request.setAttribute("empleados", empleados);
 			request.getRequestDispatcher("Data_Enlaces").forward(request, response);
 		}else if(empleado.getPanel().equals("medios")) {
 			System.out.println("medios");

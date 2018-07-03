@@ -54,6 +54,7 @@ public class Data_Enlaces extends HttpServlet {
 	private Cliente cliente = new Cliente();
 	private OrdenarObjetos ob = new OrdenarObjetos();
 	private Empleado empleado = new Empleado();
+	private ArrayList<Empleado> empleados = new ArrayList<Empleado>();
 
 
 	private ArrayList<Enlace> enlaces =  new ArrayList<Enlace>();
@@ -67,6 +68,8 @@ public class Data_Enlaces extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		empleado = (Empleado) request.getAttribute("empleado");
+		
+		
 		
 		System.out.println("-------->"+empleado.getName());
 		
@@ -107,7 +110,7 @@ public class Data_Enlaces extends HttpServlet {
 		PrintWriter out = response.getWriter();
 
 		if(metodo.equals("cargarVistaEnlaces")) {
-			cargarVistaEnlaces(request, response, out);
+			cargarVistaEnlaces(request, response, out, id_empleado, false);
 		}else if(metodo.equals("enlaces_SelectClient")) { 
 			try {selectClient(request, response, out,id_empleado, role_empleado);} catch (ParseException e) {}
 		}else if(metodo.equals("enlaces_CheckClients")) {
@@ -138,11 +141,16 @@ public class Data_Enlaces extends HttpServlet {
 
 	}
 
-	private void cargarVistaEnlaces(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+	private void cargarVistaEnlaces(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_empleado, boolean todos) {
+		
+		int nClientes = 0;
 		
 		String html="";
 		int clienteSeleccionado=-1;
 		for (int i = 0; i < clientes.size(); i++){
+			//System.out.println(clientes.get(i).getWeb()+"  "+clientes.get(i).getEmpleados().get(id_empleado+""));	
+			if(clientes.get(i).getEmpleados().get(id_empleado+"") != null || todos) {
+				nClientes++;
 				String itemSleccionado="";
 				if(clienteSeleccionado == clientes.get(i).getIdCliente()) {itemSleccionado="item_select";}
 				html+="		<div id='"+clientes.get(i).getIdCliente()+"' onclick='enlaces_SelectClient(this.id, this)' class='item "+itemSleccionado+"'>";
@@ -175,15 +183,54 @@ public class Data_Enlaces extends HttpServlet {
 				html+="			</div>";
 				html+="			<div class='loader'><div class='l_d1'></div><div class='l_d2'></div><div class='l_d3'></div><div class='l_d4'></div><div class='l_d5'></div></div>";
 				html+="		</div>";
+			}
 		}
 		
 		out.println("<div id='lcc' class='listClients'>");
 		out.println("	<div class='titleCategory'>");
 		out.println("		<div class='titleInner'>Clientes<div class='horDiv wa'><div id='addC' class='addK'><i class='material-icons addKi'>add</i></div><div onclick='searchCliente(event)'><div id='ipCLient' onclick='stopPropagation()' class='srchI'><i onclick='searchCliente(event)' class='material-icons addKi'>search</i><input id='searchC' class='searchI' type='text' oninput='searchC()'></div></div></div></div>");
 		out.println("	</div>");
-		out.println("	<div class='infoCategory'>");
-		out.println("		<div  class='info'>"+clientes.size()+" clientes</div>");
+		out.println("	<div class='infoCategory pr'>");
+		out.println("		<div  class='info'>"+nClientes+" clientes</div>");
+		out.println("		<i class='tdCat material-icons gris fil_enl' onclick='openFilterEnlaces(this)'>filter_list</i>");
 		out.println("	</div>");
+		
+		out.println("	<div class='filtros_Enlaces_seleccionados'></div>");
+		
+		out.println("	<div class='filtros_Enlaces effect7_insset'>");
+		
+		//out.println("		<div class='column_1'>");
+		out.println("				<div class='float_left'>");
+		out.println("					<div class='section_filter'>Empleados</div>");
+		for (int j = 0; j < Data.empleados.size(); j++) 
+			if(Data.empleados.get(j).getCategoria().equals("free"))
+				out.println("			<div data-filter='empleado' data-valor='"+Data.empleados.get(j).getName().toLowerCase()+"' class='txt_opciones_filter'>"+Data.empleados.get(j).getName()+"<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("				</div>");
+		
+		out.println("				<div class='float_left pdd_left_5'>");
+		out.println("					<div class='section_filter'>Estado cliente</div>");
+		out.println("					<div data-filter='estado' data-valor='new' class='txt_opciones_filter'>Cliente nuevo<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='estado' data-valor='old' class='txt_opciones_filter'>Cliente normal<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='estado' data-valor='our' class='txt_opciones_filter'>Cliente YoSEO<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("				</div>");
+		//out.println("		</div>");
+		
+		//out.println("		<div class='column_2 pdd_top_15'>");
+		out.println("				<div class='float_left pdd_top_15'>");
+		out.println("					<div class='section_filter'>Servicios</div>");
+		out.println("					<div data-filter='servicio' data-valor='lite' class='txt_opciones_filter'>SEO Lite<div class='pretty p-icon p-smooth chkbx_filter '><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='servicio' data-valor='pro' class='txt_opciones_filter'>SEO Pro<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='servicio' data-valor='premium' class='txt_opciones_filter'>SEO Premium<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("					<div data-filter='servicio' data-valor='medida' class='txt_opciones_filter'>SEO a medida<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println("				</div>");
+		//out.println("		</div>");
+		
+		
+		
+		out.println("			<div class='btn_filter' onclick='aplicarFiltroEnlaces(this)'>Aplicar</div>");
+		out.println("	</div>");
+		
+		
 		out.println("	<div id='lstC' class='listItems'>");
 		out.println(		html);
 		out.println("	</div>");
