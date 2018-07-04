@@ -253,7 +253,7 @@ public class Data_Enlaces extends HttpServlet {
 		out.println("	</div>");
 		
 		out.println("	<div class='div_filtros_enlaces'>");
-		out.println("		<div class='filtros_Enlaces_seleccionados float_left'><div class='item_filter_group mgn_top' data-filter='empleado' data-valor='"+empleado.getId()+"'>"+empleado.getName().toLowerCase()+"<svg onclick='deteleItemFilter(this)' class='delete_item_filter' height='24' viewBox='0 0 24 24' width='17'><path class='btn_detele_item_filter' d='M12 2c-5.53 0-10 4.47-10 10s4.47 10 10 10 10-4.47 10-10-4.47-10-10-10zm5 13.59l-1.41 1.41-3.59-3.59-3.59 3.59-1.41-1.41 3.59-3.59-3.59-3.59 1.41-1.41 3.59 3.59 3.59-3.59 1.41 1.41-3.59 3.59 3.59 3.59z'></path></svg></div></div>");
+		out.println("		<div class='filtros_Enlaces_seleccionados float_left'><div class='item_filter_group mgn_top' data-filter='empleado' data-valor='"+empleado.getId()+"'>"+empleado.getName().toLowerCase()+"<svg onclick='deteleItemFilterEnlaces(this)' class='delete_item_filter' height='24' viewBox='0 0 24 24' width='17'><path class='btn_detele_item_filter' d='M12 2c-5.53 0-10 4.47-10 10s4.47 10 10 10 10-4.47 10-10-4.47-10-10-10zm5 13.59l-1.41 1.41-3.59-3.59-3.59 3.59-1.41-1.41 3.59-3.59-3.59-3.59 1.41-1.41 3.59 3.59 3.59-3.59 1.41 1.41-3.59 3.59 3.59 3.59z'></path></svg></div></div>");
 		out.println("		<div class='filtros_Enlaces effect7_insset float_left'>");
 		out.println("				<div class='float_left'>");
 		out.println("					<div class='section_filter'>Empleados</div>");

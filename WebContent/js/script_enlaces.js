@@ -546,7 +546,7 @@ function viewFiltersEnlaces(filtros,x){
 		else if(obj.valor=="our")texto="clientes yoseo";
 		else if(obj.tipo=="empleado")texto=obj.name;
 		else texto=obj.valor;
-		html+="<div class='item_filter_group mgn_top' data-filter='"+obj.tipo+"' data-valor='"+obj.valor+"'>"+texto+"<svg onclick='deteleItemFilter(this)' class='delete_item_filter' height='24' viewBox='0 0 24 24' width='17'><path class='btn_detele_item_filter' d='M12 2c-5.53 0-10 4.47-10 10s4.47 10 10 10 10-4.47 10-10-4.47-10-10-10zm5 13.59l-1.41 1.41-3.59-3.59-3.59 3.59-1.41-1.41 3.59-3.59-3.59-3.59 1.41-1.41 3.59 3.59 3.59-3.59 1.41 1.41-3.59 3.59 3.59 3.59z'></path></svg></div>";
+		html+="<div class='item_filter_group mgn_top' data-filter='"+obj.tipo+"' data-valor='"+obj.valor+"'>"+texto+"<svg onclick='deteleItemFilterEnlaces(this)' class='delete_item_filter' height='24' viewBox='0 0 24 24' width='17'><path class='btn_detele_item_filter' d='M12 2c-5.53 0-10 4.47-10 10s4.47 10 10 10 10-4.47 10-10-4.47-10-10-10zm5 13.59l-1.41 1.41-3.59-3.59-3.59 3.59-1.41-1.41 3.59-3.59-3.59-3.59 1.41-1.41 3.59 3.59 3.59-3.59 1.41 1.41-3.59 3.59 3.59 3.59z'></path></svg></div>";
 		console.log(obj.tipo+" - "+obj.valor);
 	}
 	$(contenedor).html(html);
@@ -558,6 +558,20 @@ function viewFiltersEnlaces(filtros,x){
 function cerrarFiltrosEnlaces(x, altura){
 	$(x).removeClass('liActive');
 	$(x).closest('#lcc').children('#lstC').stop().animate({ marginTop: altura+"px"}, 1000);
+}
+
+function deteleItemFilterEnlaces(x){
+	alert("hola");
+	/*var data_filter = $(x).closest('div.item_filter_group').attr('data-filter');
+	var data_valor = $(x).closest('div.item_filter_group').attr('data-valor');
+	
+	//desmarcar checkbox del filtro
+	
+	$(x).closest('.ctoolbar').find('.filter_client .div_filtro div.txt_opciones_filter[data-filter="'+data_filter+'"][data-valor="'+data_valor+'"] input').prop('checked', false);
+	$(x).closest('.ctoolbar').find('.filter_client .div_filtro .btn_filter').click();
+	$('.pop_up').removeClass('visible');
+	//alert(texto);
+	*/
 }
 
 function resize_head_table_enlaces(){
