@@ -24,7 +24,9 @@ function guardarNombreCliente(x){
 }
 
 function openServicio(x){
-	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
+	$(".rotArrow").removeClass("rotArrow");
+	$("i.description_enlace").removeClass("lf");
+	
 	if(!$(x).find("ul").attr('class').includes("visible")){
 		$(".slCt").removeClass("visible");$(".pop_up").removeClass("visible");
 		$(".slT").removeClass("visible");
@@ -61,8 +63,8 @@ function opentUser(x){
 		$(".pop_up").removeClass("visible");
 		$(".slT").removeClass("visible");
 	}*/
-	
-	if($(x).children('ul').attr('class').includes("nuevaWeb")){$(x).children('ul').css("width",$(x).css("width"))}
+	var ancho = $(x).outerWidth()+3;
+	if($(x).children('ul').attr('class').includes("nuevaWeb")){$(x).children('ul').css("width",ancho+"px")}
 }
 function guardarServicio(x){
 	$(x).closest('ul').find('li').removeClass("liActive");
@@ -87,8 +89,30 @@ function guardarServicio(x){
 	guardarFollows($(x).closest('tr').find('td.cFollow input'));
 	guardarNoFollows($(x).closest('tr').find('td.cNoFollow input'));
 	
-	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente')){
 		guardarValoresCliente(id_cliente,campo,valor);
+	}else{
+		
+		var checked = $(x).closest('tr').find('td.cCUser ul li[data-id-empleado="2"] input').prop("checked");
+		var nameAux = $(x).closest('tr').find('td.cCUser ul li[data-id-empleado="2"]').children('span').text();
+		
+		if(checked == true){
+			$(x).closest('tr').find('td.cCUser ul li[data-id-empleado="2"] input').click();
+		}
+		$(x).closest('tr').find('td.cCUser ul li[data-id-empleado="2"] input').click();
+		$(x).closest('tr').find('td.cCUser div span').text(nameAux);
+		
+		if(valor =="lite"){
+			$(x).closest('tr').find('td.cCUser ul .div_elem_empl div[data-id-empleado="2"] input').val("1");
+		}else if(valor =="pro"){
+			$(x).closest('tr').find('td.cCUser ul .div_elem_empl div[data-id-empleado="2"] input').val("1");
+		}else if(valor == "premium"){
+			$(x).closest('tr').find('td.cCUser ul .div_elem_empl div[data-id-empleado="2"] input').val("2");
+		}else if(valor ="medida"){
+			//$(x).closest('tr').find('td.cCUser ul .div_elem_empl div[data-id-empleado="2"] input').val();
+			$(x).closest('tr').find('td.cCUser ul li[data-id-empleado="2"] input').click();
+		}
+	}
 }
 function guardarFollows(x){
 	var campo ="follows";
@@ -184,69 +208,26 @@ function guardarEmpleado(x){
 			
 			
 		});
-	}
-	
-	/*
-	
-	
-	var id_empleado_anterior = $(x).closest('td').children('div.tdWeb').children('span').attr('data-id-empleado');
-	var id_empleado_seleccionado = $(x).attr('data-id-empleado');
-	var tipo_empleado_seleccionado = $(x).attr('data-tipo-empleado');
-	var nombre_empleado_seleccionado = $(x).text();
-	
-	$(x).closest('td').children('div.tdWeb').children('span').attr('data-id-empleado',id_empleado_seleccionado);
-	$(x).closest('td').children('div.tdWeb').children('span').attr('data-tipo-empleado',tipo_empleado_seleccionado);
-	$(x).closest('td').find('div span').text($(x).text());
-	
-	if(!$(x).closest('table').attr('id').includes('tNuevoCliente')){
-		$.post('Data_Clientes', {
-			metodo : "guardarEmpleado",
-			id_cliente: id_cliente,
-			posicion:posicion,
-			id_empleado_anterior:id_empleado_anterior,
-			id_empleado_seleccionado: id_empleado_seleccionado,
-			tipo_empleado_seleccionado: tipo_empleado_seleccionado,
-			nombre_empleado_seleccionado:nombre_empleado_seleccionado
-		}, function(){
-			$("#websGuardar").removeClass('cSave');
+	}else{
+		if(estado == false){
+			$(x).siblings('.div_elem_empl').find('div[data-id-empleado="'+id_empleado+'"][data-tipo-empleado="'+tipo_empleado+'"]').remove();
+		}else {
 			
-		});
-	}*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/*
-	var campo ="linkbuilder";
-	var id_cliente = $(x).closest('tr').attr('id');
-	//empleado anterior
-	var data_user = $(x).closest('ul').find('li.liActive').attr('id')
-	$(x).closest('ul').find('li').removeClass("liActive");//removemos liActive de todos las opciones
-	//empleado nuevo
-	var id_user= $(x).attr('id');
-	//cadena a remplazar
-	var data_list_user = $(x).closest('td').find('div span').attr('data-list-user');
-	//cadena remplazada
-	var valor = data_list_user.replace(data_user,id_user);
-	
-	//$(x).closest('td').find('div span').attr('data-user', id_user);
-	$(x).closest('td').find('div span').attr('data-list-user', valor);
-	$(x).closest('td').find('div span').text($(x).text());
-	$(x).addClass('liActive');
-	
-	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
-		guardarValoresClienteEmpleado(id_cliente,campo,valor, data_user);
-	*/
+			var rt = "<div data-id-empleado='"+id_empleado+"' data-tipo-empleado='"+tipo_empleado+"' class='pr mg_top_10'>" +
+					 "	<span>"+nameEmpleado+"</span>" +
+					 "		<div class='div_n_follows'>" +
+					 "			<div class='n_follows_remove' onclick='modifyEnlacesEmpleado(this)' data-action='decrease'>" +
+					 "				<i class='material-icons f_size_17 noselect'> remove </i>" +
+					 "			</div>" +
+					 "			<input class='input_n_follows inLink noselect' type='number' data-id-empleado='"+id_empleado+"' data-tipo-empleado='"+tipo_empleado+"' value='"+enlacesDisponibles+"' readonly=''>" +
+					 "			<div class='n_follows_add' onclick='modifyEnlacesEmpleado(this)' data-action='increase'>" +
+					 "				<i class='material-icons f_size_17 noselect'> add </i>" +
+					 "			</div>" +
+					 "		</div>" +
+					 "	</div>";
+			$(x).siblings('.div_elem_empl').append(rt);
+		}
+	}
 	
 }
 function openNewCliente(x){
@@ -266,20 +247,26 @@ function guardarNewCliente(x){
 	var anchor = $(ob).find('td.anchorC input').val();
 	var blog = $(ob).find('td.cCBlog div label input').is(':checked') === true ? 1 : 0;
 	var idioma = $(ob).find('td.cCIdioma input').val();
-	var user = $(ob).find('td.cCUser .tdWeb span').attr('data-id-empleado');
-	var user_tipo = $(ob).find('td.cCUser .tdWeb span').attr('data-tipo-empleado');
-
+	
+	
+	
+	var x2 = $(x).siblings('table').find('tbody tr td.cCUser ul .div_elem_empl');
+	var empleados = [];
+	var obj = {};
+	$(x2).find('input[type="number"]').each(function(i) {
+		var valor = $(this).val();
+		var id_empleado = $(this).attr('data-id-empleado');
+		var tipo_empleado = $(this).attr('data-tipo-empleado');
+		obj = {'id_empleado': id_empleado, 'tipo_empleado': tipo_empleado, 'valor':valor}
+		empleados.push(obj);
+	});
+	
+	var jsonEmpleados = JSON.stringify(empleados);
+	
 	
 	var text = "";
 	var aceptado = true;
-	/*if(web==""){text="Introuce una web";aceptado = false;}
-	else if(!web.startsWith('http://') && !web.startsWith('https://') ){text="Introuce una web correcta";aceptado = false;}
-	else if(web.includes('.')==false){text="Introuce una web correcta";aceptado = false;}
-	else if(typeof servicio === 'undefined'){text="Introuce un servicio";aceptado = false;}
-	else if(follow==""){text="Introuce follows";aceptado = false;}
-	else if(nofollow==""){text="Introuce no follows";aceptado = false;}
-	else if(typeof user === 'undefined'){text="Selecciona un usuario";aceptado = false;}
-	*/
+
 	
 	
 	if(aceptado===false){
@@ -295,8 +282,7 @@ function guardarNewCliente(x){
 			anchor:anchor,
 			blog:blog,
 			idioma:idioma,
-			user:user,
-			user_tipo:user_tipo
+			jsonEmpleados: jsonEmpleados
 		}, function(rt){
 			var status = rt.status;
 			if(status==0){

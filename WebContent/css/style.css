@@ -107,12 +107,13 @@
 
 .listItems{    overflow: hidden;
     overflow-y: scroll;
-    height: calc(100% - 102px);
+    height: calc(100% - 136px);
     width: 350px;
     position: fixed;
     padding-bottom: 15px;
     background: white;
-    border-right: 1px solid #ececec;}
+    border-right: 1px solid #ececec;
+        margin-top: 34px;}
 .uniqueClient{background: white;position: absolute; width: calc(100% - 350px);height: 100%;margin-left: 350px;}
 
 .infoClient{width: calc(100% - 100px); border-bottom: 1px solid #ececec;position: absolute;    padding-bottom: 5px;top: 45px;margin-left: 50px;}
@@ -1186,7 +1187,8 @@ tr:hover{
     margin-left: 10px;
     position: relative;
     line-height: 19px;
-        cursor: pointer;
+    cursor: pointer;
+    font-variant: small-caps;
 }   
 .delete_item_filter{  
     position: absolute;
@@ -1301,13 +1303,18 @@ tr:hover{
     background: white;
     padding-top: 15px;
     padding-left: 8px;
-    position: absolute;
     
 }
 .pdd_left_5{padding-left: 5px;}
 .pdd_top_15{    padding-top: 15px;}
 
-.showDown{margin-top: 275px;}
+.filtros_Enlaces_seleccionados{
+    padding-top: 4px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #ececec;
+    width: 100%;
+}
+.mgn_top{margin-top: 3px;}
 
 
 .visible{display: block;}

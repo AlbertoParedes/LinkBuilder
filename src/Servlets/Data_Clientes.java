@@ -310,10 +310,10 @@ public class Data_Clientes extends HttpServlet {
 		String anchor = request.getParameter("anchor");			
 		String blog = request.getParameter("blog");
 		String idioma = request.getParameter("idioma");
-		int user = Integer.parseInt(request.getParameter("user"));
-		String user_tipo = request.getParameter("user_tipo");
-		System.out.println(user_tipo+"+++");
-
+		String jsonEmpleados = request.getParameter("jsonEmpleados");
+		System.out.println(jsonEmpleados); 
+		
+		
 		obj.put("status", "0");
 		if(!web.startsWith("http://") && !web.startsWith("http://")) {
 			obj.put("text", "Introuce una web correcta");
@@ -321,7 +321,7 @@ public class Data_Clientes extends HttpServlet {
 			obj.put("text", "Debe contener al menos un .");
 		}else if(!servicio.trim().equals("lite") && !servicio.trim().equals("pro") && !servicio.trim().equals("premium") && !servicio.trim().equals("medida")){
 			obj.put("text", "Introduce un Servicio");
-		}else if(user<1){
+		}else if(jsonEmpleados.equals("[]")){
 			obj.put("text", "Selecciona un usuario");
 		}else {
 
@@ -348,9 +348,8 @@ public class Data_Clientes extends HttpServlet {
 			if(clientesGson.size()==0) {//si esto es igual a 0 significa que en la bbdd no hay ningun cliente con este dominio
 				status="1";
 
-				ArrayList<String> wbList = new ArrayList<>(Arrays.asList(web,nombre,servicio,follow,nofollow,anchor,blog,idioma,user+"",user_tipo));
-				json = ws.clientes(wbList, "insertNuevoCliente", "clientes.php");
-				//ws.nuevoCliente(web, nombre, servicio, follow, nofollow, anchor, blog, idioma, user, "insertNuevoCliente.php");
+				//ArrayList<String> wbList = new ArrayList<>(Arrays.asList(web,nombre,servicio,follow,nofollow,anchor,blog,idioma,user+"",user_tipo));
+				//json = ws.clientes(wbList, "insertNuevoCliente", "clientes.php");
 			}else {
 				if(coincidenciaExacta) {status="2";text="Este cliente ya existe";}
 				else {status="3";text="Coincidencia parcial en el dominio con el cliente:  ";}
@@ -522,30 +521,31 @@ public class Data_Clientes extends HttpServlet {
 		System.out.println("0- :"+jsonArray[0]);
 		System.out.println("1- :"+jsonArray[1]);
 		empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
-		//System.out.println(empleado.toString());
-		
-		/*
-		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_user+""));
-		String json = ws.clientes(wbList, "getClientesEmpleadoAndUser", "clientes.php");
-		String[] jsonArray = json.split(";;");
-		System.out.println("0- :"+jsonArray[0]);
-		System.out.println("1- :"+jsonArray[1]);
-		empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
-		System.out.println(empleado.toString());
-		//System.out.println(json);
-*/
-		/*String combobox = "<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input class='slT' type='checkbox'><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>";
-		listaEmpleados = ""; 
-		for (Empleado e : Data.empleados) {
-			if(e.getCategoria().equals("free")) {
-				listaEmpleados += "<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+combobox+"<span class='f_s_12'>"+e.getName()+"</span></li>";
-			}
-		}*/
 
+		//----------------------------------------------------------------------------------------------------------------------------------------------
+		String listaEmpleados="", listaEnlacesEmpleado="<div onclick='stopPropagation()' class='div_elem_empl'>";
+		//obtenemos los empleados que participan en el cliente
+		for (int i = 0; i < Data.empleados.size(); i++) {
+			Empleado e = Data.empleados.get(i);
+			String checked="";
+			/*if(e.getCategoria().equals("free")) { 
+				listaEnlacesEmpleado += "<div data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' class='pr mg_top_10'><span>"+e.getName()+"</span>"+"<div class='div_n_follows'><div class='n_follows_remove' onclick='modifyEnlacesEmpleado(this)' data-action='decrease'><i class='material-icons f_size_17 noselect'> remove </i></div>"
+						+ "<input class='input_n_follows inLink noselect' type='number' data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' value='0' readonly >"
+				+ "<div class='n_follows_add' onclick='modifyEnlacesEmpleado(this)' data-action='increase'><i class='material-icons f_size_17 noselect'> add </i></div></div>"+"</div>"; 
+			}*/
+			if(e.getCategoria().equals("free")) { 
+				listaEmpleados += 
+				"<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+
+					"<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input class='slT' type='checkbox' "+checked+"><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>"+
+					"<span class='f_s_12'>"+e.getName()+"</span>"+ 
+				"</li>";
+			}
+		}
+		listaEnlacesEmpleado+="</div>";
+		//----------------------------------------------------------------------------------------------------------------------------------------------
 		
-		//clientes por usuario///////////********************************************************************
-		//wbList = new ArrayList<>(Arrays.asList(id_user+"",user_role));
-		//json = ws.clientes(wbList, "getClientesEmpleado", "clientes.php");
+		
+		
 		this.clientes.clear();
 		clientes = pj.parsearClientesMap(jsonArray[1]);
 		
@@ -637,7 +637,10 @@ public class Data_Clientes extends HttpServlet {
 		out.println("<div class='newSomething effect7'>");
 		out.println("	<div class='cancelNew' onclick='cancelNewCliente(this)' ><i class='material-icons i_cancel'> clear </i></div>");
 		out.println("	<table id='tNuevoCliente' class='table'>");
-		out.println("			<thead><tr><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable tipoNew'>Servicio</th><th class='cabeceraTable cFollow wdth_45'><i class='material-icons lf'>link</i></th><th class='cabeceraTable cNoFollow wdth_45'><i class='material-icons lnf'>link</i></th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog txt_center_mg_0'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th><th class='cabeceraTable cCUser'>User</th></tr></thead>");
+		out.println("			<thead><tr><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable tipoNew'>Servicio</th><th class='cabeceraTable cFollow wdth_45'><i class='material-icons lf'>link</i></th><th class='cabeceraTable cNoFollow wdth_45'><i class='material-icons lnf'>link</i></th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog txt_center_mg_0'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th>"
+				
+				+ "<th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='aplicarFiltro(this)' data-tipo='user'><i class='material-icons f_size26'>account_circle</i></th></tr></thead>");
+
 		out.println("			<tbody>");
 		out.println("				<td class='cCWebCliente'><input class='inLink'  placeholder='Introduce una web' type='text' value=''></td>");
 		out.println("				<td class='cCNombre'><input class='inLink' placeholder='Introduce un nombre' type='text' value=''></td>");
@@ -657,10 +660,25 @@ public class Data_Clientes extends HttpServlet {
 		out.println("					<div class='tdCat tdWeb'><label  class='switch label_switch'><input class='slT' type='checkbox' onchange='guardarBlog(this)'><span class='slider round'></span></label></div>");
 		out.println("				</td>");
 		out.println("				<td class='tdCat cCIdioma'><input class='inLink' type='text' onchange='guardarIdioma(this)' value='ESP'></td>");
-		out.println("				<td class='tdCat cCUser pr' onclick='opentUser(this)'>");
-		out.println("					<div class='tdCat tdWeb'><span data-id-empleado='0' data-tipo-empleado='0' class='tdCat' data-list-user='' type='text'>-</span></div>");
-		out.println("					<ul class='slCt effect7 nuevaWeb margin_top_6'>"+listaEmpleados+"</ul>");
+		
+		
+		
+		out.println("				<td class='tdCat cCUser pr txt_center_mg_0' onclick='opentUser(this)'>");
+		out.println("					<div class='tdCat tdWeb txt_center_mg_0'><span data-id-empleado='0' data-tipo-empleado='0' class='tdCat' data-list-user='' type='text'>-</span></div>");
+		//out.println("					<ul class='slCt effect7 nuevaWeb margin_top_6'>"+listaEmpleados+"<i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></ul>");
+		out.println("				<ul class='slCt effect7 nuevaWeb txt_algn_left margin_top_6'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
+
 		out.println("				</td>");
+		/*
+		//Columna USER
+		out.println("			<td class='tdCat cCUser pr txt_center_mg_0' onclick='opentUser(this)'>");
+		out.println("				<div class='tdCat tdWeb txt_center_mg_0'>");
+		out.println("					<span class='tdCat' type='text'>-</span>");
+		out.println("				</div>"); 
+		out.println("				<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
+		out.println("			</td>");
+		*/
+		
 		out.println("			</tbody>");
 		out.println("	</table>");
 		out.println("	<div class='infoNew'></div>"); 
@@ -774,7 +792,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("			<span data-id-empleado='"+cliente.getId_empleado()+"' data-tipo-empleado='"+cliente.getTipoEmpleado()+"' class='tdCat' type='text'>"+cliente.getName_empleado()+"</span>");
 		//out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
 		out.println("		</div>"); 
-		out.println("		<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'> more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
+		out.println("		<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
 		out.println("	</td>");
 		//Destinos
 		out.println("	<td class='tdCat cell_destino pr text_center' onclick='openDestinos(this)'>");

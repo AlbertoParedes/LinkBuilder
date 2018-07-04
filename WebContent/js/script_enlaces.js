@@ -305,11 +305,24 @@ function changeMonth(){
 		$('#lstC div.item_select').children('.loader').addClass('fadeIn');
 		$('.blockAll').addClass('visible');
 	}
-		
+	
+	
+	var filtros = [];
+	var obj = {};
+	$('div.filtros_Enlaces').find('div.txt_opciones_filter input:checked').each(function(){
+		var tipo = $(this).closest('div.txt_opciones_filter').attr('data-filter');
+		var valor = $(this).closest('div.txt_opciones_filter').attr('data-valor');
+		var name = $(this).closest('div.txt_opciones_filter').attr('data-name');
+		obj = {	'tipo': tipo, 'valor': valor, 'name' : name}
+		filtros.push(obj);
+	});
+	var jsonEnlaces = JSON.stringify(filtros);
+	
 	$.post('Data_Enlaces', {
 		metodo : 'enlaces_ResultadosMes',
 		mes: mes,
 		year: year,
+		jsonEnlaces : jsonEnlaces
 	}, function(responseText) {
 		$('#results_Client table tbody').html(responseText);
 		resize_head_table_enlaces();
@@ -485,25 +498,66 @@ function aplicarFiltroEnlaces(x){
 	$(x).closest('div.filtros_Enlaces ').find('div.txt_opciones_filter input:checked').each(function(){
 		var tipo = $(this).closest('div.txt_opciones_filter').attr('data-filter');
 		var valor = $(this).closest('div.txt_opciones_filter').attr('data-valor');
-		obj = {	'tipo': tipo, 'valor': valor}
+		var name = $(this).closest('div.txt_opciones_filter').attr('data-name');
+		obj = {	'tipo': tipo, 'valor': valor, 'name' : name}
 		filtros.push(obj);
 	});
+	viewFiltersEnlaces(filtros,x);
+	var jsonEnlaces = JSON.stringify(filtros);
 	
-	alert(filtros);
-	
+	$.post('Data_Enlaces', {
+		metodo : "aplicarFiltrosEnlaces",
+		jsonEnlaces: jsonEnlaces
+	}, function(response){
+		
+		$('#lcc #lstC').html(response.listaClientes);
+		$('#lcc .infoCategory .info').html(response.n_clientes +" clientes");
+		
+	});
 }
 
 function openFilterEnlaces(x){
 	
+	var height_filtro_selected = $(x).closest('#lcc').find('.div_filtros_enlaces .filtros_Enlaces_seleccionados').outerHeight();
+	var height_filtro = $(x).closest('#lcc').find('.div_filtros_enlaces .filtros_Enlaces').outerHeight();
+	var suma_height = height_filtro + height_filtro_selected;
 	if(!$(x).attr("class").includes('liActive')){
-		$(x).closest('#lcc').find('#lstC').addClass('showDown', 1000);
 		$(x).addClass('liActive');
+		$(x).closest('#lcc').children('#lstC').stop().animate({ marginTop: suma_height+"px"}, 1000);
 	}else{
-		$(x).closest('#lcc').find('#lstC').removeClass('showDown', 1000);
-		$(x).removeClass('liActive');
+		cerrarFiltrosEnlaces(x, height_filtro_selected);
 	}
 	
+
+}
+
+function viewFiltersEnlaces(filtros,x){
+	var html="", texto="";
+	var contenedor = $('#lcc .filtros_Enlaces_seleccionados');
+	for (var i = 0; i < filtros.length; i++){
+		var obj = filtros[i];
+		if(obj.valor=="pro")texto="seo pro";
+		else if(obj.valor=="lite")texto="seo lite";
+		else if(obj.valor=="pro")texto="seo pro";
+		else if(obj.valor=="premium")texto="seo premium";
+		else if(obj.valor=="medida")texto="seo a medida";
+		else if(obj.valor=="new")texto="clientes nuevos";
+		else if(obj.valor=="old")texto="clientes normales";
+		else if(obj.valor=="our")texto="clientes yoseo";
+		else if(obj.tipo=="empleado")texto=obj.name;
+		else texto=obj.valor;
+		html+="<div class='item_filter_group mgn_top' data-filter='"+obj.tipo+"' data-valor='"+obj.valor+"'>"+texto+"<svg onclick='deteleItemFilter(this)' class='delete_item_filter' height='24' viewBox='0 0 24 24' width='17'><path class='btn_detele_item_filter' d='M12 2c-5.53 0-10 4.47-10 10s4.47 10 10 10 10-4.47 10-10-4.47-10-10-10zm5 13.59l-1.41 1.41-3.59-3.59-3.59 3.59-1.41-1.41 3.59-3.59-3.59-3.59 1.41-1.41 3.59 3.59 3.59-3.59 1.41 1.41-3.59 3.59 3.59 3.59z'></path></svg></div>";
+		console.log(obj.tipo+" - "+obj.valor);
+	}
+	$(contenedor).html(html);
+	var altura = $(contenedor).outerHeight()
+	cerrarFiltrosEnlaces(x,altura);
 	
+}
+
+function cerrarFiltrosEnlaces(x, altura){
+	$(x).removeClass('liActive');
+	$(x).closest('#lcc').children('#lstC').stop().animate({ marginTop: altura+"px"}, 1000);
 }
 
 function resize_head_table_enlaces(){
