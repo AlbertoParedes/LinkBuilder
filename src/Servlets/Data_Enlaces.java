@@ -56,7 +56,6 @@ public class Data_Enlaces extends HttpServlet {
 	private Cliente cliente = new Cliente();
 	private OrdenarObjetos ob = new OrdenarObjetos();
 	private Empleado empleado = new Empleado();
-	private ArrayList<Empleado> empleados = new ArrayList<Empleado>();
 
 
 	private ArrayList<Enlace> enlaces =  new ArrayList<Enlace>();
@@ -229,7 +228,6 @@ public class Data_Enlaces extends HttpServlet {
 				if((enlacesPorCliente-enlacesPorClienteHechos) == 0){
 					html+="		<div class='noti notiPos "+opacity+"'><i class='material-icons lf'>done</i></div>";
 				}else{
-					//html+="		<div class='noti "+opacity+"'>"+(c.getFollows() - c.getFollowsDone())+"</div>";
 					html+="		<div class='noti "+opacity+"'>"+(enlacesPorCliente-enlacesPorClienteHechos)+"</div>";
 				}
 				if(c.getStatus().equals("our")){ 		
@@ -430,9 +428,9 @@ public class Data_Enlaces extends HttpServlet {
 		//tabla
 		html+="		<table id='tClientes' class='table'>";
 		if(!empleado_role.equals("user_paid")) {
-			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer'><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Medio</th><th class='cabeceraTable cLink'>Enlace</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
+			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='viewEmpleadoDone(this)' ><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Medio</th><th class='cabeceraTable cLink'>Enlace</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
 		}else {
-			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer'><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>";
+			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='viewEmpleadoDone(this)' ><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>";
 		}
 		html+="			<tbody>";
 		html+="			</tbody>"; 
@@ -543,6 +541,13 @@ public class Data_Enlaces extends HttpServlet {
 						editar=true;
 					}
 					
+					String empleadoDone = "";
+					try {
+						empleadoDone = Data.empleadosHashMap.get(e.getHechoPor()+"").getName();
+					} catch (java.lang.NullPointerException e2) {
+						
+					}
+					
 					
 					//TABLA----------------------
 					out.println("<tr id='"+id_resultado+"' posicion='"+i+"' >");
@@ -550,8 +555,8 @@ public class Data_Enlaces extends HttpServlet {
 	
 					out.println("	<td class='tdCat cCUser pr txt_center_mg_0'>");
 					out.println("		<div class='tdCat tdWeb txt_center_mg_0'>");
-					out.println("			<span data-info='empCli' data-id-empleado='"+e.getIdEmpleado()+"' class='tdCat' type='text'>"+e.getNameEmpleado()+"</span>");
-					out.println("			<span data-info='empDone' data-id-empleado-done='"+e.getHechoPor()+"' class='tdCat' type='text'></span>");
+					out.println("			<span data-info='empCli' data-id-empleado='"+e.getIdEmpleado()+"' class='tdCat empleadoDefault visible' type='text'>"+e.getNameEmpleado()+"</span>");
+					out.println("			<span data-info='empDone' data-id-empleado-done='"+e.getHechoPor()+"' class='tdCat empleadoDone' type='text'>"+empleadoDone+"</span>");
 					out.println("		</div>"); 
 					out.println("	</td>");
 					
@@ -669,7 +674,7 @@ public class Data_Enlaces extends HttpServlet {
 		System.out.println("Enlaces hechos por el empleado que deberia hacer el enlace: "+follows_done_empleado);
 		
 		
-		//id resultado, elimar o añadir enlace, enlace, de quien es el enlace, quien lo ha hecho
+		//id resultado, elimar o aï¿½adir enlace, enlace, de quien es el enlace, quien lo ha hecho
 		
 		/*
 		ws.updateResultado(id_resultado+"", "enlace", link+"" , "updateResultado.php");

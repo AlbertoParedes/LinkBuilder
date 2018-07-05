@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +34,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import Classes.ParsingJson;
 import Classes.ReadFactura;
 import Classes.Webservice;
 import Objects.CategoriaObjeto;
@@ -59,11 +61,13 @@ public class Data extends HttpServlet {
 	Webservice ws = new Webservice();
 
 	private ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+	private ParsingJson pj = new ParsingJson();
 	private Cliente2 cliente = new Cliente2();
 	private ArrayList<ForoGson> foros = new ArrayList<ForoGson>();
 	public static ArrayList<CategoriaGson> categorias = new ArrayList<CategoriaGson>();
 	private ArrayList<TematicaGson> tematicas = new ArrayList<TematicaGson>();
 	public static ArrayList<Empleado> empleados = new ArrayList<Empleado>();
+	public static HashMap<String, Empleado> empleadosHashMap;
 	private Empleado empleado = new Empleado();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -104,7 +108,11 @@ public class Data extends HttpServlet {
 		this.empleados.clear();
 		this.empleados = new Gson().fromJson(jsonArray[2], new TypeToken<List<Empleado>>(){}.getType());
 		
+		
+		
 		empleado = new Gson().fromJson(jsonArray[3].substring(1, jsonArray[3].length()-1), Empleado.class);
+		
+		empleadosHashMap = pj.parsearEmpleadosMap(empleados);
 		
 		if(empleado.getPanel().equals("enlaces")) {
 			System.out.println("enlaces");

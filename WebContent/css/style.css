@@ -1318,6 +1318,9 @@ tr:hover{
 .mgn_top{margin-top: 3px;}
 
 
+.empleadoDone, .empleadoDefault{display: none}
+
+
 .visible{display: block;}
 .fadeIn{visibility:visible;opacity: 1;}
 

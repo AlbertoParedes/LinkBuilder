@@ -605,6 +605,25 @@ function deteleItemFilterEnlaces(x){
 	
 }
 
+function viewEmpleadoDone(x){
+	
+	var clase = $(x).closest('tr').find('th.cCUser i').attr('class');
+	
+	if (!clase.includes('sOK_color')){
+		$(x).closest('tr').find('th.cCUser i').addClass('sOK_color');
+		
+		$(x).closest('table').find('tbody tr td.cCUser div span.empleadoDefault').removeClass('visible');
+		$(x).closest('table').find('tbody tr td.cCUser div span.empleadoDone').addClass('visible');
+		
+	}else{
+		
+		$(x).closest('tr').find('th.cCUser i').removeClass('sOK_color');
+		$(x).closest('table').find('tbody tr td.cCUser div span.empleadoDefault').addClass('visible');
+		$(x).closest('table').find('tbody tr td.cCUser div span.empleadoDone').removeClass('visible');
+	}
+	
+}
+
 function resize_head_table_enlaces(){
 	/*var tr = $('#tClientes tbody tr:first-child');
 	

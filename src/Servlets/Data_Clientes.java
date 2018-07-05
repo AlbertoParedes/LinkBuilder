@@ -350,6 +350,7 @@ public class Data_Clientes extends HttpServlet {
 
 				//ArrayList<String> wbList = new ArrayList<>(Arrays.asList(web,nombre,servicio,follow,nofollow,anchor,blog,idioma,user+"",user_tipo));
 				//json = ws.clientes(wbList, "insertNuevoCliente", "clientes.php");
+				
 			}else {
 				if(coincidenciaExacta) {status="2";text="Este cliente ya existe";}
 				else {status="3";text="Coincidencia parcial en el dominio con el cliente:  ";}
