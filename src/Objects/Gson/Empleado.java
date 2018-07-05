@@ -72,6 +72,7 @@ public class Empleado {
 	
 	
 	private int n_follows;
+	private int n_follows_done;
 	
 	//sesion
 	@SerializedName("panel")
@@ -85,11 +86,12 @@ public class Empleado {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Empleado(int id, String name, int n_follows) {
+	public Empleado(int id, String name, int n_follows, int n_follows_done) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.n_follows = n_follows;
+		this.n_follows_done = n_follows_done;
 	}
 
 	public int getN_follows() {
@@ -98,6 +100,16 @@ public class Empleado {
 
 	public void setN_follows(int n_follows) {
 		this.n_follows = n_follows;
+	}
+	
+	
+
+	public int getN_follows_done() {
+		return n_follows_done;
+	}
+
+	public void setN_follows_done(int n_follows_done) {
+		this.n_follows_done = n_follows_done;
 	}
 
 	public int getId() {

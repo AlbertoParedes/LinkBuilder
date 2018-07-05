@@ -18,18 +18,28 @@ function changePanel(id) {
 			cargarVistaEnlaces();
 		}
 		
+		guardarPanelSesion("enlaces")
+		
 	}else if(id == "btnKeywords"){
 		$(".allKeywords").css('display', 'block');
 		$("#"+id).addClass("btnSelected");
 		$("#"+id+" i").addClass("btnSelected");
 		if(websInicio==false){cargarCategorias();}
 		
+		guardarPanelSesion("medios")
+		
 	}else if(id = "btnListaClientes"){
 		$(".allClientes").css('display', 'block');
 		$("#"+id).addClass("btnSelected");
 		$("#"+id+" i").addClass("btnSelected");
 		cargarListaClientes();
+		guardarPanelSesion("clientes")
+		
 	}
+}
+
+function guardarPanelSesion(panel){
+	$.post('Data', {metodo : 'guardarPanelSesion',panel: panel});
 }
 
 function abrirBox(id) {

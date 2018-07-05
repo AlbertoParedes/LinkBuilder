@@ -64,7 +64,7 @@ public class Data extends HttpServlet {
 	public static ArrayList<CategoriaGson> categorias = new ArrayList<CategoriaGson>();
 	private ArrayList<TematicaGson> tematicas = new ArrayList<TematicaGson>();
 	public static ArrayList<Empleado> empleados = new ArrayList<Empleado>();
-
+	private Empleado empleado = new Empleado();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -104,7 +104,7 @@ public class Data extends HttpServlet {
 		this.empleados.clear();
 		this.empleados = new Gson().fromJson(jsonArray[2], new TypeToken<List<Empleado>>(){}.getType());
 		
-		Empleado empleado = new Gson().fromJson(jsonArray[3].substring(1, jsonArray[3].length()-1), Empleado.class);
+		empleado = new Gson().fromJson(jsonArray[3].substring(1, jsonArray[3].length()-1), Empleado.class);
 		
 		if(empleado.getPanel().equals("enlaces")) {
 			System.out.println("enlaces");
@@ -142,7 +142,10 @@ public class Data extends HttpServlet {
 		}*/
 
 
-		if(metodo.equals("chd")) {
+		if(metodo.equals("guardarPanelSesion")) {
+			guardarPanelSesion(request, response, out);
+		}
+		else if(metodo.equals("chd")) {
 			guardarDestino(request, response, out);
 		}else if(metodo.equals("guardarForoCompleto")) {
 			guardarForoCompleto(request, response);
@@ -164,6 +167,12 @@ public class Data extends HttpServlet {
 
 
 
+
+	private void guardarPanelSesion(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		String panel = request.getParameter("panel");
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(empleado.getId()+"",panel+""));
+		ws.data(wbList, "guardarPanelSesion", "data.php");
+	}
 
 	private void guardarDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String destino = request.getParameter("destino");
