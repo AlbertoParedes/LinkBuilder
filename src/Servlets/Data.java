@@ -68,7 +68,7 @@ public class Data extends HttpServlet {
 	private ArrayList<TematicaGson> tematicas = new ArrayList<TematicaGson>();
 	public static ArrayList<Empleado> empleados = new ArrayList<Empleado>();
 	public static HashMap<String, Empleado> empleadosHashMap;
-	private Empleado empleado = new Empleado();
+	//private Empleado empleado = new Empleado();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -93,9 +93,9 @@ public class Data extends HttpServlet {
 		String json = ws.data(wbList, "getCommonData", "data.php");
 		//System.out.println(json);
 		String[] jsonArray = json.split(";;");
-		System.out.println("0-Categorias :"+jsonArray[0]);
-		System.out.println("1-Tematicas :"+jsonArray[1]);
-		System.out.println("2-Empleados :"+jsonArray[2]);
+		//System.out.println("0-Categorias :"+jsonArray[0]);
+		//System.out.println("1-Tematicas :"+jsonArray[1]);
+		//System.out.println("2-Empleados :"+jsonArray[2]);
 		System.out.println("3-Mis datos :"+jsonArray[3]);
 		
 		this.categorias.clear();
@@ -108,23 +108,19 @@ public class Data extends HttpServlet {
 		this.empleados.clear();
 		this.empleados = new Gson().fromJson(jsonArray[2], new TypeToken<List<Empleado>>(){}.getType());
 		
-		
-		
-		empleado = new Gson().fromJson(jsonArray[3].substring(1, jsonArray[3].length()-1), Empleado.class);
+		Empleado empleado = new Gson().fromJson(jsonArray[3].substring(1, jsonArray[3].length()-1), Empleado.class);
 		
 		empleadosHashMap = pj.parsearEmpleadosMap(empleados);
 		
+		System.out.println("Panel: "+empleado.getPanel());
 		if(empleado.getPanel().equals("enlaces")) {
-			System.out.println("enlaces");
 			request.setAttribute("empleado", empleado);
 			request.setAttribute("empleados", empleados);
 			request.getRequestDispatcher("Data_Enlaces").forward(request, response);
 		}else if(empleado.getPanel().equals("medios")) {
-			System.out.println("medios");
 		}else if(empleado.getPanel().equals("clientes")) {
 			request.setAttribute("empleado", empleado);
 			request.getRequestDispatcher("Data_Enlaces").forward(request, response);
-			System.out.println("clientes");
 		}
 		
 		//obtenemosForos();
@@ -134,24 +130,17 @@ public class Data extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		HttpSession session = request.getSession();
-		int id_user = Integer.parseInt(session.getAttribute("id_user").toString());
+		int id_empleado = Integer.parseInt(session.getAttribute("id_user").toString());
 		String role = session.getAttribute("role_user").toString();
-
+		
 		String metodo = request.getParameter("metodo");
 
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 
-		/*
-		else if(metodo.equals("ckc")) { 
-			try {checkClientEdition(request, response, out,id_user, role);} catch (ParseException e) {}
-		}else if (metodo.equals("lkc")) {
-			try {mostrarResultados(request, response, out, role);} catch (ParseException e) {e.printStackTrace();}
-		}*/
-
 
 		if(metodo.equals("guardarPanelSesion")) {
-			guardarPanelSesion(request, response, out);
+			guardarPanelSesion(request, response, out, id_empleado);
 		}
 		else if(metodo.equals("chd")) {
 			guardarDestino(request, response, out);
@@ -165,20 +154,15 @@ public class Data extends HttpServlet {
 			mostrarForos(request, response, out);
 		}else if(metodo.equals("guardarForo")) {
 			guardarForo(request, response, out);
-		}else if(metodo.equals("cleanBlocksUser")) {
-			/*ws.desbloquearEditando(0,id_user, "desbloquearEditando.php");
-			for (ClienteGson c : this.clientes) {
-				c.setEditando(0);
-			}*/
 		}
 	}
 
 
 
 
-	private void guardarPanelSesion(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+	private void guardarPanelSesion(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_empleado) {
 		String panel = request.getParameter("panel");
-		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(empleado.getId()+"",panel+""));
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_empleado+"",panel+""));
 		ws.data(wbList, "guardarPanelSesion", "data.php");
 	}
 

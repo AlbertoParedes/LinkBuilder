@@ -101,7 +101,7 @@
 		<div id="loadPage">
 			<script>
 				if("<%=ventana%>" == "enlaces"){
-					cargarVistaEnlaces();
+					//cargarVistaEnlaces();
 					$('#btnClientes').click();
 				}else if("<%=ventana%>" == "medios"){
 					$('#btnKeywords').click();

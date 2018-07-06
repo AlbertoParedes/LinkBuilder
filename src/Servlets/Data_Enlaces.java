@@ -55,7 +55,7 @@ public class Data_Enlaces extends HttpServlet {
 	private ParsingJson pj = new ParsingJson();
 	private Cliente cliente = new Cliente();
 	private OrdenarObjetos ob = new OrdenarObjetos();
-	private Empleado empleado = new Empleado();
+	//private Empleado empleado = new Empleado();
 
 
 	private ArrayList<Enlace> enlaces =  new ArrayList<Enlace>();
@@ -64,15 +64,16 @@ public class Data_Enlaces extends HttpServlet {
 
 
 
-	public Data_Enlaces() {super();}
+	public Data_Enlaces() {}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("Do get");
 		
-		empleado = (Empleado) request.getAttribute("empleado");
+		Empleado empleado = (Empleado) request.getAttribute("empleado");
+		HttpSession httpSession = request.getSession();
+		httpSession.setAttribute("empleado", empleado);
 		
-		
-		
-		System.out.println("-------->"+empleado.getName());
+		System.out.println("Yo soy: "+empleado.getName());
 		
 		/*
 		HttpSession session = request.getSession();
@@ -84,9 +85,8 @@ public class Data_Enlaces extends HttpServlet {
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(empleado.getId()+""));
 		String json = ws.clientes(wbList, "getClientes", "clientes.php");
 		String[] jsonArray = json.split(";;");
-		System.out.println("0- :"+jsonArray[0]);
-		System.out.println("1- :"+jsonArray[1]);
-		//empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
+		//System.out.println("0- :"+jsonArray[0]);
+		//System.out.println("1- :"+jsonArray[1]);
 
 		this.clientes.clear();
 		clientes = pj.parsearClientesMap(jsonArray[1]);
@@ -101,25 +101,27 @@ public class Data_Enlaces extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		HttpSession session = request.getSession();
-		int id_empleado = Integer.parseInt(session.getAttribute("id_user").toString());
-		String nick_empleado = session.getAttribute("name_user").toString();
-		String role_empleado = session.getAttribute("role_user").toString();
+		Empleado empleado = (Empleado) session.getAttribute("empleado");
+		System.out.println(empleado);
 
 		String metodo = request.getParameter("metodo");
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 
+		System.out.println("\nDo post:  "+ empleado.getId()+" - "+ empleado.getIdEmpleado()+" - "+metodo);
+		
 		if(metodo.equals("cargarVistaEnlaces")) {
-			cargarVistaEnlaces(request, response, out, "{"+id_empleado+"}");
+			cargarVistaEnlaces(request, response, out, "{"+empleado.getId()+"}", empleado);
 		}else if(metodo.equals("enlaces_SelectClient")) { 
-			try {selectClient(request, response, out,id_empleado, role_empleado);} catch (ParseException e) {}
+			try {selectClient(request, response, out,empleado.getId(), empleado.getRole());} catch (ParseException e) {}
 		}else if(metodo.equals("enlaces_CheckClients")) {
 			//try {checkClients(request, response, out,id_user,role);} catch (ParseException e) {}
 		}else if(metodo.equals("enlaces_ResultadosMes")) {
-			resultadosMes(request, response, out, role_empleado);
+			resultadosMes(request, response, out, empleado.getRole(), empleado);
 		}else if(metodo.equals("guardarEnlaceResultado")) {
-			guardarEnlaceResultado(request, response, out,id_empleado);
+			guardarEnlaceResultado(request, response, out,empleado.getId(), empleado);
 		}else if(metodo.equals("mostrarWebResultado")) {
 			mostrarWebResultado(request, response, out);
 		}else if(metodo.equals("borrarCategoriaResultado")) {
@@ -145,6 +147,7 @@ public class Data_Enlaces extends HttpServlet {
 	}
 
 	private void aplicarFiltrosEnlaces(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+		System.out.println("Metodo: aplicarFiltrosEnlaces");
 		String jsonEnlaces = request.getParameter("jsonEnlaces");
 		String busquedaCliente = request.getParameter("busquedaCliente");
 		int clienteSeleccionado = Integer.parseInt(request.getParameter("clienteSeleccionado"));
@@ -176,11 +179,12 @@ public class Data_Enlaces extends HttpServlet {
 	}
 	
 	private HashMap<String, String> listaClientes(String empleados, String estados, String servicios, String clienteBusqueda, int clienteSeleccionado) {
-		System.out.println("Empleados = "+empleados);
-		System.out.println("Estados = "+estados);
-		System.out.println("Servicios = "+servicios);
-		System.out.println(clienteSeleccionado);
-		System.out.println(clienteBusqueda+"\n");
+		System.out.println("Metodo: listaClientes");
+		//System.out.println("Empleados = "+empleados);
+		//System.out.println("Estados = "+estados);
+		//System.out.println("Servicios = "+servicios);
+		//System.out.println(clienteSeleccionado);
+		//System.out.println(clienteBusqueda+"\n");
 		
 		int nClientes = 0;
 		int enlacesEmpleados = 0;
@@ -237,7 +241,7 @@ public class Data_Enlaces extends HttpServlet {
 					html+="			<div class='div_bookmark'><i class='material-icons div_i_bookmark sOK_color'>bookmark</i><div class='div_line_bookmark sOK'></div></div>";
 				}
 				html+="			</div>";
-				html+="			<div class='blockClient"; if(c.getEditando()==1)html+="visible";html+="'><div class='lockDiv'><i class='material-icons lf blur'> lock </i></div></div>";
+				html+="			<div class='blockClient"; if(c.getEditando()==1)html+=" visible";html+="'><div class='lockDiv'><i class='material-icons lf blur'> lock </i></div></div>";
 				html+="			<div class='pop_up_info_blocked'>";
 				html+="				<div class='msg_blocked'>Editando cliente por</div>";
 				html+="				<div class='msg_name_blocked'>Guillermo</div>";
@@ -253,12 +257,12 @@ public class Data_Enlaces extends HttpServlet {
 		json.put("html", html);
 		json.put("nClientes", nClientes+"");
 		
-		System.out.println("Total enlaces: "+enlacesEmpleados);
+		//System.out.println("Total enlaces: "+enlacesEmpleados);
 		return json;
 	}
 
-	private void cargarVistaEnlaces(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String empleados) {
-		
+	private void cargarVistaEnlaces(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String empleados, Empleado empleado) {
+		System.out.println("Metodo: cargarVistaEnlaces");
 		HashMap<String, String> json = listaClientes(empleados,"","","",0);
 		
 		out.println("<div id='lcc' class='listClients'>");
@@ -316,7 +320,8 @@ public class Data_Enlaces extends HttpServlet {
 	}
 
 	private void selectClient(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_empleado, String user_role) throws IOException, ParseException {
-		System.out.println();
+		System.out.println("Metodo: selectClient");
+		//System.out.println();
 		String id_client = request.getParameter("id_client");
 		String fecha;
 		
@@ -328,13 +333,11 @@ public class Data_Enlaces extends HttpServlet {
 			fecha = year+"-"+mes;
 		//}
 		
-		System.out.println("fechaaaaaa: "+fecha);
-
+ 
 		String json = ws.getEnlaces(id_client,id_empleado+"", fecha ,"getEnlaces","enlaces.php");
-		System.out.println(json);
+		System.out.println("json enlaces: "+json);
 		String[] jsonArray = json.split(";;");
-		System.out.println("0- "+jsonArray[0]);//array de enlaces
-
+		//System.out.println("0- "+jsonArray[0]);//array de enlaces
 
 		response.setContentType("application/json");
 		out = response.getWriter();
@@ -344,7 +347,7 @@ public class Data_Enlaces extends HttpServlet {
 		int disponibilidad=0;
 		//parseamos los enlaces (resultados)
 		ArrayList<Enlace> enlaces = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(jsonArray[0], new TypeToken<List<Enlace>>(){}.getType());
-		System.out.println("#"+enlaces.size());
+		//System.out.println("#"+enlaces.size());
 		if(enlaces.size() != 0) {
 			disponibilidad = enlaces.get(0).getDisponibilidad();
 			userEditando = enlaces.get(0).getUserEditando();	
@@ -353,8 +356,8 @@ public class Data_Enlaces extends HttpServlet {
 		}
 		
 		if(disponibilidad==1) {
-			System.out.println("1- "+jsonArray[1]);//array de foros
-			System.out.println("2- "+jsonArray[2].substring(1, jsonArray[2].length()-1));//array de datos del cliente
+			//System.out.println("1- "+jsonArray[1]);//array de foros
+			//System.out.println("2- "+jsonArray[2].substring(1, jsonArray[2].length()-1));//array de datos del cliente
 			//System.out.println("3- "+jsonArray[3]);//array de datos del cliente 
 
 			//parseamos los foros disponibles
@@ -396,6 +399,7 @@ public class Data_Enlaces extends HttpServlet {
 	}
 
 	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out,String empleado_role, JSONObject obj) throws IOException, ParseException {
+		System.out.println("Metodo: mostrarResultados");
 		//obtenemosForos();
 		//int posicion = Integer.parseInt(request.getParameter("posicion"));
 		/*Date date= new Date();Calendar cal = Calendar.getInstance();cal.setTime(date);
@@ -428,9 +432,9 @@ public class Data_Enlaces extends HttpServlet {
 		//tabla
 		html+="		<table id='tClientes' class='table'>";
 		if(!empleado_role.equals("user_paid")) {
-			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='viewEmpleadoDone(this)' ><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Medio</th><th class='cabeceraTable cLink'>Enlace</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
+			html+="		<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='viewEmpleadoDone(this)' ><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Medio</th><th class='cabeceraTable cLink'>Enlace</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
 		}else {
-			html+="			<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='viewEmpleadoDone(this)' ><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>";
+			html+="		<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='viewEmpleadoDone(this)' ><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>";
 		}
 		html+="			<tbody>";
 		html+="			</tbody>"; 
@@ -444,7 +448,8 @@ public class Data_Enlaces extends HttpServlet {
 
 	}
 
-	private void resultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String user_role) throws IOException {
+	private void resultadosMes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String user_role, Empleado empleado) throws IOException {
+		System.out.println("Metodo: resultadosMes");
 		boolean respuesta = true;//con esto comprobamos que tenemos algun resultado en el mes seleccionado
 		String mes = request.getParameter("mes");
 		String year = request.getParameter("year");
@@ -460,13 +465,13 @@ public class Data_Enlaces extends HttpServlet {
 			String tipo = row.get("tipo").toString(), valor = row.get("valor").toString();
 			if(tipo.equals("empleado"))usuarios += "{"+valor+"}";
 		}
-		System.out.println(jsonEnlaces);
+		//System.out.println(jsonEnlaces);
 
 		String categoriasLi = "<i onclick='borrarCategoria(this)' class='material-icons crossReset'> clear </i>";
 		for (int j = 0; j < Data.categorias.size(); j++) 
 			categoriasLi += "<li id='"+Data.categorias.get(j).getIdCategoria()+"' class='' onclick='guardarCategoriaResultado(this)'>"+Data.categorias.get(j).getEnlace()+"</li>";		
 		
-		System.out.println(year+"-"+mes);
+		//System.out.println(year+"-"+mes);
 
 		if(enlaces.get(0).getFecha().toString().startsWith(year+"-"+mes)) {//COMPOBAMOS QUE LA FEMCHA MESUAL COINCIDE PORQUE SINO DEBEMOS PEDIR AL SERVIDOR LOS DATOS DEL MES SELECCIONADO
 			
@@ -503,7 +508,7 @@ public class Data_Enlaces extends HttpServlet {
 			
 			for (int i = 0; i < enlaces.size(); i++) {
 				Enlace e = enlaces.get(i);
-				System.out.println("Usuarios: -> "+e.getIdEmpleado());
+				//System.out.println("Usuarios: -> "+e.getIdEmpleado());
 				if(usuarios.contains("{"+e.getIdEmpleado()+"}") || e.getIdEmpleado().equals("0")) {
 					int id_resultado = Integer.parseInt(e.getIdResultado());
 	
@@ -534,7 +539,7 @@ public class Data_Enlaces extends HttpServlet {
 					//opcion de poder modificar el enlace siempre y cuando no se haya registrado ningun enlace por otro usuario
 					String readonly="readonly",openDestinos="", openCategorias="", editEnlace="",editAnchor="",openMedios="";
 					boolean editar=false;
-					System.out.println("Traz 1 = "+ Integer.parseInt(e.getHechoPor()) +" == "+ empleado.getId()+"  "+e.getEnlace());
+					//System.out.println("Traz 1 = "+ Integer.parseInt(e.getHechoPor()) +" == "+ empleado.getId()+"  "+e.getEnlace());
 					if(Integer.parseInt(e.getHechoPor()) == -1 || Integer.parseInt(e.getHechoPor()) == empleado.getId()) {
 						readonly = "";openDestinos="onclick='openDestinos(this)'";openCategorias="onclick='openCategoriaResultado(this)'";editEnlace="onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)'";
 						editAnchor="onchange='guardarAnchor(this)' oninput='saveClient(this)'" ; openMedios="onclick='openWebResultado(this)'";
@@ -644,9 +649,10 @@ public class Data_Enlaces extends HttpServlet {
 
 	}
 
-	private void guardarEnlaceResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user) {
+	private void guardarEnlaceResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, Empleado empleado) {
+		System.out.println("Metodo: guardarEnlaceResultado");
 		String link = request.getParameter("link");
-		System.out.println("\nEnlace a subir:  "+link);
+		//System.out.println("\nEnlace a subir:  "+link);
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
 		int id_empleado = Integer.parseInt(request.getParameter("id_empleado"));
 		int follows_done_empleado = Integer.parseInt(request.getParameter("follows_done_empleado"));
@@ -684,10 +690,10 @@ public class Data_Enlaces extends HttpServlet {
 		if(mes==mes_js && year==year_js) {
 			String fecha = year+"-"+mes_string;
 			System.out.println("@: Id enlace:"+id_resultado +"  Enlace de: "+id_empleado +"   Hecho por:"+ empleado.getId());
-			System.out.println("FECHAAAAAAQA: "+ fecha);
+			//System.out.println("FECHAAAAAAQA: "+ fecha);
 			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_resultado+"",sameEmpleado+"", link.trim(), id_empleado+"", empleado.getId()+"", vacio+"", follows_done_empleado+"", fecha));
 			String json = ws.clientes(wbList, "guardarEnlacesDone", "enlaces.php");
-			System.out.println("@:"+json);
+			//System.out.println("@:"+json);
 			
 			
 			//cliente.setFollowsDone(follows_done);
@@ -711,6 +717,7 @@ public class Data_Enlaces extends HttpServlet {
 
 
 	private void borrarCategoriaResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		System.out.println("Metodo: guardarCategoriaResultado");
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
 		int id_foro_anterior = Integer.parseInt(request.getParameter("id_foro_anterior"));
 		int categoria_foro_anterior = Integer.parseInt(request.getParameter("categoria_foro_anterior"));
@@ -729,6 +736,7 @@ public class Data_Enlaces extends HttpServlet {
 
 	}
 	private void guardarCategoriaResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		System.out.println("Metodo: guardarCategoriaResultado");
 		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
 		ws.updateResultado(id_resultado+"", "categoria", idCategoria+"" , "updateResultado.php");
@@ -736,6 +744,7 @@ public class Data_Enlaces extends HttpServlet {
 	}
 
 	private void mostrarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		System.out.println("Metodo: mostrarWebResultado");
 		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
 
 		ob.forosByWeb(forosDisponibles);
@@ -749,6 +758,7 @@ public class Data_Enlaces extends HttpServlet {
 		}
 	}
 	private void guardarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+		System.out.println("Metodo: guardarWebResultado");
 		response.setContentType("application/json");
 		out = response.getWriter();
 		JSONObject obj = new JSONObject();
@@ -799,6 +809,7 @@ public class Data_Enlaces extends HttpServlet {
 		System.out.println("Insertado");
 	}
 	private void buscarMedio(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		System.out.println("Metodo: buscarMedio");
 		String texto = request.getParameter("texto");
 		int id_categoria = Integer.parseInt(request.getParameter("id_categoria"));
 		for (Foro f : forosDisponibles) {
@@ -810,6 +821,7 @@ public class Data_Enlaces extends HttpServlet {
 		}
 	}
 	private void guradarDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		System.out.println("Metodo: guradarDestino");
 		String destino = request.getParameter("destino");
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
 		ws.updateResultado(id_resultado+"", "destino", destino+"" , "updateResultado.php");
@@ -818,6 +830,7 @@ public class Data_Enlaces extends HttpServlet {
 	}
 
 	private void nuevoDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+		System.out.println("Metodo: nuevoDestino");
 		String url = request.getParameter("url");
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
 
@@ -838,6 +851,7 @@ public class Data_Enlaces extends HttpServlet {
 
 	}
 	private void guardarAnchor(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		System.out.println("Metodo: guardarAnchor");
 		String anchor = request.getParameter("anchor");
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
 		ws.updateResultado(id_resultado+"", "anchor", anchor+"" , "updateResultado.php");

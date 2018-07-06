@@ -48,7 +48,6 @@ function enlaces_SelectClient(id_client,x) {
 			$(x).children('.itemChild').children('.noti').removeClass('opacity_0').addClass('opacity_0');
 
 		}else if(response.blocked=="2"){
-			
 			$(x).children('.loader').removeClass("fadeIn");
 			$('.blockAll').removeClass('visible');
 
