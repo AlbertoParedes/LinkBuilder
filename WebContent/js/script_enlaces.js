@@ -24,11 +24,23 @@ function enlaces_SelectClient(id_client,x) {
 	mes = mes <10 ? "0"+mes : 0;
 	var fecha = $('.datedropper .picker [data-k="y"] .pick-sl').val()+"-"+mes;//obtenemos el año y la fecha
 	
+	//obtenemos los usuarios seleccionados
+	/*$('.filtros_Enlaces').find('div[data-filter="empleado"]').find('input:ckeched').each(function(){
+		alert($this.closest('div[data-filter="empleado"]').attr('data-valor'));
+	});*/
+	var users= "";
+	$('.filtros_Enlaces').find('div[data-filter="empleado"]').find('input:checked').each(function(){
+		users += $(this).closest('div[data-filter="empleado"]').attr('data-valor')+","
+	})
+	users += ";";users = users.replace(",;","");
+	alert(users);
+	
 	//revisamos si el cliente seleccionado esta disponible
 	$.post('Data_Enlaces', {
 		metodo : "enlaces_SelectClient",
 		id_client : id_client,
-		fecha : fecha
+		fecha : fecha,
+		users:users
 	}, function(response) {
 		
 		if(response.blocked=="1"){

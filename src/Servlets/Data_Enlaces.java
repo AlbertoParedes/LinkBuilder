@@ -325,6 +325,8 @@ public class Data_Enlaces extends HttpServlet {
 		String id_client = request.getParameter("id_client");
 		String fecha;
 		
+		String users = request.getParameter("users");
+		
 		//if(fecha.contains("undefined")) {//cuando obtenemos el a�o por javascript nos devueve siempre undefined si estamos en el mes correspondiente al dia de hoy
 			Date today = new Date(); 
 			Calendar cal = Calendar.getInstance(); cal.setTime(today);
@@ -333,17 +335,20 @@ public class Data_Enlaces extends HttpServlet {
 			fecha = year+"-"+mes;
 		//}
 		
- 
-		String json = ws.getEnlaces(id_client,id_empleado+"", fecha ,"getEnlaces","enlaces.php");
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_client+"", id_empleado+"", fecha+"",users));
+		String json = ws.clientes(wbList, "getEnlaces", "enlaces.php");
+		
+		//String json = ws.getEnlaces(id_client,id_empleado+"", fecha ,"getEnlaces","enlaces.php");
 		System.out.println("json enlaces: "+json);
 		String[] jsonArray = json.split(";;");
 		//System.out.println("0- "+jsonArray[0]);//array de enlaces
+		System.out.println("2- "+jsonArray[3]);//array de enlaces
 
 		response.setContentType("application/json");
 		out = response.getWriter();
 		JSONObject obj = new JSONObject();
 		String blocked="",userEditando="";
-
+ 
 		int disponibilidad=0;
 		//parseamos los enlaces (resultados)
 		ArrayList<Enlace> enlaces = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(jsonArray[0], new TypeToken<List<Enlace>>(){}.getType());
@@ -465,16 +470,12 @@ public class Data_Enlaces extends HttpServlet {
 			String tipo = row.get("tipo").toString(), valor = row.get("valor").toString();
 			if(tipo.equals("empleado"))usuarios += "{"+valor+"}";
 		}
-		//System.out.println(jsonEnlaces);
 
 		String categoriasLi = "<i onclick='borrarCategoria(this)' class='material-icons crossReset'> clear </i>";
 		for (int j = 0; j < Data.categorias.size(); j++) 
 			categoriasLi += "<li id='"+Data.categorias.get(j).getIdCategoria()+"' class='' onclick='guardarCategoriaResultado(this)'>"+Data.categorias.get(j).getEnlace()+"</li>";		
 		
-		//System.out.println(year+"-"+mes);
-
 		if(enlaces.get(0).getFecha().toString().startsWith(year+"-"+mes)) {//COMPOBAMOS QUE LA FEMCHA MESUAL COINCIDE PORQUE SINO DEBEMOS PEDIR AL SERVIDOR LOS DATOS DEL MES SELECCIONADO
-			
 		}else {//si el mes no coincide 
 			String json = ws.getEnlaces(cliente.getIdCliente()+"", year+"-"+mes ,"","getEnlacesAnteriores","enlaces.php");
 			System.out.println(json);
@@ -533,8 +534,6 @@ public class Data_Enlaces extends HttpServlet {
 	
 					String botonDescripcion="";
 					if(!e.getDescripcionForo().trim().equals("")) botonDescripcion="<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>";
-	 
-					
 					
 					//opcion de poder modificar el enlace siempre y cuando no se haya registrado ningun enlace por otro usuario
 					String readonly="readonly",openDestinos="", openCategorias="", editEnlace="",editAnchor="",openMedios="";
@@ -547,12 +546,7 @@ public class Data_Enlaces extends HttpServlet {
 					}
 					
 					String empleadoDone = "";
-					try {
-						empleadoDone = Data.empleadosHashMap.get(e.getHechoPor()+"").getName();
-					} catch (java.lang.NullPointerException e2) {
-						
-					}
-					
+					try {empleadoDone = Data.empleadosHashMap.get(e.getHechoPor()+"").getName();} catch (java.lang.NullPointerException e2) {}
 					
 					//TABLA----------------------
 					out.println("<tr id='"+id_resultado+"' posicion='"+i+"' >");
@@ -564,7 +558,6 @@ public class Data_Enlaces extends HttpServlet {
 					out.println("			<span data-info='empDone' data-id-empleado-done='"+e.getHechoPor()+"' class='tdCat empleadoDone' type='text'>"+empleadoDone+"</span>");
 					out.println("		</div>"); 
 					out.println("	</td>");
-					
 					
 					out.println("	<td class='tdCat cell_destino pr' "+openDestinos+">");
 					out.println("		<div class='tdCat tdWeb'>");
@@ -690,7 +683,6 @@ public class Data_Enlaces extends HttpServlet {
 		if(mes==mes_js && year==year_js) {
 			String fecha = year+"-"+mes_string;
 			System.out.println("@: Id enlace:"+id_resultado +"  Enlace de: "+id_empleado +"   Hecho por:"+ empleado.getId());
-			//System.out.println("FECHAAAAAAQA: "+ fecha);
 			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_resultado+"",sameEmpleado+"", link.trim(), id_empleado+"", empleado.getId()+"", vacio+"", follows_done_empleado+"", fecha));
 			String json = ws.clientes(wbList, "guardarEnlacesDone", "enlaces.php");
 			//System.out.println("@:"+json);
