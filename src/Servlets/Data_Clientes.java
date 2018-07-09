@@ -684,24 +684,12 @@ public class Data_Clientes extends HttpServlet {
 		out.println("				</td>");
 		out.println("				<td class='tdCat cCIdioma'><input class='inLink' type='text' onchange='guardarIdioma(this)' value='ESP'></td>");
 		
-		
-		
+		//Columna USER
 		out.println("				<td class='tdCat cCUser pr txt_center_mg_0' onclick='opentUser(this)'>");
 		out.println("					<div class='tdCat tdWeb txt_center_mg_0'><span data-id-empleado='0' data-tipo-empleado='0' class='tdCat' data-list-user='' type='text'>-</span></div>");
-		//out.println("					<ul class='slCt effect7 nuevaWeb margin_top_6'>"+listaEmpleados+"<i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></ul>");
-		out.println("				<ul class='slCt effect7 nuevaWeb txt_algn_left margin_top_6'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
-
+		out.println("					<ul class='slCt effect7 nuevaWeb txt_algn_left margin_top_6'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
 		out.println("				</td>");
-		/*
-		//Columna USER
-		out.println("			<td class='tdCat cCUser pr txt_center_mg_0' onclick='opentUser(this)'>");
-		out.println("				<div class='tdCat tdWeb txt_center_mg_0'>");
-		out.println("					<span class='tdCat' type='text'>-</span>");
-		out.println("				</div>"); 
-		out.println("				<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
-		out.println("			</td>");
-		*/
-		
+
 		out.println("			</tbody>");
 		out.println("	</table>");
 		out.println("	<div class='infoNew'></div>"); 
@@ -711,7 +699,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("<div class='divBlockClientes'></div>");
 		out.println("<div class='resize_head_table_clientes'><script> resize_head_table_clientes() </script></div>");
 		
-		reseatValores(request, response, out, id_user, user_role, campoOrdenar);
+		reseatValores(request, response, out, id_user, user_role, campoOrdenar); 
 		
 		System.out.println("pagina cargada");
 		 
