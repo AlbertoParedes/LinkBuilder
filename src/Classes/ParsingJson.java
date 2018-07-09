@@ -133,10 +133,54 @@ public class ParsingJson {
 		return es;
 
 	}
+	
+	public int parsearEnlacesPorClienteEmpleado(String json) {
+		Object obj = JSONValue.parse(json);
+		JSONArray array = (JSONArray) obj;
+
+		int sumaFollowsDone = 0 ,sumaFollows=0;
+		
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject c = (JSONObject) array.get(i);
+			
+			sumaFollowsDone = toInt(c.get("suma_follows_done").toString());
+			sumaFollows = toInt(c.get("suma_follows").toString());
+			
+		}
+		return sumaFollows - sumaFollowsDone;
+	}
+	
+	public int parsearIdCliente(String json) {
+
+		Object obj = JSONValue.parse(json);
+		JSONArray array = (JSONArray) obj;
+		int id_cliente = 0 ;
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject c = (JSONObject) array.get(i);
+			id_cliente = toInt(c.get("id_cliente").toString());
+		}
+		return id_cliente;
+	}
+	
+	public ArrayList<Empleado> parsearClienteEmpleado(String json) {
+
+		ArrayList<Empleado> empleados = new ArrayList<Empleado>();
+		
+		Object obj = JSONValue.parse(json);
+		JSONArray array = (JSONArray) obj;
+		int id_cliente = 0 ;
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject c = (JSONObject) array.get(i);
+			Empleado e = new Empleado();
+			e.setId(toInt(c.get("id_empleado").toString()));
+			e.setCategoria(c.get("tipo_empleado").toString());
+			e.setN_follows(toInt(c.get("valor").toString()));
+			empleados.add(e);
+		}
+		return empleados;
+	}
 	private int toInt(String string) {
 		return Integer.parseInt(string); 
 	}
-
-
 
 }

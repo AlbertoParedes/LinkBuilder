@@ -33,7 +33,7 @@ function enlaces_SelectClient(id_client,x) {
 		users += $(this).closest('div[data-filter="empleado"]').attr('data-valor')+","
 	})
 	users += ";";users = users.replace(",;","");
-	alert(users);
+	//alert(users);
 	
 	//revisamos si el cliente seleccionado esta disponible
 	$.post('Data_Enlaces', {
@@ -65,6 +65,7 @@ function enlaces_SelectClient(id_client,x) {
 
 		}else if(response.blocked=="0"){
 			$('#uniqueClient').html(response.html);
+			$(x).children('.itemChild').children('.noti').replaceWith(response.noti);
 			changeThemeC(id_client);
 			clienteSeleccionado = id_client;
 			

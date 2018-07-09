@@ -153,7 +153,7 @@ function guardarIdioma(x){
 
 }
 function guardarEmpleado(x){
-	
+	stopPropagation();
 	var id_cliente = $(x).closest('tr').attr('id');
 	var posicion = $(x).closest('tr').attr('posicion');
 	var estado = $(x).find('input[type=checkbox]').prop('checked');
@@ -186,6 +186,7 @@ function guardarEmpleado(x){
 	
 	
 	if(!$(x).closest('table').attr('id').includes('tNuevoCliente')){
+		
 		var json = JSON.stringify(empleados);
 		$.post('Data_Clientes', {
 			metodo : "guardarEmpleado",
@@ -247,7 +248,6 @@ function guardarNewCliente(x){
 	var anchor = $(ob).find('td.anchorC input').val();
 	var blog = $(ob).find('td.cCBlog div label input').is(':checked') === true ? 1 : 0;
 	var idioma = $(ob).find('td.cCIdioma input').val();
-	
 	
 	
 	var x2 = $(x).siblings('table').find('tbody tr td.cCUser ul .div_elem_empl');
@@ -704,6 +704,12 @@ function saveEnlacesEmpleado(x){
 		empleados.push(obj);
 	});
 	
+	var users = "";
+	$(x).closest('ul').find('li div.pretty input[type="checkbox"]:checked').each(function(){users += $(this).closest('li').children('span').text()+",";});
+	users += ";";users = users.replace(',;',"");users = users.replace(';',"");
+	
+	$(x).closest('td').children('div').children('span').text(users);
+	
 	if(empleados.length>0){
 		var json = JSON.stringify(empleados);
 		$.post('Data_Clientes', {
@@ -716,6 +722,19 @@ function saveEnlacesEmpleado(x){
 	}
 }
 
+
+function updateSpanNames(x){
+	
+	var users = "";
+	
+	$(x).closest('ul').find('li div.pretty input[type="checkbox"]:checked').each(function(){
+		users += $(this).closest('li').children('span').text()+",";
+	});
+	users += ";";users = users.replace(',;',"");users = users.replace(';',"");
+	
+	$(x).closest('td').children('div').children('span').text(users);
+	
+}
 
 function resize_head_table_clientes(){
 	var tr = $('#tClients tbody tr:first-child');

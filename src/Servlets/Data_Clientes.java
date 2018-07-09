@@ -313,16 +313,28 @@ public class Data_Clientes extends HttpServlet {
 		String jsonEmpleados = request.getParameter("jsonEmpleados");
 		System.out.println(jsonEmpleados); 
 		
+		int sumaEnlaces = 0;
+		ArrayList<Empleado> empleados = pj.parsearClienteEmpleado(jsonEmpleados);
+		for (Empleado e : empleados) {sumaEnlaces += e.getN_follows();}
+
+		boolean enlacesCompletos = false;
+		if(servicio.equals("lite")) {if(sumaEnlaces==3) {enlacesCompletos=true;}}
+		else if(servicio.equals("pro"))  {if(sumaEnlaces==4) {enlacesCompletos=true;}}
+		else if(servicio.equals("premium"))  {if(sumaEnlaces==6) {enlacesCompletos=true;}}
+		else if(servicio.equals("medida"))  {if(sumaEnlaces>0) {enlacesCompletos=true;}}
+		
 		
 		obj.put("status", "0");
-		if(!web.startsWith("http://") && !web.startsWith("http://")) {
+		if(!web.startsWith("http://") && !web.startsWith("https://")) {
 			obj.put("text", "Introuce una web correcta");
 		}else if(!web.contains(".")){
 			obj.put("text", "Debe contener al menos un .");
 		}else if(!servicio.trim().equals("lite") && !servicio.trim().equals("pro") && !servicio.trim().equals("premium") && !servicio.trim().equals("medida")){
 			obj.put("text", "Introduce un Servicio");
 		}else if(jsonEmpleados.equals("[]")){
-			obj.put("text", "Selecciona un usuario");
+			obj.put("text", "Selecciona almenos un usuario");
+		}else if(enlacesCompletos == false){
+			obj.put("text", "Reparte todos los follows entre los empleados");
 		}else {
 
 			//comprobamos que el cliente ya esta insertado en la base de datos
@@ -347,9 +359,24 @@ public class Data_Clientes extends HttpServlet {
 			String status="",text="";
 			if(clientesGson.size()==0) {//si esto es igual a 0 significa que en la bbdd no hay ningun cliente con este dominio
 				status="1";
-
-				//ArrayList<String> wbList = new ArrayList<>(Arrays.asList(web,nombre,servicio,follow,nofollow,anchor,blog,idioma,user+"",user_tipo));
-				//json = ws.clientes(wbList, "insertNuevoCliente", "clientes.php");
+				
+				ArrayList<String> wbList = new ArrayList<>(Arrays.asList(web,nombre,servicio,follow,nofollow,anchor,blog,idioma));
+				json = ws.clientes(wbList, "insertNuevoCliente", "clientes.php");
+				System.out.println("##: "+json );
+				int idCliente = pj.parsearIdCliente(json);
+				for (Empleado e : empleados) {
+					
+					wbList = new ArrayList<>(Arrays.asList(idCliente+"", e.getId()+"",e.getCategoria(), e.getN_follows()+""));
+					ws.clientes(wbList, "insertClienteEmpleado", "clientes.php");
+					
+					wbList = new ArrayList<>(Arrays.asList(idCliente+"", e.getId()+"", e.getN_follows()+"", "2018-07", 0+""));
+					ws.clientes(wbList, "resetearValoresMensuales", "clientes.php");
+					
+				}
+				if(idCliente>0) {
+					wbList = new ArrayList<>(Arrays.asList(idCliente+"", 0+"", 0+"", "2018-07", 1+""));
+					ws.clientes(wbList, "resetearValoresMensuales", "clientes.php");
+				}
 				
 			}else {
 				if(coincidenciaExacta) {status="2";text="Este cliente ya existe";}
@@ -362,7 +389,7 @@ public class Data_Clientes extends HttpServlet {
 
 		}
 		out.print(obj);
-
+		
 	} 
 	private void eliminarCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String json = request.getParameter("json");
@@ -529,15 +556,10 @@ public class Data_Clientes extends HttpServlet {
 		for (int i = 0; i < Data.empleados.size(); i++) {
 			Empleado e = Data.empleados.get(i);
 			String checked="";
-			/*if(e.getCategoria().equals("free")) { 
-				listaEnlacesEmpleado += "<div data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' class='pr mg_top_10'><span>"+e.getName()+"</span>"+"<div class='div_n_follows'><div class='n_follows_remove' onclick='modifyEnlacesEmpleado(this)' data-action='decrease'><i class='material-icons f_size_17 noselect'> remove </i></div>"
-						+ "<input class='input_n_follows inLink noselect' type='number' data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' value='0' readonly >"
-				+ "<div class='n_follows_add' onclick='modifyEnlacesEmpleado(this)' data-action='increase'><i class='material-icons f_size_17 noselect'> add </i></div></div>"+"</div>"; 
-			}*/
 			if(e.getCategoria().equals("free")) { 
 				listaEmpleados += 
 				"<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+
-					"<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input class='slT' type='checkbox' "+checked+"><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>"+
+					"<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input onclick='updateSpanNames(this)' class='slT' type='checkbox' "+checked+"><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>"+
 					"<span class='f_s_12'>"+e.getName()+"</span>"+ 
 				"</li>";
 			}
@@ -640,7 +662,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("	<table id='tNuevoCliente' class='table'>");
 		out.println("			<thead><tr><th class='cabeceraTable cCWebCliente'>Web</th><th class='cabeceraTable cCNombre'>Nombre</th><th class='cabeceraTable tipoNew'>Servicio</th><th class='cabeceraTable cFollow wdth_45'><i class='material-icons lf'>link</i></th><th class='cabeceraTable cNoFollow wdth_45'><i class='material-icons lnf'>link</i></th><th class='cabeceraTable anchorC'>Anchor</th><th class='cabeceraTable cCBlog txt_center_mg_0'>Blog</th><th class='cabeceraTable cCIdioma'>Idioma</th>"
 				
-				+ "<th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='aplicarFiltro(this)' data-tipo='user'><i class='material-icons f_size26'>account_circle</i></th></tr></thead>");
+				+ "<th class='cabeceraTable cCUser txt_center_mg_0 wdth_110' data-tipo='user'><i class='material-icons f_size26'>account_circle</i></th></tr></thead>");
 
 		out.println("			<tbody>");
 		out.println("				<td class='cCWebCliente'><input class='inLink'  placeholder='Introduce una web' type='text' value=''></td>");

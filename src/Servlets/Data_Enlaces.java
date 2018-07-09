@@ -319,51 +319,46 @@ public class Data_Enlaces extends HttpServlet {
 		out.println("	</div>");
 	}
 
+	@SuppressWarnings({ "unchecked", "unused" })
 	private void selectClient(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_empleado, String user_role) throws IOException, ParseException {
 		System.out.println("Metodo: selectClient");
-		//System.out.println();
+		
+		response.setContentType("application/json");
+		out = response.getWriter();
+		JSONObject obj = new JSONObject();
+		String blocked="",userEditando="";
 		String id_client = request.getParameter("id_client");
 		String fecha;
-		
 		String users = request.getParameter("users");
 		
 		//if(fecha.contains("undefined")) {//cuando obtenemos el a�o por javascript nos devueve siempre undefined si estamos en el mes correspondiente al dia de hoy
-			Date today = new Date(); 
-			Calendar cal = Calendar.getInstance(); cal.setTime(today);
-			int month = cal.get(Calendar.MONTH)+1, year = cal.get(Calendar.YEAR);
-			String mes = month+""; if(month<10) mes= "0"+mes;
-			fecha = year+"-"+mes;
+		Date today = new Date(); 
+		Calendar cal = Calendar.getInstance(); cal.setTime(today);
+		int month = cal.get(Calendar.MONTH)+1, year = cal.get(Calendar.YEAR);
+		String mes = month+""; if(month<10) mes= "0"+mes;
+		fecha = year+"-"+mes;
 		//}
 		
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_client+"", id_empleado+"", fecha+"",users));
 		String json = ws.clientes(wbList, "getEnlaces", "enlaces.php");
 		
-		//String json = ws.getEnlaces(id_client,id_empleado+"", fecha ,"getEnlaces","enlaces.php");
 		System.out.println("json enlaces: "+json);
 		String[] jsonArray = json.split(";;");
 		//System.out.println("0- "+jsonArray[0]);//array de enlaces
-		System.out.println("2- "+jsonArray[3]);//array de enlaces
+		//System.out.println("2- "+jsonArray[3]);//array de los enlaces hecho y por hacer de cada empoleado en el cliente seleccionado 
 
-		response.setContentType("application/json");
-		out = response.getWriter();
-		JSONObject obj = new JSONObject();
-		String blocked="",userEditando="";
+		
  
 		int disponibilidad=0;
 		//parseamos los enlaces (resultados)
 		ArrayList<Enlace> enlaces = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(jsonArray[0], new TypeToken<List<Enlace>>(){}.getType());
-		//System.out.println("#"+enlaces.size());
 		if(enlaces.size() != 0) {
 			disponibilidad = enlaces.get(0).getDisponibilidad();
 			userEditando = enlaces.get(0).getUserEditando();	
 		}else if(enlaces.size() == 0) {//si es igual a cero significa que no se ha devuelto ningun resultado
 			disponibilidad = 2;
 		}
-		
 		if(disponibilidad==1) {
-			//System.out.println("1- "+jsonArray[1]);//array de foros
-			//System.out.println("2- "+jsonArray[2].substring(1, jsonArray[2].length()-1));//array de datos del cliente
-			//System.out.println("3- "+jsonArray[3]);//array de datos del cliente 
 
 			//parseamos los foros disponibles
 			ArrayList<Foro> forosDisponibles = new Gson().fromJson(jsonArray[1], new TypeToken<List<Foro>>(){}.getType());
@@ -375,31 +370,27 @@ public class Data_Enlaces extends HttpServlet {
 			//parseamos al cliente seleccionado
 			Cliente cliente = new Gson().fromJson(jsonArray[2].substring(1, jsonArray[2].length()-1), Cliente.class);
 			this.cliente = cliente;
-
-			mostrarResultados(request, response, out, user_role, obj);
-
 			
-
+			String noti="";
+			int porHacer = pj.parsearEnlacesPorClienteEmpleado(jsonArray[3]) ;
+			if(porHacer == 0){noti="<div class='noti notiPos'><i class='material-icons lf'>done</i></div>";}else{noti="<div class='noti'>"+porHacer+"</div>";}
+			obj.put("noti", noti);
+			
+			mostrarResultados(request, response, out, user_role, obj);
+			
 		}else if(disponibilidad==2) {
 			obj.put("blocked", "2");
 			out.print(obj);
-
 			System.out.println("No ha ningun resultado para este cliente");
 		}else {
 
 			blocked="1";
-
 			obj.put("blocked", blocked);
 			obj.put("userEditando", userEditando);
 			out.print(obj);
 
 			System.out.println("Estas bloqueado por "+userEditando);
 		}
-
-
-
-
-
 
 	}
 
