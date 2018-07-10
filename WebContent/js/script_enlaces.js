@@ -81,6 +81,7 @@ function enlaces_SelectClient(id_client,x) {
 
 
 function guardarEnlaceResultado(x){
+	bloqueamosPantalla();
 	
 	var id_resultado = $(x).closest('tr').attr("id");
 	//var posicion = $(x).closest('tr').attr("posicion");
@@ -98,15 +99,6 @@ function guardarEnlaceResultado(x){
 	}
 	
 	var follows_por_hacer=0,nofollows_done=0;
-	/*$(x).closest('tbody').children('tr').each(function(){
-	var tipo = $(this).children(".cTipo").attr("tipo");
-	var link_done = $(this).children(".cLink").children('input').val();
-	if(tipo=="follow" && link_done.trim()!=""){
-		follows_done++;
-	}else if(tipo=="nofollow" && link_done.trim()!=""){
-		nofollows_done++;
-	}
-});*/
 	
 	$(x).closest('tbody').find('tr td.cLink input').each(function(){
 		var value = $(this).val();
@@ -120,6 +112,9 @@ function guardarEnlaceResultado(x){
 	$(x).closest('tbody').find('tr td.cCUser').find("div span[data-id-empleado-done='"+id_empleado+"']").each(function(){
 		follows_done_empleado ++;
 	});
+	
+	
+	//bloqueamos toda la pantalla
 	
 	$.post('Data_Enlaces', {
 		metodo : 'guardarEnlaceResultado',
@@ -148,7 +143,7 @@ function guardarEnlaceResultado(x){
 		}else{
 			tipo.addClass("sPendiente");
 		}
-		
+		desbloqueamosPantalla();
 	});
 	
 	
@@ -273,6 +268,8 @@ function borrarCategoria(x){
 }
 
 function enlaces_guradarDestino(x){
+	bloqueamosPantalla();
+	
 	var id_resultado = $(x).closest('tr').attr("id");
 	var destino = $(x).text();
 	
@@ -292,11 +289,12 @@ function enlaces_guradarDestino(x){
 		id_resultado: id_resultado,
 		destino: destino,
 	}, function (){
-		
+		desbloqueamosPantalla();
 	});
 }
 
 function guardarCategoriaResultado(x){// controlar que cuando selecciones otra categoria se elimine el foro 
+	bloqueamosPantalla();
 	var id_resultado = $(x).closest('tr').attr("id");
 	var posicion = $(x).closest('tr').attr("posicion");
 	var id_categoria = $(x).attr("id");
@@ -320,6 +318,7 @@ function guardarCategoriaResultado(x){// controlar que cuando selecciones otra c
 			posicion: posicion
 		}, function (){
 			$(x).closest('td').find('div span[data-id-categoria]').attr('data-id-categoria', id_categoria);
+			desbloqueamosPantalla();
 		});
 	}
 	
@@ -361,7 +360,7 @@ function changeMonth(){
 		year: year,
 		jsonEnlaces : jsonEnlaces
 	}, function(responseText) {
-		$('#results_Client table tbody').html(responseText);
+		$('#results_Enlaces table tbody').html(responseText);
 		resize_head_table_enlaces();
 		setTimeout(function () {
 			$('.loader').removeClass("fadeIn");
@@ -386,6 +385,7 @@ function buscarMedio(x){
 }
 
 function guardarWebResultado(x){
+	bloqueamosPantalla();
 	
 	$(x).closest('ul').children('li').removeClass("liActive");
 	$(x).addClass("liActive");
@@ -441,10 +441,12 @@ function guardarWebResultado(x){
 		$(x).closest('td').children('div.tdCat').html(rt.html);
 		$(x).closest('td').children('textarea').text(rt.descripcion);
 		
+		desbloqueamosPantalla();
 	});
 	
 }
 function guardarAnchor(x){
+	bloqueamosPantalla();
 	var id_resultado = $(x).closest('tr').attr("id");
 	var anchor = $(x).val();
 	
@@ -454,6 +456,7 @@ function guardarAnchor(x){
 		anchor: anchor,
 	}, function(responseText) {
 		$('#cGuardar').removeClass('cSave');
+		desbloqueamosPantalla();
 	});
 	
 }
@@ -548,6 +551,7 @@ function aplicarFiltroEnlaces(x){
 		busquedaCliente: busquedaCliente,
 		clienteSeleccionado:clienteSeleccionado
 	}, function(response){
+		$('#lcc div.infoCategory i.liActive').removeClass('liActive');
 		$('#lcc #lstC').html(response.listaClientes);
 		$('#lcc .infoCategory .info').html(response.n_clientes +" clientes");
 		if(busquedaCliente == "" && clienteSeleccionado>0){
@@ -567,7 +571,7 @@ function openFilterEnlaces(x){
 	var suma_height = height_filtro + height_filtro_selected;
 	if(!$(x).attr("class").includes('liActive')){
 		$(x).addClass('liActive');
-		$(x).closest('#lcc').children('#lstC').stop().animate({ marginTop: suma_height+"px"}, 1000);
+		$(x).closest('#lcc').children('#lstC').stop().animate({ marginTop: suma_height+"px"}, 200);
 	}else{
 		cerrarFiltrosEnlaces(x, height_filtro_selected);
 	}
@@ -601,7 +605,7 @@ function viewFiltersEnlaces(filtros,x){
 
 function cerrarFiltrosEnlaces(x, altura){
 	$(x).removeClass('liActive');
-	$(x).closest('#lcc').children('#lstC').stop().animate({ marginTop: altura+"px"}, 1000);
+	$(x).closest('#lcc').children('#lstC').stop().animate({ marginTop: altura+"px"}, 200);
 }
 
 function deteleItemFilterEnlaces(x){

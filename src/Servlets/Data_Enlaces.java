@@ -424,7 +424,7 @@ public class Data_Enlaces extends HttpServlet {
 		html+="<div class='ctoolbar'><div id='cGuardar' class='zoom'>guardar</div></div>";
 		html+="<div class='div_table'>";
 		//html+="	<div class='titleTable'>Keywords<div class='horDiv'></div></div>";
-		html+="	<div id='results_Client' class='contentTable'>";
+		html+="	<div id='results_Enlaces' class='contentTable'>";
 		//tabla
 		html+="		<table id='tClientes' class='table'>";
 		if(!empleado_role.equals("user_paid")) {
@@ -478,6 +478,9 @@ public class Data_Enlaces extends HttpServlet {
 			this.forosDisponibles = forosDisponibles;
 
 			//parseamos los enlaces (resultados)
+			//ArrayList<String> wbList = new ArrayList<>(Arrays.asList(cliente.getIdCliente()+"", id_empleado+"", year+"-"+mes,users));
+			//String json = ws.clientes(wbList, "getEnlaces", "enlaces.php");
+			
 			ArrayList<Enlace> enlaces = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(jsonArray[1], new TypeToken<List<Enlace>>(){}.getType());
 			if(enlaces.size()>0) {
 				this.enlaces.clear();
@@ -503,7 +506,6 @@ public class Data_Enlaces extends HttpServlet {
 				//System.out.println("Usuarios: -> "+e.getIdEmpleado());
 				if(usuarios.contains("{"+e.getIdEmpleado()+"}") || e.getIdEmpleado().equals("0")) {
 					int id_resultado = Integer.parseInt(e.getIdResultado());
-	
 					int posicionForo=-1;
 					for (Foro f : forosDisponibles) {
 						if(e.getIdForo()==f.getIdForo()) {

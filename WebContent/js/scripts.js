@@ -32,7 +32,11 @@ function changePanel(id) {
 		$(".allClientes").css('display', 'block');
 		$("#"+id).addClass("btnSelected");
 		$("#"+id+" i").addClass("btnSelected");
-		cargarListaClientes();
+		
+		if (typeof $('#divClientes .keywordsClient').attr('class') === 'undefined'){
+			cargarListaClientes();
+		}
+		
 		guardarPanelSesion("clientes")
 		
 	}
@@ -638,6 +642,7 @@ function showGuardar(){$("#websGuardar").addClass('cSave');}
 //Hide the menus if visible
 window.addEventListener('click', function(e){  
 	var clase = $(e.target).attr("class");
+	
 	if (typeof clase === 'undefined'){}else{
 
 	if (clase.includes("tdCat") || clase.includes("arrow")){
@@ -757,7 +762,15 @@ function closeAllPopUps(){
 	$(".slWeb").removeClass("visible");
 }
 
+function bloqueamosPantalla(){
+	$('.blockAll').addClass('visible');
+	$('.blockAll .loader').addClass('fadeIn');
+}
 
+function desbloqueamosPantalla(){
+	$('.blockAll').removeClass('visible');
+	$('.blockAll .loader').removeClass('fadeIn');
+}
 
 
 

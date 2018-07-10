@@ -82,7 +82,7 @@
 		 	</div>
 		</div>
 		
-		<div class="blockAll" onclick="bloquearTodo()"></div>
+		<div class="blockAll inner_pop_up" onclick="bloquearTodo()"><div class="loader"><div class="l_d1"></div><div class="l_d2"></div><div class="l_d3"></div><div class="l_d4"></div><div class="l_d5"></div></div></div>
 		
 		<script type="text/javascript" src="js/scripts.js"></script>
 

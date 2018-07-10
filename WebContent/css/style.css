@@ -1317,9 +1317,16 @@ tr:hover{
 }
 .mgn_top{margin-top: 3px;}
 .wdth_110{    width: 110px;}
-
+.z_index_god{z-index: 10001;}
 .empleadoDone, .empleadoDefault{display: none}
 
+.effect7_left {
+    -webkit-box-shadow: -6px 10px 55px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: -6px 10px 55px rgba(0, 0, 0, 0.1);
+    box-shadow: -6px 10px 55px rgba(0, 0, 0, 0.1);
+}
+
+.list_categoria_medios{    margin-top: 0px;    height: calc(100% - 102px);}
 
 .visible{display: block;}
 .fadeIn{visibility:visible;opacity: 1;}

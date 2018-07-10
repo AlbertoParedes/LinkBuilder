@@ -86,13 +86,16 @@ function guardarServicio(x){
 		$(x).closest('tr').find('.cNoFollow input').prop('readonly', false);
 	}
 	
-	guardarFollows($(x).closest('tr').find('td.cFollow input'));
-	guardarNoFollows($(x).closest('tr').find('td.cNoFollow input'));
+	if(valor!='medida'){
+		guardarFollows($(x).closest('tr').find('td.cFollow input'));
+		guardarNoFollows($(x).closest('tr').find('td.cNoFollow input'));
+	}
+	
 	
 	if(!$(x).closest('table').attr('id').includes('tNuevoCliente')){
 		guardarValoresCliente(id_cliente,campo,valor);
 	}else{
-		
+		/*
 		var checked = $(x).closest('tr').find('td.cCUser ul li[data-id-empleado="2"] input').prop("checked");
 		var nameAux = $(x).closest('tr').find('td.cCUser ul li[data-id-empleado="2"]').children('span').text();
 		
@@ -101,6 +104,7 @@ function guardarServicio(x){
 		}
 		$(x).closest('tr').find('td.cCUser ul li[data-id-empleado="2"] input').click();
 		$(x).closest('tr').find('td.cCUser div span').text(nameAux);
+		
 		
 		if(valor =="lite"){
 			$(x).closest('tr').find('td.cCUser ul .div_elem_empl div[data-id-empleado="2"] input').val("1");
@@ -111,7 +115,7 @@ function guardarServicio(x){
 		}else if(valor ="medida"){
 			//$(x).closest('tr').find('td.cCUser ul .div_elem_empl div[data-id-empleado="2"] input').val();
 			$(x).closest('tr').find('td.cCUser ul li[data-id-empleado="2"] input').click();
-		}
+		}*/
 	}
 }
 function guardarFollows(x){
@@ -154,6 +158,13 @@ function guardarIdioma(x){
 }
 function guardarEmpleado(x){
 	stopPropagation();
+	
+	x= $(x).closest('li');
+	
+	var usersChecked = $(x).closest('ul').find('li div input[type="checkbox"]:checked').length;
+	if(usersChecked==0){ $(x).siblings('.div_elem_empl').removeClass('visible');
+	}else{ $(x).siblings('.div_elem_empl').addClass('visible');}
+	
 	var id_cliente = $(x).closest('tr').attr('id');
 	var posicion = $(x).closest('tr').attr('posicion');
 	var estado = $(x).find('input[type=checkbox]').prop('checked');
@@ -321,8 +332,13 @@ function resetValoresNuevoCliente(x){
 	var blog = $(x).find('td.cCBlog div label input').prop('checked', false);
 	var idioma = $(x).find('td.cCIdioma input').val("ESP");
 	
-	var user = $(x).find('td.cCUser ul li').removeClass('liActive');
-	user = $(x).find('td.cCUser div span').text('-');
+	
+	
+	var users = $(x).find('td.cCUser ul li input[type="checkbox"]').prop("checked", false);
+	$(x).find('td.cCUser div.tdCat span').text('-');
+	$(x).find('td.cCUser div.div_elem_empl').empty();
+	$(x).find('td.cCUser div.div_elem_empl').removeClass('visible');
+	//user = $(x).find('td.cCUser div span').text('-');
 	
 	$(x).closest('div.newSomething').children('.infoNew').html("");
 };
@@ -337,6 +353,8 @@ function cancelNewCliente(x){
 
 
 function guardarValoresCliente(id_cliente,campo,valor){
+	bloqueamosPantalla();
+	
 	var posicion = $('#tClients tr#'+id_cliente).attr('posicion');
 	$.post('Data_Clientes', {
 		metodo : "guardarValoresCliente",
@@ -346,8 +364,38 @@ function guardarValoresCliente(id_cliente,campo,valor){
 		posicion:posicion
 	}, function(){
 		$("#websGuardar").removeClass('cSave');
+		
+		if(campo=="servicio" && valor!='medida'){
+			//abrir el panel de los empleados y forzar a que asignen los enlaces
+			var ul = $('tr#'+id_cliente).find('td.cCUser ul');
+			$(ul).addClass('z_index_god').addClass('visible');
+			
+			
+			var usersChecked = $(ul).find('li div input[type="checkbox"]:checked').length;
+			if(usersChecked==0){ $(ul).find('div.div_elem_empl').removeClass('visible');
+			}else{ $(ul).find('div.div_elem_empl').addClass('visible');}
+			
+			
+		}else if(campo=="follows"){
+			if($('tr#'+id_cliente).find('td.cCTipo ul li.liActive').attr('id')=="medida"){
+				//abrir el panel de los empleados y forzar a que asignen los enlaces
+				var ul = $('tr#'+id_cliente).find('td.cCUser ul');
+				$(ul).addClass('z_index_god').addClass('visible');
+				$(ul).find('div.div_elem_empl').addClass('visible');
+				//desbloqueamosPantalla();
+			}
+		}else if(campo=="nofollows"){
+			//desbloqueamosPantalla();
+		}else{
+			desbloqueamosPantalla();
+		}
+		
+		
+		
 	});
 }
+
+
 
 
 
@@ -692,9 +740,11 @@ function openEmpleadoEnlaces(x){
 }
 
 function saveEnlacesEmpleado(x){
+	var follows =  parseInt($(x).closest('tr').children('td.cFollow').children('input').val());
 	
 	var empleados = [];
 	var obj = {};
+	var suma=0;
 	var id_cliente = $(x).closest('tr').attr('id');
 	$(x).closest('.div_elem_empl').find('input[type="number"]').each(function(i) {
 		var valor = $(this).val();
@@ -702,6 +752,7 @@ function saveEnlacesEmpleado(x){
 		var tipo_empleado = $(this).attr('data-tipo-empleado');
 		obj = {	'id_cliente': id_cliente, 'id_empleado': id_empleado, 'tipo_empleado': tipo_empleado, 'valor':valor}
 		empleados.push(obj);
+		suma+=parseInt(valor);
 	});
 	
 	var users = "";
@@ -710,16 +761,22 @@ function saveEnlacesEmpleado(x){
 	
 	$(x).closest('td').children('div').children('span').text(users);
 	
-	if(empleados.length>0){
-		var json = JSON.stringify(empleados);
-		$.post('Data_Clientes', {
-			metodo : "modificarEnlacesEmpleado",
-			json: json
-		}, function(){
-			//$('#btnListaClientes').click();
-			closeAllPopUps();
-		});
+	if(follows == suma){
+		if(empleados.length>0){
+			var json = JSON.stringify(empleados);
+			$.post('Data_Clientes', {
+				metodo : "modificarEnlacesEmpleado",
+				json: json
+			}, function(){
+				desbloqueamosPantalla();
+				$(x).closest('ul').removeClass('z_index_god');
+				closeAllPopUps();
+			});
+		}
+	}else{
+		alert("Debes asignar todos los enlaces");
 	}
+	
 }
 
 
@@ -733,7 +790,7 @@ function updateSpanNames(x){
 	users += ";";users = users.replace(',;',"");users = users.replace(';',"");
 	
 	$(x).closest('td').children('div').children('span').text(users);
-	
+	guardarEmpleado(x);
 }
 
 function resize_head_table_clientes(){

@@ -118,6 +118,11 @@ public class Data extends HttpServlet {
 			request.setAttribute("empleados", empleados);
 			request.getRequestDispatcher("Data_Enlaces").forward(request, response);
 		}else if(empleado.getPanel().equals("medios")) {
+			//cambiar
+			request.setAttribute("empleado", empleado);
+			request.setAttribute("empleados", empleados);
+			request.getRequestDispatcher("Data_Enlaces").forward(request, response);
+			
 		}else if(empleado.getPanel().equals("clientes")) {
 			request.setAttribute("empleado", empleado);
 			request.getRequestDispatcher("Data_Enlaces").forward(request, response);
@@ -189,8 +194,7 @@ public class Data extends HttpServlet {
 		out = response.getWriter();
 		out.println("	<div class='titleCategory'><div class='titleInner'>Categorias<div class='horDiv wa'><div id='addK' class='addK'><i class='material-icons addKi'>add</i></div><div onclick='searchKey(event)'><div id='ipkey' class='srchI'><i class='material-icons addKi'>search</i><input id='searchK' class='searchI' type='text' oninput='searchK()'></div></div></div></div></div>");
 		out.println("	<div class='infoCategory'><div class='info'>"+categorias.size()+" Categorias</div></div>");
-		out.println("		<div id='lkkI' class='listItems'>");
-
+		out.println("		<div id='lkkI' class='listItems list_categoria_medios'>");
 		for (int i = 1; i < categorias.size(); i++) {
 			if(i==1) {out.println("<div id='"+categorias.get(i).getIdCategoria()+"' posicion='"+i+"' onclick='selectCategoria(this)' class='item'><div class='itemChild childKey'><div class='dominioItem'>"+categorias.get(i).getEnlace()+"</div></div></div>");
 			}else {out.println("<div id='"+categorias.get(i).getIdCategoria()+"' posicion='"+i+"' onclick='selectCategoria(this)' class='item'><div class='line'></div><div class='itemChild childKey'><div class='dominioItem'>"+categorias.get(i).getEnlace()+"</div></div></div>");}

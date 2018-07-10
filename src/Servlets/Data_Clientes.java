@@ -127,47 +127,32 @@ public class Data_Clientes extends HttpServlet {
 		for(int i=0;i<arrayData.size();i++){
 			JSONObject row =(JSONObject)arrayData.get(i);
 			String tipo = row.get("tipo").toString(), valor = row.get("valor").toString();
-			if(tipo.equals("servicio"))servicios += valor+";";
-			if(tipo.equals("empleado"))usuarios += valor+";";
-			if(tipo.equals("estado"))estados += valor+";";
+			if(tipo.equals("servicio"))servicios += "{"+valor+"}";
+			if(tipo.equals("empleado"))usuarios += "{"+valor+"}";
+			if(tipo.equals("estado"))estados += "{"+valor+"}";
 		}
 		System.out.println("filtrar por: -> "+json);
+		
+		System.out.println("servicio: "+servicios);
+		System.out.println("empleado: "+usuarios);
+		System.out.println("estado: "+estados);
+		
 		for (int c = 0; c < clientes.size(); c++) {
 			Cliente cliente = clientes.get(c);
-			
-			// si no hay ningun filtro se mostran otravez todos
-			if(servicios.equals("") && usuarios.equals("") && estados.equals("")) { 
-				setContenidoTabla(empleado, c, cliente, out);
+			boolean mostrarServicio = false, mostrarUsario=false,mostrarEstado=false;
+			if(usuarios.equals("")) {
+				mostrarUsario = true;
+			}else {
+				for(Map.Entry<String, Empleado> e : cliente.getEmpleados().entrySet()) {
+				    if(usuarios.contains("{"+e.getValue().getName().toLowerCase()+"}")) {
+				    	mostrarUsario = true;
+				    	break;
+				    }
+				}
 			}
-			// si los tres tipos de filtros esta llenos por algo hacemos este if
-			else if(servicios.contains(cliente.getServicio()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";") && estados.contains(cliente.getStatus()+";")) {
-				setContenidoTabla(empleado, c, cliente, out);
-			}
-			//si estado y servicios estan llenos y usuarios esta vacio
-			else if(estados.contains(cliente.getStatus()+";") && servicios.contains(cliente.getServicio()+";")			&& usuarios.equals("")) {
-				setContenidoTabla(empleado, c, cliente, out);
-			}
-			//si estado y usuarios estan llenos y servicios esta vacio
-			else if(estados.contains(cliente.getStatus()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")			&& servicios.equals("")) {
-				setContenidoTabla(empleado, c, cliente, out);
-			}
-			//si servicios y usuarios estan llenos y estado esta vacio
-			else if(servicios.contains(cliente.getServicio()+";") && usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")			&& estados.equals("")) {
-				setContenidoTabla(empleado, c, cliente, out);
-			}
-			//si estado esta lleno y lo demas vacio
-			else if(estados.contains(cliente.getStatus()+";")		&& servicios.equals("") && usuarios.equals("")) {
-				setContenidoTabla(empleado, c, cliente, out);
-			}
-			//si servicios esta lleno y lo demas vacio
-			else if(servicios.contains(cliente.getServicio()+";")		&& estados.equals("") && usuarios.equals("")) {
-				setContenidoTabla(empleado, c, cliente, out);
-			}
-			//si empleados esta lleno y lo demas vacio
-			else if(usuarios.toLowerCase().contains(cliente.getName_empleado().toLowerCase()+";")			&& estados.equals("") && servicios.equals("")) {
-				setContenidoTabla(empleado, c, cliente, out);
-			}
-
+			if(servicios.contains("{"+cliente.getServicio()+"}") || servicios.equals("")) mostrarServicio = true;
+			if(estados.contains("{"+cliente.getStatus()+"}") || estados.equals("")) mostrarEstado = true;
+			if(mostrarServicio && mostrarUsario && mostrarEstado) setContenidoTabla(empleado, c, cliente, out);
 		}
 	}
 
@@ -551,17 +536,19 @@ public class Data_Clientes extends HttpServlet {
 		empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
 
 		//----------------------------------------------------------------------------------------------------------------------------------------------
-		String listaEmpleados="", listaEnlacesEmpleado="<div onclick='stopPropagation()' class='div_elem_empl'>";
+		String listaEmpleados="",listaFiltroEmpleado="", listaEnlacesEmpleado="<div onclick='stopPropagation()' class='div_elem_empl'>";
 		//obtenemos los empleados que participan en el cliente
 		for (int i = 0; i < Data.empleados.size(); i++) {
 			Empleado e = Data.empleados.get(i);
 			String checked="";
 			if(e.getCategoria().equals("free")) { 
-				listaEmpleados += 
-				"<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+
+				listaEmpleados +=  
+				"<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' class='inner_pop_up' onclick='stopPropagation()'>"+
 					"<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input onclick='updateSpanNames(this)' class='slT' type='checkbox' "+checked+"><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>"+
 					"<span class='f_s_12'>"+e.getName()+"</span>"+ 
 				"</li>";
+				
+				listaFiltroEmpleado +="<div data-filter='empleado' data-valor='"+e.getName().toLowerCase()+"' data-name='"+e.getId()+"' class='txt_opciones_filter'>"+e.getName()+"<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>";
 			}
 		}
 		listaEnlacesEmpleado+="</div>";
@@ -615,8 +602,7 @@ public class Data_Clientes extends HttpServlet {
 
 		out.println("				<div class='float_left'>");
 		out.println("					<div class='section_filter'>Empleados</div>");
-		out.println("					<div data-filter='empleado' data-valor='nini' class='txt_opciones_filter'>Nini<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
-		out.println("					<div data-filter='empleado' data-valor='vane' class='txt_opciones_filter'>Vane<div class='pretty p-icon p-smooth chkbx_filter'><input class='slT' type='checkbox'/><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div></div>");
+		out.println(					listaFiltroEmpleado);
 		out.println("				</div>");
 		
 		
@@ -627,7 +613,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("	<div id='websGuardar' class='zoom'>guardar</div></div>"); 
 		out.println("</div>");
 		out.println("<div class='keywordsClient listaClientes'>");
-		out.println("	<div id='results_Client' class='contentTable'>");
+		out.println("	<div id='results_Clients' class='contentTable'>");
 		out.println("		<table id='tClients' class='table'>");
 		out.println("			<thead class='head_fixed'>");
 		out.println("				<tr>");
@@ -706,7 +692,7 @@ public class Data_Clientes extends HttpServlet {
 	}
 
 	private void setContenidoTabla (Empleado empleado, int c,Cliente cliente, PrintWriter out) {
-		String listaEmpleados="", listaEnlacesEmpleado="<div onclick='stopPropagation()' class='div_elem_empl'>";
+		String listaEmpleados="", listaEnlacesEmpleado="<div onclick='stopPropagation()' class='div_elem_empl effect7_left'>";
 		//obtenemos los empleados que participan en el cliente
 		for (int i = 0; i < Data.empleados.size(); i++) {
 			Empleado e = Data.empleados.get(i);
@@ -721,8 +707,8 @@ public class Data_Clientes extends HttpServlet {
 			}
 			if(e.getCategoria().equals("free")) { 
 				listaEmpleados += 
-				"<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' "+empleado.getClientesEmpleado().get("onClick")+">"+
-					"<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input class='slT' type='checkbox' "+checked+"><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>"+
+				"<li data-id-empleado='"+e.getId()+"' data-tipo-empleado='"+e.getCategoria()+"' class='inner_pop_up' onclick='stopPropagation()'>"+
+					"<div class='pretty p-icon p-smooth chkbx_filter cbx_users'><input "+empleado.getClientesEmpleado().get("onClick")+" class='slT' type='checkbox' "+checked+"><div class='state p-success paTem'><i class='icon material-icons'>done</i><label></label></div></div>"+
 					"<span class='f_s_12'>"+e.getName()+"</span>"+ 
 				"</li>";
 			}
@@ -803,7 +789,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("			<span data-id-empleado='"+cliente.getId_empleado()+"' data-tipo-empleado='"+cliente.getTipoEmpleado()+"' class='tdCat' type='text'>"+cliente.getName_empleado()+"</span>");
 		//out.println("			<i class='material-icons arrow'>arrow_drop_down</i>	");
 		out.println("		</div>"); 
-		out.println("		<ul class='slCt effect7 pop_up txt_algn_left'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
+		out.println("		<ul class='slCt effect7 pop_up txt_algn_left inner_pop_up'>"+listaEmpleados+"<div class='algn_center'><i class='material-icons i_more noselect' onclick='openEmpleadoEnlaces(this)'>more_horiz</i></div>"+listaEnlacesEmpleado+"</ul>");
 		out.println("	</td>");
 		//Destinos
 		out.println("	<td class='tdCat cell_destino pr text_center' onclick='openDestinos(this)'>");
