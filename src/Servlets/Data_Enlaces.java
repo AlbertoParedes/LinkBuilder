@@ -491,8 +491,6 @@ public class Data_Enlaces extends HttpServlet {
 			this.forosDisponibles.clear();
 			this.forosDisponibles = forosDisponibles;
 
-			
-			
 			ArrayList<Enlace> enlaces = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(jsonArray[1], new TypeToken<List<Enlace>>(){}.getType());
 			if(enlaces.size()>0) {
 				this.enlaces.clear();
@@ -658,8 +656,8 @@ public class Data_Enlaces extends HttpServlet {
 		
 		//int follows_done = Integer.parseInt(request.getParameter("follows_done"));
 		int nofollows_done = Integer.parseInt(request.getParameter("nofollows_done"));
-		int mes_js = Integer.parseInt(request.getParameter("mes"));
-		int year_js = Integer.parseInt(request.getParameter("year"));
+		String mes_js = request.getParameter("mes");
+		String year_js = request.getParameter("year");
 
 		/*
 		Date date= new Date();Calendar cal = Calendar.getInstance();cal.setTime(date);
@@ -686,6 +684,8 @@ public class Data_Enlaces extends HttpServlet {
 		ws.updateResultado(id_resultado+"", "enlace", link+"" , "updateResultado.php");
 		ws.updateResultado(id_resultado+"", "hecho_por", id_user+"" , "updateResultado.php");
 		*/
+		
+		System.out.println(fecha +" <-> "+year_js+"-"+mes_js);
 
 		if(fecha.equals(year_js+"-"+mes_js)) {
 			//String fecha = year+"-"+mes_string;
