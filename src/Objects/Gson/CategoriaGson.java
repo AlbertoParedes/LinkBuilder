@@ -33,6 +33,10 @@ public class CategoriaGson {
 	@SerializedName("dificultad")
 	@Expose
 	private String dificultad;
+	
+	@SerializedName("type")
+	@Expose
+	private String type;
 
 	
 
@@ -95,5 +99,15 @@ public class CategoriaGson {
 	public void setDificultad(String dificultad) {
 		this.dificultad = dificultad;
 	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	
 
 }

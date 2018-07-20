@@ -53,6 +53,11 @@ public class Empleado {
 	@SerializedName("clientes_blog")
 	@Expose
 	private int clientesBlog;
+	
+	@SerializedName("clientes_paid")
+	@Expose
+	private int clientesPaid;
+	
 	@SerializedName("clientes_idioma")
 	@Expose
 	private int clientesIdioma;
@@ -102,8 +107,6 @@ public class Empleado {
 		this.n_follows = n_follows;
 	}
 	
-	
-
 	public int getN_follows_done() {
 		return n_follows_done;
 	}
@@ -291,7 +294,6 @@ public class Empleado {
 		return map;
 	}
 
-
 	public Map getClientesBlog() {
 		Map<String, String> map = new HashMap<String, String>();
 		if(clientesBlog==1) {
@@ -306,7 +308,20 @@ public class Empleado {
 		return map;
 	}
 
-
+	public Map getClientesPaid() {
+		Map<String, String> map = new HashMap<String, String>();
+		if(clientesPaid==1) {
+			map.put("onChange", "onchange='guardarPaid(this)'");
+			map.put("estado", "");
+			return map;
+		}else if(clientesPaid==0) {
+			map.put("onChange", "");
+			map.put("estado", "disabled");
+			return map;
+		}
+		return map;
+	}
+	
 	public Map getClientesIdioma() {
 		Map<String, String> map = new HashMap<String, String>();
 		if(clientesIdioma==1) {

@@ -5,8 +5,10 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,13 +49,37 @@ public class Data_Clientes extends HttpServlet {
 	private ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 	private Empleado empleado = new Empleado();
 	private String listaEmpleados = "";
+	private String fecha;
 
 	public Data_Clientes() {
 		super();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		System.out.println("Do get CLIENTES");
+		Date today = new Date(); 
+		Calendar cal = Calendar.getInstance(); cal.setTime(today);
+		int month = cal.get(Calendar.MONTH)+1, year = cal.get(Calendar.YEAR);
+		String mes = month+""; if(month<10) mes= "0"+mes;
+		fecha = year+"-"+mes;
+		
+		Empleado empleado = (Empleado) request.getAttribute("empleado");
+		HttpSession httpSession = request.getSession();
+		httpSession.setAttribute("empleado", empleado);
+		
+		System.out.println("Yo soy: "+empleado.getName());
+
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(empleado.getId()+""));
+		String json = ws.clientes(wbList, "getClientes", "clientes.php");
+		String[] jsonArray = json.split(";;");
+
+		this.clientes.clear();
+		clientes = pj.parsearClientesMap(jsonArray[1]);
+		ob.clientesByDomain(clientes);
+
+		request.setAttribute("name_user", empleado.getName());
+		request.setAttribute("ventana",empleado.getPanel());
+		request.getRequestDispatcher("Data.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -274,6 +300,8 @@ public class Data_Clientes extends HttpServlet {
 			clientes.get(posicion).setServicio(valor);
 		}else if(campo.equals("status")) {
 			clientes.get(posicion).setStatus(valor);
+		}else if(campo.equals("enlaces_de_pago")) {
+			clientes.get(posicion).setEnlacesDePago(valor);
 		}
 		
 		System.out.println("guardado, posicion: "+posicion);
@@ -281,6 +309,7 @@ public class Data_Clientes extends HttpServlet {
 		
 
 	}
+	
 	private void guardarNuevoCliente(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		response.setContentType("application/json");
@@ -376,6 +405,7 @@ public class Data_Clientes extends HttpServlet {
 		out.print(obj);
 		
 	} 
+	
 	private void eliminarCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
 		String json = request.getParameter("json");
 		System.out.println(json);
@@ -391,6 +421,7 @@ public class Data_Clientes extends HttpServlet {
 			System.out.println("Cliente "+web_cliente+" eliminado");
 		}
 	}
+	
 	private void addDestino(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
 		response.setContentType("application/json");
 		out = response.getWriter();
@@ -407,6 +438,7 @@ public class Data_Clientes extends HttpServlet {
 
 		System.out.println(id_cliente +"  "+url);
 	}
+	
 	@SuppressWarnings("unchecked")
 	private void subirNuevaFactura(HttpServletRequest request, HttpServletResponse response, int id_user, PrintWriter out) throws IOException, ServletException {
 
@@ -525,7 +557,6 @@ public class Data_Clientes extends HttpServlet {
 
 	}
 
-
 	private void cargarListaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role, String campoOrdenar) throws IOException, ParseException {
 
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_user+""));
@@ -626,6 +657,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("					<th class='cabeceraTable cNoFollow'><i class='material-icons lnf'>link</i></th>");
 		out.println("					<th class='cabeceraTable anchorC'>Anchor</th>");
 		out.println("					<th class='cabeceraTable cCBlog txt_center_mg_0'>Blog</th>");
+		out.println("					<th class='cabeceraTable cCPaid txt_center_mg_0'><i class='material-icons'> monetization_on </i></th>");
 		out.println("					<th class='cabeceraTable cCIdioma'><i class='material-icons'> g_translate </i></th>");
 		out.println("					<th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='aplicarFiltro(this)' data-tipo='user'><i class='material-icons f_size26'>account_circle</i>"+arrowuser+"</th>");
 		out.println("					<th class='cabeceraTable cell_destino txt_center_mg_0'>Destinos</th>");
@@ -741,6 +773,7 @@ public class Data_Clientes extends HttpServlet {
 		htmlServicio += "			<li id='premium' "+clasePremium+" data-follows='6' data-nofollows='15' "+empleado.getClientesServicio().get("onClick")+">SEO Premium</li>";
 		htmlServicio += "			<li id='medida' "+claseMedida+" data-follows='0' data-nofollows='0' "+empleado.getClientesServicio().get("onClick")+"'>SEO a medida</li>";
 		String blogChecked ="checked"; if(Integer.parseInt(cliente.getBlog())==0) blogChecked="";
+		String paidChecked ="checked"; if(Integer.parseInt(cliente.getEnlacesDePago())==0) paidChecked="";
 
 		out.println("<tr id='"+id_cliente+"' posicion='"+c+"' class='pr'>");
 		out.println("	<td class='select_client'>");
@@ -779,6 +812,12 @@ public class Data_Clientes extends HttpServlet {
 		out.println("	<td class='tdCat cCBlog txt_center_mg_0 pr'>");
 		out.println("		<div class='tdCat tdWeb'>");
 		out.println("			<label  class='switch label_switch'><input class='slT' type='checkbox' "+empleado.getClientesBlog().get("onChange")+" "+blogChecked+" "+empleado.getClientesBlog().get("estado")+"><span class='slider round'></span></label>");
+		out.println("		</div>");
+		out.println("	</td>");
+		//ENLACE DE PAGO
+		out.println("	<td class='tdCat cCBlog txt_center_mg_0 pr'>");
+		out.println("		<div class='tdCat tdWeb'>");
+		out.println("			<label  class='switch label_switch'><input class='slT' type='checkbox' "+empleado.getClientesPaid().get("onChange")+" "+paidChecked+" "+empleado.getClientesPaid().get("estado")+"><span class='slider round'></span></label>");
 		out.println("		</div>");
 		out.println("	</td>");
 		//Columna IDIOMA

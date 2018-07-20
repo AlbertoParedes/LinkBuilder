@@ -242,6 +242,8 @@ function borrarCategoria(x){
 	
 	var id_foro_anterior = $(x).closest('tr').children('td.cWeb').children('div').children('span').attr("data-id-foro");
 	var categoria_foro_anterior = $(x).closest('tr').children('td.cWeb').children('div').children('span').attr("data-id-categoria");
+	var type_foro_anterior = $(x).closest('tr').children('td.cWeb').children('div').children('span').attr("data-type");
+	
 	var medio_anterior = $(x).closest('tr').children('td.cWeb').children('div').children('span').text();
 	var descripcion_foro_anterior = $(x).closest('tr').children('td.cWeb').children('textarea').text();
 	
@@ -252,7 +254,8 @@ function borrarCategoria(x){
 		id_foro_anterior:id_foro_anterior,
 		categoria_foro_anterior:categoria_foro_anterior,
 		medio_anterior:medio_anterior,
-		descripcion_foro_anterior: descripcion_foro_anterior
+		descripcion_foro_anterior: descripcion_foro_anterior,
+		type_foro_anterior:type_foro_anterior
 	}, function (rt){
 		var spanMedio = $(x).closest('tr').children('td.cWeb').find('div.tdWeb span');
 		$(spanMedio).attr("data-id-foro","0");
@@ -397,10 +400,12 @@ function guardarWebResultado(x){
 	var id_foro=$(x).attr('data-id-foro');//id del foro selecionado
 	var posicion_foro = $(x).attr('data-posicion-foro');// posicion en el array del foro seleccionado
 	var categoria_foro = $(x).attr('data-id-categoria');
+	var type_foro = $(x).attr('data-type');
 	
 	var id_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-id-foro");
 	var posicion_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-posicion-foro");
 	var categoria_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-id-categoria");
+	var type_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-type");
 	var medio_anterior = $(x).closest('td').children('div').children('span').text();
 	var descripcion_foro_anterior = $(x).closest('td').children('textarea').text();
 	
@@ -422,12 +427,14 @@ function guardarWebResultado(x){
 		id_foro: id_foro,	
 		posicion_foro: posicion_foro,
 		categoria_foro: categoria_foro,
+		type_foro: type_foro,
 		
 		id_foro_anterior:id_foro_anterior,
 		posicion_foro_anterior:posicion_foro_anterior,
 		categoria_foro_anterior: categoria_foro_anterior,
 		medio_anterior: medio_anterior,
-		descripcion_foro_anterior:descripcion_foro_anterior
+		descripcion_foro_anterior:descripcion_foro_anterior,
+		type_foro_anterior: type_foro_anterior
 	}, function(rt) {
 		
 		if(id_categoria_tdCategoria==0){

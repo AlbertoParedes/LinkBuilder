@@ -21,6 +21,7 @@
 		
 		<script type="text/javascript" src="js/script_enlaces.js"></script>
 		<script type="text/javascript" src="js/script_clientes.js"></script>
+		<script type="text/javascript" src="js/script_medios.js"></script>
 		
 		
 		
@@ -57,9 +58,9 @@
 		<div class="main">
 			<div class="content-menu">
 				<ul>
-					<li><div id="btnClientes" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">link</i></div><h4 class="titleItem">Enlaces</h4></li>
-					<li><div id="btnKeywords" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">sort_by_alpha</i></div><h4 class="titleItem">Medios</h4></li>
-					<li><div id="btnListaClientes" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">perm_identity</i></div><h4 class="titleItem">Clientes</h4></li>				</ul>
+					<li><div id="btnEnlaces" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">link</i></div><h4 class="titleItem">Enlaces</h4></li>
+					<li><div id="btnMedios" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">sort_by_alpha</i></div><h4 class="titleItem">Medios</h4></li>
+					<li><div id="btnClientes" onclick="changePanel(this.id)" class="circleIcono"><i class="material-icons googleIcono">perm_identity</i></div><h4 class="titleItem">Clientes</h4></li>				</ul>
 			</div>
 		</div>
 		
@@ -102,11 +103,11 @@
 			<script>
 				if("<%=ventana%>" == "enlaces"){
 					//cargarVistaEnlaces();
-					$('#btnClientes').click();
+					$('#btnEnlaces').click();
 				}else if("<%=ventana%>" == "medios"){
-					$('#btnKeywords').click();
+					$('#btnMedios').click();
 				}else if("<%=ventana%>" == "clientes"){
-					$('#btnListaClientes').click();
+					$('#btnClientes').click();
 				}
 			</script>
 		</div>

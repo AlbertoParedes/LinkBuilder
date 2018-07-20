@@ -148,6 +148,16 @@ function guardarBlog(x){
 		guardarValoresCliente(id_cliente,campo,valor);
 
 }
+
+function guardarPaid(x){
+	var campo ="enlaces_de_pago";
+	var id_cliente = $(x).closest('tr').attr('id');
+	var valor = $(x).is(':checked') === true ? 1 : 0;
+	if(!$(x).closest('table').attr('id').includes('tNuevoCliente'))
+		guardarValoresCliente(id_cliente,campo,valor);
+
+}
+
 function guardarIdioma(x){
 	var campo ="idioma";
 	var id_cliente = $(x).closest('tr').attr('id');

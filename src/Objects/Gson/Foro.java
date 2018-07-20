@@ -21,6 +21,10 @@ public class Foro {
 	@SerializedName("descripcion")
 	@Expose
 	private String descripcion;
+	
+	@SerializedName("type")
+	@Expose
+	private String type;
 
 	public Foro() {
 	}
@@ -30,12 +34,13 @@ public class Foro {
 	
 
 
-	public Foro(int idForo, String webForo, int categoria, String descripcion) {
+	public Foro(int idForo, String webForo, int categoria, String descripcion, String type) {
 		super();
 		this.idForo = idForo;
 		this.webForo = webForo;
 		this.categoria = categoria;
 		this.descripcion = descripcion;
+		this.type = type;
 	}
 
 
@@ -77,6 +82,19 @@ public class Foro {
 
 	public void setWebForo(String webForo) {
 		this.webForo = webForo;
+	}
+
+
+
+
+
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 
