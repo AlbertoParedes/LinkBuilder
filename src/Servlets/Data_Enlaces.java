@@ -377,11 +377,13 @@ public class Data_Enlaces extends HttpServlet {
 			Cliente cliente = new Gson().fromJson(jsonArray[2].substring(1, jsonArray[2].length()-1), Cliente.class);
 			this.cliente = cliente;
 			
-
-			String noti="";
-			int porHacer = pj.parsearEnlacesPorClienteEmpleado(jsonArray[3]) ;
-			if(porHacer == 0){noti="<div class='noti notiPos'><i class='material-icons lf'>done</i></div>";}else{noti="<div class='noti'>"+porHacer+"</div>";}
-			obj.put("noti", noti);
+			if(empleado.getCategoria().equals("free")) {
+				String noti="";
+				int porHacer = pj.parsearEnlacesPorClienteEmpleado(jsonArray[3]) ;
+				if(porHacer == 0){noti="<div class='noti notiPos'><i class='material-icons lf'>done</i></div>";}else{noti="<div class='noti'>"+porHacer+"</div>";}
+				obj.put("noti", noti);
+			}
+			
 			
 			
 			mostrarResultados(request, response, out, user_role, obj);
