@@ -590,11 +590,10 @@ textarea{color: #878787;}
 }
 
 .cPrecio{
-	width: 40px;
+	width: 70px;
     text-align: center;
 }
-.cBeneficio{width: width: 46px;;}
-.c_incremento{    width: 55px;}
+
 .pago_web{ width: 15%;}
 .paid_inputs{text-align: center;display:none}
 .open_inputs{display: block;position: absolute;top: 6px;left: 0;}
@@ -1328,6 +1327,23 @@ tr:hover{
 }
 
 .list_categoria_medios{    margin-top: 0px;    height: calc(100% - 102px);}
+
+.add_div_toolbar_enlaces{
+	float: left;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.add_div_toolbar_enlaces:hover i{
+	color: #0f9d58; 
+}
+.warning_color{
+	color: #FABB2D;
+}
+
+.cLinkPaid{width: 15%;}
+.input_precio{display: none; position: absolute;top: 0;height: 100%;width: 100%;text-align: center;left: 0;}
+.span_precio{text-align: center;}
 
 .visible{display: block;}
 .fadeIn{visibility:visible;opacity: 1;}

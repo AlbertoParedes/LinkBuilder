@@ -1,4 +1,3 @@
-
 var websInicio=false;
 function changePanel(id) {
 	

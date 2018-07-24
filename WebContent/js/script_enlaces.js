@@ -7,10 +7,6 @@ function cargarVistaEnlaces(){
 	});
 }
 
-
-
-
-
 var clienteSeleccionado=0;
 function enlaces_SelectClient(id_client,x) {
 	//mostramos que estamos cargando la informacion
@@ -208,7 +204,7 @@ function enlaces_nuevoDestinoEnter(e,x){
     	enlaces_nuevoDestino(x);
     }
 }
-function openWebResultado(x){
+function openMedios(x){
 	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
 	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
 	var clase = $(x).closest('td').find('div.pop_up').attr("class");
@@ -220,7 +216,7 @@ function openWebResultado(x){
 		var id_categoria = $(x).closest('tr').find('td.cCateg div span[data-id-categoria]').attr('data-id-categoria');
 		//if (typeof id_categoria !== 'undefined'){
 			$.post('Data_Enlaces', {
-				metodo : 'mostrarWebResultado',
+				metodo : 'mostrarMedios',
 				id_categoria: id_categoria,
 				id_resultado: id_resultado
 			}, function(responseText) {
@@ -387,7 +383,7 @@ function buscarMedio(x){
 	
 }
 
-function guardarWebResultado(x){
+function guardarMedio(x){
 	bloqueamosPantalla();
 	
 	$(x).closest('ul').children('li').removeClass("liActive");
@@ -420,7 +416,7 @@ function guardarWebResultado(x){
 	}
 	
 	$.post('Data_Enlaces', {
-		metodo : 'guardarWebResultado',
+		metodo : 'guardarMedio',
 		id_categoria_tdCategoria:id_categoria_tdCategoria,
 		
 		id_resultado: id_resultado,
@@ -658,6 +654,286 @@ function resize_head_table_enlaces(){
 	});
 	*/
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//funciones panel de pago
+
+function addNewEnlacePaid(x){
+	
+	var id_cliente = $('#lstC.listItems').children('div.item_select').attr('id');
+	$.post('Data_Enlaces', {
+		metodo : "addNewEnlacePaid",
+		id_cliente: id_cliente
+	}, function(response){
+		$('#lstC.listItems').children('div.item_select').click();
+	});
+	
+}
+
+
+function openMediosPaid(x){
+	$(".rotArrow").removeClass("rotArrow");$("i.description_enlace").removeClass("lf");
+	//comprobamos si se ha hhecho otro click sobre esta misma categoria para cerrar el ul
+	var clase = $(x).closest('td').find('div.pop_up').attr("class");
+	$(".slCt").removeClass("visible");
+	$(".pop_up").removeClass("visible");
+	$(".slWeb").removeClass("visible");
+	if(!clase.includes("visible")){
+		var id_resultado = $(x).closest('tr').attr('id');
+		//if (typeof id_categoria !== 'undefined'){
+			$.post('Data_Enlaces', {
+				metodo : 'mostrarMedios',
+				id_categoria: '18',
+				id_resultado: id_resultado
+			}, function(responseText) {
+				$(x).find('div.pop_up ul').html(responseText);
+				$(x).find('div.pop_up').addClass("visible");
+				//modificamos la flecha 
+				$(x).children('div').children('i.arrow').addClass("rotArrow");
+				
+			});
+		//}
+		
+	}
+}
+
+function guardarMedioPaid(x){
+	bloqueamosPantalla();
+	
+	$(x).closest('ul').children('li').removeClass("liActive");
+	$(x).addClass("liActive");
+	var id_categoria_tdCategoria = '18';
+	
+	
+	var id_resultado=$(x).closest('tr').attr('id');
+	
+	var id_foro=$(x).attr('data-id-foro');//id del foro selecionado
+	var posicion_foro = $(x).attr('data-posicion-foro');// posicion en el array del foro seleccionado
+	var categoria_foro = $(x).attr('data-id-categoria');
+	var type_foro = $(x).attr('data-type');
+	
+	var id_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-id-foro");
+	var posicion_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-posicion-foro");
+	var categoria_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-id-categoria");
+	var type_foro_anterior = $(x).closest('td').children('div').children('span').attr("data-type");
+	var medio_anterior = $(x).closest('td').children('div').children('span').text();
+	var descripcion_foro_anterior = $(x).closest('td').children('textarea').text();
+	
+	//var posicionResultado = $(x).closest('tr').attr('posicion');
+	
+	//si se seleciona la X borraremos ese resultado de nuestra bbdd y de nuestro array
+	if($(x).attr('class').includes('crossReset')){
+		$(x).closest('td').children('div').children('span').text('');
+		id_foro = 0;
+		posicion_foro = -1;
+		categoria_foro = 0;
+	}
+	
+	$.post('Data_Enlaces', {
+		metodo : 'guardarMedio',
+		id_categoria_tdCategoria:id_categoria_tdCategoria,
+		
+		id_resultado: id_resultado,
+		id_foro: id_foro,	
+		posicion_foro: posicion_foro,
+		categoria_foro: categoria_foro,
+		type_foro: type_foro,
+		
+		id_foro_anterior:id_foro_anterior,
+		posicion_foro_anterior:posicion_foro_anterior,
+		categoria_foro_anterior: categoria_foro_anterior,
+		medio_anterior: medio_anterior,
+		descripcion_foro_anterior:descripcion_foro_anterior,
+		type_foro_anterior: type_foro_anterior
+	}, function(rt) {
+		
+		if(id_categoria_tdCategoria==0){
+			$(x).closest('tr').children('td.cCateg').find('div.tdCat span').attr("data-id-categoria", categoria_foro);
+			var textoCategoria = $(x).closest('tr').find('td.cCateg ul li#'+categoria_foro).text();
+			if(textoCategoria!=""){
+				$(x).closest('tr').children('td.cCateg').find('div.tdCat span').text(textoCategoria);
+			}
+			
+		}
+		$(x).closest('td').children('div.tdCat').html(rt.html);
+		$(x).closest('td').children('textarea').text(rt.descripcion);
+		
+		desbloqueamosPantalla();
+	});
+}
+
+function openPrecio(x){
+	
+	$(x).siblings('input.input_precio').addClass('visible');
+	var precio = parseInt($(x).text());
+	$(x).siblings('input.input_precio').focus();
+	$(x).siblings('input.input_precio').val(precio);
+	
+}
+
+function guardarPrecio(x){
+	
+	$(x).removeClass('visible');
+	var precio = parseInt($(x).val());
+	if(!isNaN(precio)){
+		$(x).siblings('span.span_precio').text(precio+' \u20AC');
+	}
+	$(x).val("");
+	
+	
+	var tr = $(x).closest('tr');
+	obtenerBeneficios(tr);
+}
+
+function obtenerBeneficios(x){
+	
+	var precioCompra = parseInt($(x).children('td.precio_compra').children('span.span_precio').text());
+	var precioVenta  = parseInt($(x).children('td.precio_venta' ).children('span.span_precio').text());
+	
+	var beneficio = precioVenta - precioCompra;
+	var incremento = (beneficio / precioCompra)*100;
+	
+	$(x).children('td.beneficio').text(beneficio+' \u20AC');
+	$(x).children('td.incremento').text(round(incremento, 0)+' %');
+	
+	
+}
+
+function round(value, precision) {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+}
+
+function closePrecio(x){
+	$("input.input_precio").removeClass('visible');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

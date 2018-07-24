@@ -2,6 +2,7 @@ package Servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class Data_Enlaces extends HttpServlet {
 		HashMap<String, String> json = listaClientes(empleados,"","","",0, empleado);
 		out.println("<div id='lcc' class='listClients'>");
 		out.println("	<div class='titleCategory'>");
-		out.println("		<div class='titleInner'>Clientes<div class='horDiv wa'><div id='addC' class='addK'><i class='material-icons addKi'>add</i></div><div onclick='searchCliente(this,event)'><div id='ipCLient' onclick='stopPropagation()' class='srchI'><i onclick='searchCliente(this,event)' class='material-icons addKi'>search</i><input id='searchC' class='searchI' type='text' oninput='aplicarFiltroEnlaces(this)'></div></div></div></div>");
+		out.println("		<div class='titleInner'>Clientes<div class='horDiv wa'><div onclick='searchCliente(this,event)'><div id='ipCLient' onclick='stopPropagation()' class='srchI'><i onclick='searchCliente(this,event)' class='material-icons addKi'>search</i><input id='searchC' class='searchI' type='text' oninput='aplicarFiltroEnlaces(this)'></div></div></div></div>");
 		out.println("	</div>");
 		out.println("	<div class='infoCategory pr'>");
 		out.println("		<div  class='info'>"+json.get("nClientes")+" clientes</div>");
@@ -158,10 +159,7 @@ public class Data_Enlaces extends HttpServlet {
 		out.println("		</div>");
 		out.println("	</div>");
 	}
-	
-	
-	
-	
+
 	
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -186,16 +184,16 @@ public class Data_Enlaces extends HttpServlet {
 			resultadosMes(request, response, out, empleado.getRole(), empleado);
 		}else if(metodo.equals("guardarEnlaceResultado")) {
 			guardarEnlaceResultado(request, response, out,empleado.getId(), empleado);
-		}else if(metodo.equals("mostrarWebResultado")) {
-			mostrarWebResultado(request, response, out, empleado);
+		}else if(metodo.equals("mostrarMedios")) {
+			mostrarMedios(request, response, out, empleado);
 		}else if(metodo.equals("borrarCategoriaResultado")) {
 			borrarCategoriaResultado(request, response, out);
 		}else if(metodo.equals("enlaces_guradarDestino")) {
 			guradarDestino(request, response, out);
 		}else if(metodo.equals("guardarCategoriaResultado")) {
 			guardarCategoriaResultado(request, response, out);
-		}else if(metodo.equals("guardarWebResultado")) {
-			guardarWebResultado(request, response, out);
+		}else if(metodo.equals("guardarMedio")) {
+			guardarMedio(request, response, out);
 		}else if(metodo.equalsIgnoreCase("enlaces_buscarMedio")) {
 			buscarMedio(request, response, out, empleado);
 		}else if(metodo.equals("enlaces_nuevoDestino")) {
@@ -206,6 +204,8 @@ public class Data_Enlaces extends HttpServlet {
 			buscarCliente(request, response, out);
 		}*/else if(metodo.equals("aplicarFiltrosEnlaces")) {
 			aplicarFiltrosEnlaces(request, response, out, empleado);
+		}else if(metodo.equals("addNewEnlacePaid")) {
+			addNewEnlacePaid(request, response, out, empleado);
 		}
 
 	}
@@ -346,7 +346,7 @@ public class Data_Enlaces extends HttpServlet {
 		String users = request.getParameter("users");
 		
 		
-		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_client+"", id_empleado+"", fecha+"",users));
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_client+"", id_empleado+"", fecha+"",users, empleado.getCategoria()));
 		String json = ws.clientes(wbList, "getEnlaces", "enlaces.php");
 		
 		System.out.println("json enlaces: "+json);
@@ -386,7 +386,7 @@ public class Data_Enlaces extends HttpServlet {
 			
 			
 			
-			mostrarResultados(request, response, out, user_role, obj);
+			mostrarResultados(request, response, out, obj, empleado);
 			
 		}else if(disponibilidad==2) {
 			obj.put("blocked", "2");
@@ -404,7 +404,7 @@ public class Data_Enlaces extends HttpServlet {
 
 	}
 
-	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out,String empleado_role, JSONObject obj) throws IOException, ParseException {
+	private void mostrarResultados(HttpServletRequest request, HttpServletResponse response, PrintWriter out,JSONObject obj, Empleado empleado) throws IOException, ParseException {
 		System.out.println("Metodo: mostrarResultados");
 		//obtenemosForos();
 		//int posicion = Integer.parseInt(request.getParameter("posicion"));
@@ -431,16 +431,16 @@ public class Data_Enlaces extends HttpServlet {
 		html+="</div>";
 
 		//barra de herramientas
-		html+="<div class='ctoolbar'><div id='cGuardar' class='zoom'>guardar</div></div>";
+		html+="<div class='ctoolbar'><div class='add_div_toolbar_enlaces' onclick='addNewEnlacePaid(this)' ><i class='material-icons gris'>add_circle_outline</i></div><div id='cGuardar' class='zoom'>guardar</div></div>";
 		html+="<div class='div_table'>";
 		//html+="	<div class='titleTable'>Keywords<div class='horDiv'></div></div>";
 		html+="	<div id='results_Enlaces' class='contentTable'>";
 		//tabla
 		html+="		<table id='tClientes' class='table'>";
-		if(!empleado_role.equals("user_paid")) {
+		if(empleado.getCategoria().equals("free")) {
 			html+="		<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='viewEmpleadoDone(this)' ><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cCateg'>Categoria</th><th class='cabeceraTable cWeb'>Medio</th><th class='cabeceraTable cLink'>Enlace</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cTipo'>Tipo</th></tr></thead>";
-		}else {
-			html+="		<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='viewEmpleadoDone(this)' ><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cPrecio'>Coste</th><th class='cabeceraTable cPrecio'>Venta</th><th class='cabeceraTable cPrecio cBeneficio'>Beneficio</th><th class='cabeceraTable cPrecio c_incremento'>Incremento</th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLink'>Link</th></tr></thead>";
+		}else if(empleado.getCategoria().equals("paid")){
+			html+="		<thead class=''><tr><th class='cabeceraTable cStatus'><div class='divStatus sPendiente'></th><th class='cabeceraTable cCUser txt_center_mg_0 cursor_pointer' onclick='viewEmpleadoDone(this)' ><i class='material-icons f_size26'>account_circle</i></th><th class='cabeceraTable cDest'>Destino</th><th class='cabeceraTable pago_web'>Medio</th><th class='cabeceraTable cAnchor'>Anchor</th><th class='cabeceraTable cLinkPaid'>Enlace</th><th class='cabeceraTable cPrecio'><i class='material-icons lnf'>attach_money</i></th><th class='cabeceraTable cPrecio'><i class='material-icons sOK_color'>attach_money</i></th><th class='cabeceraTable cPrecio'><i class='material-icons lf'> trending_up </i></th><th class='cabeceraTable cPrecio'><i class='material-icons warning_color'> bar_chart </i></th></tr></thead>";
 		}
 		html+="			<tbody>";
 		html+="			</tbody>"; 
@@ -478,14 +478,14 @@ public class Data_Enlaces extends HttpServlet {
 				categoriasLi += "<li id='"+Data.categorias.get(j).getIdCategoria()+"' class='' onclick='guardarCategoriaResultado(this)'>"+Data.categorias.get(j).getEnlace()+"</li>";
 			}
 		} 
-					
+					 
 		
 		if(enlaces.get(0).getFecha().toString().startsWith(year+"-"+mes)) {//COMPOBAMOS QUE LA FEMCHA MESUAL COINCIDE PORQUE SINO DEBEMOS PEDIR AL SERVIDOR LOS DATOS DEL MES SELECCIONADO
 		}else {//si el mes no coincide 
 			
 			//parseamos los enlaces (resultados)
 			System.out.println("@@"+year+"-"+mes);
-			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(cliente.getIdCliente()+"", year+"-"+mes));
+			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(cliente.getIdCliente()+"", year+"-"+mes, empleado.getCategoria()));
 			String json = ws.clientes(wbList, "getEnlacesAnteriores", "enlaces.php");
 			
 			//String json = ws.getEnlaces(cliente.getIdCliente()+"", year+"-"+mes ,"","getEnlacesAnteriores","enlaces.php");
@@ -519,136 +519,225 @@ public class Data_Enlaces extends HttpServlet {
 			
 			for (int i = 0; i < enlaces.size(); i++) {
 				Enlace e = enlaces.get(i);
-				//System.out.println("Usuarios: -> "+e.getIdEmpleado());
-				if(usuarios.contains("{"+e.getIdEmpleado()+"}") || e.getIdEmpleado().equals("0")) {
-					int id_resultado = Integer.parseInt(e.getIdResultado());
-					int posicionForo=-1;
-					for (Foro f : forosDisponibles) {
-						if(e.getIdForo()==f.getIdForo() && f.getType().equals(empleado.getCategoria())) {
-							posicionForo = forosDisponibles.indexOf(f);break;
-						}
-					}
-	
-					String claseStatus="";
-					if(!e.getEnlace().trim().equalsIgnoreCase("")) claseStatus="sOK";
-					else claseStatus="sPendiente";
-	
-					String claseTipo="",tipo="";
-					if(e.getTipo().equalsIgnoreCase("follow")) {claseTipo="lf";tipo="follow";}
-					else if(e.getTipo().equalsIgnoreCase("nofollow")) {claseTipo="lnf";tipo="nofollow";}
-	
-					//lista de categorias-----------------------------
-					String nameCategoria = "Selecciona una categor&iacute;a";
-					if(e.getCategoria()!=0)nameCategoria = e.getNombreCategoria(); 
-	
-					String botonDescripcion="";
-					if(!e.getDescripcionForo().trim().equals("")) botonDescripcion="<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>";
-					
-					//opcion de poder modificar el enlace siempre y cuando no se haya registrado ningun enlace por otro usuario
-					String readonly="readonly",openDestinos="", openCategorias="", editEnlace="",editAnchor="",openMedios="";
-					boolean editar=false;
-					//System.out.println("Traz 1 = "+ Integer.parseInt(e.getHechoPor()) +" == "+ empleado.getId()+"  "+e.getEnlace());
-					if(Integer.parseInt(e.getHechoPor()) == -1 || Integer.parseInt(e.getHechoPor()) == empleado.getId()) {
-						readonly = "";openDestinos="onclick='openDestinos(this)'";openCategorias="onclick='openCategoriaResultado(this)'";editEnlace="onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)'";
-						editAnchor="onchange='guardarAnchor(this)' oninput='saveClient(this)'" ; openMedios="onclick='openWebResultado(this)'";
-						editar=true;
-					}
-					
-					String empleadoDone = "";
-					try {empleadoDone = Data.empleadosHashMap.get(e.getHechoPor()+"").getName();} catch (java.lang.NullPointerException e2) {}
-					
-					//TABLA----------------------
-					out.println("<tr id='"+id_resultado+"' posicion='"+i+"' >");
-					out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");
-	
-					out.println("	<td class='tdCat cCUser pr txt_center_mg_0'>");
-					out.println("		<div class='tdCat tdWeb txt_center_mg_0'>");
-					out.println("			<span data-info='empCli' data-id-empleado='"+e.getIdEmpleado()+"' class='tdCat empleadoDefault visible' type='text'>"+e.getNameEmpleado()+"</span>");
-					out.println("			<span data-info='empDone' data-id-empleado-done='"+e.getHechoPor()+"' class='tdCat empleadoDone' type='text'>"+empleadoDone+"</span>");
-					out.println("		</div>"); 
-					out.println("	</td>");
-					
-					out.println("	<td class='tdCat cell_destino pr' "+openDestinos+">");
-					out.println("		<div class='tdCat tdWeb'>");
-					out.println("			<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>"+e.getDestino()+"</span>");
-					if (editar)out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
-					out.println("		</div>");
-					if (editar) {
-					out.println(		"<div class='div_enlaces_pop_up effect7 pop_up'>");
-					out.println(			"<i onclick='enlaces_guradarDestino(this)' class='material-icons crossReset'> clear </i>");
-					out.println(			"<div onclick='stopPropagation(this)' class='border_bottom_gris inner_pop_up' ><input class='inLink inner_pop_up input_search_medio' type='text'  onkeypress='enlaces_nuevoDestinoEnter(event,this)' placeholder='Nuevo destino'><i onclick='enlaces_nuevoDestino(this)' class='material-icons p_a add_destinos_enlace'>add</i></div>");
-					out.println(			"<ul class='slWeb pdd_v_10'>"+urlsAAtacarLi+"</ul>");
-					out.println(		"</div>");
-					}
-					out.println("	</td>"); 
-					
-					out.println("	<td class='tdCat cCateg pr' "+openCategorias+">");
-					out.println("		<div class='tdCat'>");
-					out.println("			<span class='tdCat' data-id-categoria='"+e.getCategoria()+"'  data-type='"+e.getType()+"'>"+nameCategoria+"</span>");
-					if (editar)out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
-					out.println("		</div>");
-					if (editar)out.println(		"<ul class='slCt effect7 pop_up'>"+categoriasLi+"</ul>");
-					out.println("	</td>");
-					
-					out.println("	<td class='tdCat tdWeb cWeb pr' "+openMedios+">");
-					out.println("		<div class='tdCat tdWeb'>");
-					out.println("			<span data-id-foro='"+e.getIdForo()+"' data-posicion-foro='"+posicionForo+"' data-id-categoria='"+e.getCategoria()+"' data-type='"+e.getType()+"'  onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb goLink'>"+e.getWebForo()+"</span>");
-					if (editar)out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
-					out.println(			botonDescripcion); 
-					out.println("		</div>");
-					if (editar) {
-					out.println(		"<div class='div_enlaces_pop_up effect7 pop_up'>");
-					out.println(			"<i onclick='guardarWebResultado(this)' class='material-icons crossReset'> clear </i>");
-					out.println(			"<div onclick='stopPropagation(this)' class='border_bottom_gris inner_pop_up' ><input class='inLink inner_pop_up input_search_medio' type='text' oninput='buscarMedio(this)' placeholder='Busca un medio'><i class='material-icons p_a lupa_medios'>search</i></div>");
-					out.println(			"<ul class='slWeb'></ul>");
-					out.println(		"</div>");
-					}
-					out.println("		<textarea class='div_enlaces_pop_up pop_up effect7 div_enlaces_descripcion_pop_up'  wrap='hard' onclick='stopPropagation()' readonly>");
-					out.println(			e.getDescripcionForo().trim().replace("<", "&lt;").replace(">", "&gt;"));
-					out.println(		"</textarea>");
-					out.println("	</td>");
-	
-					out.println("	<td class='cLink'>");
-					out.println("		<input class='inLink' "+editEnlace+" onclick='goLink(this)' "+onHoverGoLink+"  type='text' value='"+e.getEnlace()+"' "+readonly+">");
-					out.println("	</td>");
-	
-					out.println("	<td class='cAnchor'><input class='inLink' "+editAnchor+" type='text' value='"+e.getAnchor()+"' "+readonly+"></td>");
-					out.println("	<td tipo='"+tipo+"' class='cTipo'><i class='material-icons "+claseTipo+"'>link</i></td>");
-					out.println("</tr>");
+				
+				if(empleado.getCategoria().equals("free")) {
+					tablaEnlacesFREE(out, empleado, usuarios, categoriasLi, urlsAAtacarLi, onHoverGoLink, i, e);
+				}else if(empleado.getCategoria().equals("paid")) {
+					tablaEnlacesPAID(out, empleado, usuarios, urlsAAtacarLi, onHoverGoLink, i, e);
 				}
-				/*}else {
-
-						int beneficio = cliente.getResultados().get(i).getPrecion_venta()-cliente.getResultados().get(i).getPrecio_compra();
-						Double div = (beneficio*1.0/cliente.getResultados().get(i).getPrecio_compra())*100;
-
-						//TABLA----------------------
-						out.println("<tr id='"+id_resultado+"' posicion='"+i+"'>");
-						out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");
-						out.println("	<td class='tdCat tdWeb pago_web pr' onclick='openWebResultado(this)'>");
-						out.println("		<div class='tdCat tdWeb'>");
-						out.println("			<span mweb='"+mweb+"' onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb'>"+cliente.getResultados().get(i).getWeb_foro()+"</span>");
-						out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
-						out.println("		</div>");
-						out.println(		"<ul class='slCt slWeb effect7 pop_up'></ul>");
-						out.println("	</td>");
-						out.println("	<td data-paid='compra' class='cPrecio td_input_precio pr' onclick='openCoste(this)'><span>"+cliente.getResultados().get(i).getPrecio_compra()+" &euro;</span>"+"<input class='inLink paid_inputs' onchange='updatePrecio(this)' onclick='stopPropagation(this)' oninput='saveClient(this)' onkeypress='getKey(event)' type='number' value='"+cliente.getResultados().get(i).getPrecio_compra()+"'></td>");
-						out.println("	<td data-paid='venta' class='cPrecio td_input_precio pr' onclick='openCoste(this)'><span>"+cliente.getResultados().get(i).getPrecion_venta()+" &euro;</span>"+"<input class='inLink paid_inputs' onchange='updatePrecio(this)' onclick='stopPropagation(this)' oninput='saveClient(this)' onkeypress='getKey(event)' type='number' value='"+cliente.getResultados().get(i).getPrecion_venta()+"'></td>");
-						out.println("	<td data-paid='beneficio' class='cPrecio'>"+beneficio+" &euro;</td>");
-						out.println("	<td data-paid='incremento' class='cPrecio'>"+div.intValue()+"%</td>");
-						out.println("	<td class='cDest'><input class='inLink' onchange='updateDestino(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getDestino()+"'></td>");
-						out.println("	<td class='cAnchor'><input class='inLink' onchange='guardarAnchor(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getAnchor()+"'></td>");
-						out.println("	<td class='cLink'>");
-						out.println("		<input class='inLink' onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)' type='text' value='"+cliente.getResultados().get(i).getEnlace()+"'>");
-						out.println("	</td>");
-						out.println("</tr>");
-
-					}*/
+				
 			}
 		}else {
 			
 		}
 		
 
+	}
+	
+	private void tablaEnlacesPAID(PrintWriter out, Empleado empleado, String usuarios, String urlsAAtacarLi, String onHoverGoLink, int i, Enlace e) {
+		if(usuarios.contains("{"+e.getIdEmpleado()+"}") || e.getIdEmpleado().equals("0")) {
+			int id_resultado = Integer.parseInt(e.getIdResultado());
+			int posicionForo=-1;
+			for (Foro f : forosDisponibles) {
+				if(e.getIdForo()==f.getIdForo() && f.getType().equals(empleado.getCategoria())) {
+					posicionForo = forosDisponibles.indexOf(f);break;
+				}
+			}
+
+			String claseStatus="";
+			if(!e.getEnlace().trim().equalsIgnoreCase("")) claseStatus="sOK";
+			else claseStatus="sPendiente";
+
+			String claseTipo="",tipo="";
+			if(e.getTipo().equalsIgnoreCase("follow")) {claseTipo="lf";tipo="follow";}
+			else if(e.getTipo().equalsIgnoreCase("nofollow")) {claseTipo="lnf";tipo="nofollow";}
+
+			//lista de categorias-----------------------------
+			String nameCategoria = "Selecciona una categor&iacute;a";
+			if(e.getCategoria()!=0)nameCategoria = e.getNombreCategoria(); 
+
+			String botonDescripcion="";
+			if(!e.getDescripcionForo().trim().equals("")) botonDescripcion="<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>";
+			
+			//opcion de poder modificar el enlace siempre y cuando no se haya registrado ningun enlace por otro usuario
+			String readonly="readonly",openDestinos="", openCategorias="", editEnlace="",editAnchor="",openMedios="";
+			boolean editar=false;
+			//System.out.println("Traz 1 = "+ Integer.parseInt(e.getHechoPor()) +" == "+ empleado.getId()+"  "+e.getEnlace());
+			if(Integer.parseInt(e.getHechoPor()) == -1 || Integer.parseInt(e.getHechoPor()) == empleado.getId()) {
+				readonly = "";openDestinos="onclick='openDestinos(this)'";openCategorias="onclick='openCategoriaResultado(this)'";editEnlace="onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)'";
+				editAnchor="onchange='guardarAnchor(this)' oninput='saveClient(this)'" ; openMedios="onclick='openMediosPaid(this)'";
+				editar=true;
+			}
+			
+			String empleadoDone = "";
+			try {empleadoDone = Data.empleadosHashMap.get(e.getHechoPor()+"").getName();} catch (java.lang.NullPointerException e2) {}
+			
+			//TABLA----------------------
+			out.println("<tr id='"+id_resultado+"' posicion='"+i+"' >");
+			out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");
+
+			out.println("	<td class='tdCat cCUser pr txt_center_mg_0'>");
+			out.println("		<div class='tdCat tdWeb txt_center_mg_0'>");
+			out.println("			<span data-info='empCli' data-id-empleado='"+e.getIdEmpleado()+"' class='tdCat empleadoDefault visible' type='text'>"+e.getNameEmpleado()+"</span>");
+			out.println("			<span data-info='empDone' data-id-empleado-done='"+e.getHechoPor()+"' class='tdCat empleadoDone' type='text'>"+empleadoDone+"</span>");
+			out.println("		</div>"); 
+			out.println("	</td>");
+			
+			out.println("	<td class='tdCat cell_destino pr' "+openDestinos+">");
+			out.println("		<div class='tdCat tdWeb'>");
+			out.println("			<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>"+e.getDestino()+"</span>");
+			if (editar)out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
+			out.println("		</div>");
+			if (editar) {
+			out.println(		"<div class='div_enlaces_pop_up effect7 pop_up'>");
+			out.println(			"<i onclick='enlaces_guradarDestino(this)' class='material-icons crossReset'> clear </i>");
+			out.println(			"<div onclick='stopPropagation(this)' class='border_bottom_gris inner_pop_up' ><input class='inLink inner_pop_up input_search_medio' type='text'  onkeypress='enlaces_nuevoDestinoEnter(event,this)' placeholder='Nuevo destino'><i onclick='enlaces_nuevoDestino(this)' class='material-icons p_a add_destinos_enlace'>add</i></div>");
+			out.println(			"<ul class='slWeb pdd_v_10'>"+urlsAAtacarLi+"</ul>");
+			out.println(		"</div>");
+			}
+			out.println("	</td>");
+			
+			out.println("	<td class='tdCat tdWeb cWeb pr' "+openMedios+">");
+			out.println("		<div class='tdCat tdWeb'>");
+			out.println("			<span data-id-foro='"+e.getIdForo()+"' data-posicion-foro='"+posicionForo+"' data-id-categoria='"+e.getCategoria()+"' data-type='"+e.getType()+"'  onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb goLink'>"+e.getWebForo()+"</span>");
+			if (editar)out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
+			out.println(			botonDescripcion); 
+			out.println("		</div>");
+			if (editar) {
+			out.println(		"<div class='div_enlaces_pop_up effect7 pop_up'>");
+			out.println(			"<i onclick='guardarMedioPaid(this)' class='material-icons crossReset'> clear </i>");
+			out.println(			"<div onclick='stopPropagation(this)' class='border_bottom_gris inner_pop_up' ><input class='inLink inner_pop_up input_search_medio' type='text' oninput='buscarMedio(this)' placeholder='Busca un medio'><i class='material-icons p_a lupa_medios'>search</i></div>");
+			out.println(			"<ul class='slWeb'></ul>");
+			out.println(		"</div>");
+			}
+			out.println("		<textarea class='div_enlaces_pop_up pop_up effect7 div_enlaces_descripcion_pop_up'  wrap='hard' onclick='stopPropagation()' readonly>");
+			out.println(			e.getDescripcionForo().trim().replace("<", "&lt;").replace(">", "&gt;"));
+			out.println(		"</textarea>");
+			out.println("	</td>");
+
+			out.println("	<td class='cAnchor'><input class='inLink' "+editAnchor+" type='text' value='"+e.getAnchor()+"' "+readonly+"></td>");
+			
+			out.println("	<td class='cLinkPaid'>");
+			out.println("		<input class='inLink' "+editEnlace+" onclick='goLink(this)' "+onHoverGoLink+"  type='text' value='"+e.getEnlace()+"' "+readonly+">");
+			out.println("	</td>");
+
+			
+			int precioCompra = Integer.parseInt(e.getPrecioCompra());
+			int precioVenta  = Integer.parseInt(e.getPrecioVenta());
+			
+			int beneficio = precioVenta - precioCompra;
+			double incremento = (beneficio / (precioCompra*1.0))*100;
+			DecimalFormat f = new DecimalFormat("##");
+			int inc = 0;
+			try {inc= Integer.parseInt(f.format(incremento));} catch (Exception e2) {}
+			
+			out.println("	<td class='txt_center_mg_0 pr precio_compra'><span class='span_precio' onclick='openPrecio(this)'>"+precioCompra+" &euro;</span><input class='input_precio' data-tipo='compra' onfocusout='closePrecio(this)' onchange='guardarPrecio(this)' type='text'/></td>");
+			out.println("	<td class='txt_center_mg_0 pr precio_venta '><span class='span_precio' onclick='openPrecio(this)'>"+ precioVenta+" &euro;</span><input class='input_precio' data-tipo='venta'  onfocusout='closePrecio(this)' onchange='guardarPrecio(this)' type='text'/></td>");
+			out.println("	<td class='txt_center_mg_0 beneficio'>"+beneficio+" &euro;</td>");
+			out.println("	<td class='txt_center_mg_0 incremento'>"+inc+" %</td>");
+			out.println("</tr>");
+		
+		
+		}
+	}
+
+	private void tablaEnlacesFREE(PrintWriter out, Empleado empleado, String usuarios, String categoriasLi, String urlsAAtacarLi, String onHoverGoLink, int i, Enlace e) {
+		if(usuarios.contains("{"+e.getIdEmpleado()+"}") || e.getIdEmpleado().equals("0")) {
+			int id_resultado = Integer.parseInt(e.getIdResultado());
+			int posicionForo=-1;
+			for (Foro f : forosDisponibles) {
+				if(e.getIdForo()==f.getIdForo() && f.getType().equals(empleado.getCategoria())) {
+					posicionForo = forosDisponibles.indexOf(f);break;
+				}
+			}
+
+			String claseStatus="";
+			if(!e.getEnlace().trim().equalsIgnoreCase("")) claseStatus="sOK";
+			else claseStatus="sPendiente";
+
+			String claseTipo="",tipo="";
+			if(e.getTipo().equalsIgnoreCase("follow")) {claseTipo="lf";tipo="follow";}
+			else if(e.getTipo().equalsIgnoreCase("nofollow")) {claseTipo="lnf";tipo="nofollow";}
+
+			//lista de categorias-----------------------------
+			String nameCategoria = "Selecciona una categor&iacute;a";
+			if(e.getCategoria()!=0)nameCategoria = e.getNombreCategoria(); 
+
+			String botonDescripcion="";
+			if(!e.getDescripcionForo().trim().equals("")) botonDescripcion="<i onclick='enlace_openDescription(this)' class='material-icons description_enlace goLink'>notes</i>";
+			
+			//opcion de poder modificar el enlace siempre y cuando no se haya registrado ningun enlace por otro usuario
+			String readonly="readonly",openDestinos="", openCategorias="", editEnlace="",editAnchor="",openMedios="";
+			boolean editar=false;
+			//System.out.println("Traz 1 = "+ Integer.parseInt(e.getHechoPor()) +" == "+ empleado.getId()+"  "+e.getEnlace());
+			if(Integer.parseInt(e.getHechoPor()) == -1 || Integer.parseInt(e.getHechoPor()) == empleado.getId()) {
+				readonly = "";openDestinos="onclick='openDestinos(this)'";openCategorias="onclick='openCategoriaResultado(this)'";editEnlace="onchange='guardarEnlaceResultado(this)' oninput='saveClient(this)'";
+				editAnchor="onchange='guardarAnchor(this)' oninput='saveClient(this)'" ; openMedios="onclick='openMedios(this)'";
+				editar=true;
+			}
+			
+			String empleadoDone = "";
+			try {empleadoDone = Data.empleadosHashMap.get(e.getHechoPor()+"").getName();} catch (java.lang.NullPointerException e2) {}
+			
+			//TABLA----------------------
+			out.println("<tr id='"+id_resultado+"' posicion='"+i+"' >");
+			out.println("	<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>");
+
+			out.println("	<td class='tdCat cCUser pr txt_center_mg_0'>");
+			out.println("		<div class='tdCat tdWeb txt_center_mg_0'>");
+			out.println("			<span data-info='empCli' data-id-empleado='"+e.getIdEmpleado()+"' class='tdCat empleadoDefault visible' type='text'>"+e.getNameEmpleado()+"</span>");
+			out.println("			<span data-info='empDone' data-id-empleado-done='"+e.getHechoPor()+"' class='tdCat empleadoDone' type='text'>"+empleadoDone+"</span>");
+			out.println("		</div>"); 
+			out.println("	</td>");
+			
+			out.println("	<td class='tdCat cell_destino pr' "+openDestinos+">");
+			out.println("		<div class='tdCat tdWeb'>");
+			out.println("			<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' class='tdCat tdWeb'>"+e.getDestino()+"</span>");
+			if (editar)out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
+			out.println("		</div>");
+			if (editar) {
+			out.println(		"<div class='div_enlaces_pop_up effect7 pop_up'>");
+			out.println(			"<i onclick='enlaces_guradarDestino(this)' class='material-icons crossReset'> clear </i>");
+			out.println(			"<div onclick='stopPropagation(this)' class='border_bottom_gris inner_pop_up' ><input class='inLink inner_pop_up input_search_medio' type='text'  onkeypress='enlaces_nuevoDestinoEnter(event,this)' placeholder='Nuevo destino'><i onclick='enlaces_nuevoDestino(this)' class='material-icons p_a add_destinos_enlace'>add</i></div>");
+			out.println(			"<ul class='slWeb pdd_v_10'>"+urlsAAtacarLi+"</ul>");
+			out.println(		"</div>");
+			}
+			out.println("	</td>"); 
+			
+			out.println("	<td class='tdCat cCateg pr' "+openCategorias+">");
+			out.println("		<div class='tdCat'>");
+			out.println("			<span class='tdCat' data-id-categoria='"+e.getCategoria()+"'  data-type='"+e.getType()+"'>"+nameCategoria+"</span>");
+			if (editar)out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
+			out.println("		</div>");
+			if (editar)out.println(		"<ul class='slCt effect7 pop_up'>"+categoriasLi+"</ul>");
+			out.println("	</td>");
+			
+			out.println("	<td class='tdCat tdWeb cWeb pr' "+openMedios+">");
+			out.println("		<div class='tdCat tdWeb'>");
+			out.println("			<span data-id-foro='"+e.getIdForo()+"' data-posicion-foro='"+posicionForo+"' data-id-categoria='"+e.getCategoria()+"' data-type='"+e.getType()+"'  onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'  onclick='openUrl(this, event)' class='tdCat tdWeb goLink'>"+e.getWebForo()+"</span>");
+			if (editar)out.println("			<i class='material-icons arrow'>arrow_drop_down</i>");
+			out.println(			botonDescripcion); 
+			out.println("		</div>");
+			if (editar) {
+			out.println(		"<div class='div_enlaces_pop_up effect7 pop_up'>");
+			out.println(			"<i onclick='guardarMedio(this)' class='material-icons crossReset'> clear </i>");
+			out.println(			"<div onclick='stopPropagation(this)' class='border_bottom_gris inner_pop_up' ><input class='inLink inner_pop_up input_search_medio' type='text' oninput='buscarMedio(this)' placeholder='Busca un medio'><i class='material-icons p_a lupa_medios'>search</i></div>");
+			out.println(			"<ul class='slWeb'></ul>");
+			out.println(		"</div>");
+			}
+			out.println("		<textarea class='div_enlaces_pop_up pop_up effect7 div_enlaces_descripcion_pop_up'  wrap='hard' onclick='stopPropagation()' readonly>");
+			out.println(			e.getDescripcionForo().trim().replace("<", "&lt;").replace(">", "&gt;"));
+			out.println(		"</textarea>");
+			out.println("	</td>");
+
+			out.println("	<td class='cLink'>");
+			out.println("		<input class='inLink' "+editEnlace+" onclick='goLink(this)' "+onHoverGoLink+"  type='text' value='"+e.getEnlace()+"' "+readonly+">");
+			out.println("	</td>");
+
+			out.println("	<td class='cAnchor'><input class='inLink' "+editAnchor+" type='text' value='"+e.getAnchor()+"' "+readonly+"></td>");
+			out.println("	<td tipo='"+tipo+"' class='cTipo'><i class='material-icons "+claseTipo+"'>link</i></td>");
+			out.println("</tr>");
+		}
 	}
 
 	private void guardarEnlaceResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, Empleado empleado) {
@@ -749,23 +838,31 @@ public class Data_Enlaces extends HttpServlet {
 		System.out.println("Insertado");
 	}
 
-	private void mostrarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out, Empleado empleado) {
-		System.out.println("Metodo: mostrarWebResultado");
+	private void mostrarMedios(HttpServletRequest request, HttpServletResponse response, PrintWriter out, Empleado empleado) {
+		System.out.println("Metodo: mostrarMedios");
 		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
 
 		ob.forosByWeb(forosDisponibles);
+		
 		for (Foro f : forosDisponibles) {
-			if(empleado.getCategoria().equals(f.getType())) {
+			if(empleado.getCategoria().equals(f.getType()) && empleado.getCategoria().equals("free")) {
 				if(idCategoria==0) {//si la categoria es 0 mostramos todos los enlaces 
-					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"'  data-type='"+f.getType()+"'  onclick='guardarWebResultado(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
+					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"'  data-type='"+f.getType()+"'  onclick='guardarMedio(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
 				}else if(f.getCategoria()==idCategoria) {
-					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"'  data-type='"+f.getType()+"'  onclick='guardarWebResultado(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
+					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"'  data-type='"+f.getType()+"'  onclick='guardarMedio(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
+				}
+			}else if(empleado.getCategoria().equals(f.getType()) && empleado.getCategoria().equals("paid")) {
+				if(idCategoria==0) {//si la categoria es 0 mostramos todos los enlaces 
+					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"'  data-type='"+f.getType()+"'  onclick='guardarMedioPaid(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
+				}else if(f.getCategoria()==idCategoria) {
+					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"'  data-type='"+f.getType()+"'  onclick='guardarMedioPaid(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
 				}
 			}
 		}
 	}
-	private void guardarWebResultado(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
-		System.out.println("Metodo: guardarWebResultado");
+	
+	private void guardarMedio(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+		System.out.println("Metodo: guardarMedio");
 		response.setContentType("application/json");
 		out = response.getWriter();
 		JSONObject obj = new JSONObject();
@@ -824,9 +921,9 @@ public class Data_Enlaces extends HttpServlet {
 		for (Foro f : forosDisponibles) {
 			if(empleado.getCategoria().equals(f.getType())) {
 				if(id_categoria==0 && f.getWebForo().toLowerCase().contains(texto.toLowerCase())) {//si la categoria es 0 mostramos todos los enlaces 
-					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"' data-type='"+f.getType()+"' onclick='guardarWebResultado(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
+					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"' data-type='"+f.getType()+"' onclick='guardarMedio(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
 				}else if(f.getCategoria()==id_categoria && f.getWebForo().toLowerCase().contains(texto.toLowerCase())) {
-					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"' data-type='"+f.getType()+"' onclick='guardarWebResultado(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
+					out.println("<li data-id-foro='"+f.getIdForo()+"' data-posicion-foro='"+forosDisponibles.indexOf(f)+"' data-id-categoria='"+f.getCategoria()+"' data-type='"+f.getType()+"' onclick='guardarMedio(this)'><span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)' >"+f.getWebForo()+"</span></li>");
 				}
 			}
 		}
@@ -868,6 +965,33 @@ public class Data_Enlaces extends HttpServlet {
 		ws.updateResultado(id_resultado+"", "anchor", anchor+"" , "updateResultado.php");
 		System.out.println("Insertado");
 	}
+
+	private void addNewEnlacePaid(HttpServletRequest request, HttpServletResponse response, PrintWriter out,Empleado empleado) {
+		
+		int id_cliente = Integer.parseInt(request.getParameter("id_cliente"));
+		
+		System.out.println("Vamos a añidar un nuevo enlace para el cliente numero: "+id_cliente);
+		
+		if(empleado.getCategoria().equals("paid")) {
+			ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_cliente+"", empleado.getId()+"",empleado.getCategoria()));
+			String json = ws.clientes(wbList, "addNewEnlacePaid", "enlaces.php");
+			System.out.println("-> "+json);
+		}
+		
+		
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 

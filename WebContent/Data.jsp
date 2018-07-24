@@ -19,27 +19,6 @@
 		<title>LinkBuilder</title>
 		<style>::-webkit-scrollbar {display: none;width: 20px;}</style>
 		
-		<script type="text/javascript" src="js/script_enlaces.js"></script>
-		<script type="text/javascript" src="js/script_clientes.js"></script>
-		<script type="text/javascript" src="js/script_medios.js"></script>
-		
-		
-		
-		<script type="text/javascript" src="js/jquery.js"></script>
-		<script type="text/javascript" src="js/jquery-ui.min.js"></script>
-		
-		<link href="css/datedropper.css" rel="stylesheet" type="text/css" />
-		<link href="css/calendar.css" rel="stylesheet" type="text/css" />
-		<script type="text/javascript" src="js/datedropper.js"></script>
-		
-		<script type="text/javascript" src="js/script.js"></script>
-		<script type="text/javascript" src="js/ityped.js"></script>
-		<script type="text/javascript" src="js/morris.min.js"></script>
-		<script type="text/javascript" src="js/raphel.js"></script>
-		<script type="text/javascript" src="js/jquery.form.js"></script>
-		
-		<!-- bootstrap -->
-  		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
   		
 	</head>
@@ -52,8 +31,6 @@
 			String ventana = (String) request.getAttribute("ventana");
 			
 		%>
-		
-		
 		
 		<div class="main">
 			<div class="content-menu">
@@ -82,11 +59,7 @@
 		 		<div id="divClientes" class="vistaClientes"></div> 
 		 	</div>
 		</div>
-		
 		<div class="blockAll inner_pop_up" onclick="bloquearTodo()"><div class="loader"><div class="l_d1"></div><div class="l_d2"></div><div class="l_d3"></div><div class="l_d4"></div><div class="l_d5"></div></div></div>
-		
-		<script type="text/javascript" src="js/scripts.js"></script>
-
 		<iframe name="null" style="display:none"></iframe>
 		<div id="panelConfirmacion" class="panelConfirmacion">
 			<div class="tableRow">
@@ -95,10 +68,26 @@
 		</div>
 		
 		
+		<script src="js/jquery-3.3.1.min.js"></script>
+		
+		<script type="text/javascript" src="js/script_enlaces.js"></script>
+		<script type="text/javascript" src="js/script_clientes.js"></script>
+		<script type="text/javascript" src="js/script_medios.js"></script>
 		
 		
+		<link href="css/datedropper.css" rel="stylesheet" type="text/css" />
+		<link href="css/calendar.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="js/datedropper.js"></script>
 		
+		<script type="text/javascript" src="js/scripts.js"></script>
+		<script type="text/javascript" src="js/ityped.js"></script>
+		<script type="text/javascript" src="js/morris.min.js"></script>
+		<script type="text/javascript" src="js/raphel.js"></script>
+		<script type="text/javascript" src="js/jquery.form.js"></script>
 		
+		<!-- bootstrap -->
+  		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
 		<div id="loadPage">
 			<script>
 				if("<%=ventana%>" == "enlaces"){
