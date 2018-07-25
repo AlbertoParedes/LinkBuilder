@@ -85,14 +85,18 @@ public class Data_Clientes extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		HttpSession session = request.getSession();
+		Empleado empleado = (Empleado) session.getAttribute("empleado");
+		
 		int id_user = Integer.parseInt(session.getAttribute("id_user").toString());
 		String role = session.getAttribute("role_user").toString();
 		String metodo = request.getParameter("metodo");
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
+		
+		
 
 		if(metodo.equals("cargarListaClientes")) {
-			try {cargarListaClientes(request, response, out, id_user,role, "web");} catch (ParseException e) {e.printStackTrace();}
+			try {cargarListaClientes(request, response, out, id_user,role, "web", empleado);} catch (ParseException e) {e.printStackTrace();}
 		}else if(metodo.equals("guardarValoresCliente")) {
 			guardarValoresCliente(request, response, out);
 		}else if(metodo.equals("guardarNuevoCliente")) {
@@ -557,13 +561,13 @@ public class Data_Clientes extends HttpServlet {
 
 	}
 
-	private void cargarListaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role, String campoOrdenar) throws IOException, ParseException {
+	private void cargarListaClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out, int id_user, String user_role, String campoOrdenar, Empleado empleado) throws IOException, ParseException {
 
-		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_user+""));
+		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_user+"", empleado.getCategoria()));
 		String json = ws.clientes(wbList, "getClientes", "clientes.php");
 		String[] jsonArray = json.split(";;");
-		System.out.println("0- :"+jsonArray[0]);
-		System.out.println("1- :"+jsonArray[1]);
+		//System.out.println("0- :"+jsonArray[0]);
+		//System.out.println("1- :"+jsonArray[1]);
 		empleado = new Gson().fromJson(jsonArray[0].substring(1, jsonArray[0].length()-1), Empleado.class);
 
 		//----------------------------------------------------------------------------------------------------------------------------------------------
@@ -588,8 +592,8 @@ public class Data_Clientes extends HttpServlet {
 		
 		
 		this.clientes.clear();
-		clientes = pj.parsearClientesMap(jsonArray[1]);
 		
+		clientes = pj.parsearClientesMap(jsonArray[1]);
 		ob.clientesByDomain(this.clientes);
 		
 		
@@ -667,6 +671,7 @@ public class Data_Clientes extends HttpServlet {
 		out.println("			<tbody>");
 		for (int c = 0; c < clientes.size(); c++) {
 			Cliente cliente = clientes.get(c);
+			System.out.println(cliente.getEmpleados());
 			setContenidoTabla(empleado, c, cliente, out);
 		}
 		out.println("			</tbody>");

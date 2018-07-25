@@ -67,7 +67,6 @@ public class ParsingJson {
 		JSONArray array = (JSONArray) obj;
 
 
-
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject c = (JSONObject) array.get(i);
 
@@ -79,6 +78,7 @@ public class ParsingJson {
 
 
 				String es = c.get("ids_empleados").toString().replaceAll(";,", ";");
+				
 				String[] arrayEmpleados = es.split(";");
 
 				for (String e : arrayEmpleados) {
@@ -88,10 +88,11 @@ public class ParsingJson {
 					nombres += empleado.getName()+",";
 				}
 				nombres+=";";nombres = nombres.replace(",;", "");
-
+				
 			} catch (Exception e) {
-				// TODO: handle exception
+				System.out.println("ERROR al parsear empleados");
 			}
+			
 			Cliente cliente = new Cliente(
 					toInt(c.get("id_cliente").toString()), 
 					c.get("web").toString(), 

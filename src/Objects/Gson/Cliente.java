@@ -355,13 +355,12 @@ public class Cliente {
 
 	@Override
 	public String toString() {
-		return "Cliente [idCliente=" + idCliente + ", web=" + web + ", nombre=" + nombre + ", servicio=" + servicio
-				+ ", follows=" + follows + ", nofollows=" + nofollows + ", anchor=" + anchor + ", blog=" + blog
-				+ ", idioma=" + idioma + ", followsDone=" + followsDone + ", nofollowsDone=" + nofollowsDone
-				+ ", linkbuilder=" + linkbuilder + ", editando=" + editando + ", userEditando=" + userEditando
-				+ ", eliminado=" + eliminado + ", enlacesDePago=" + enlacesDePago + ", id_empleado=" + id_empleado
-				+ ", urls_a_atacar=" + urls_a_atacar + ", name_empleado=" + name_empleado + ", tipoEmpleado="
-				+ tipoEmpleado + "]";
+		return "Cliente [idCliente=" + idCliente + ", web=" + web + ", empleados=" + empleados + "]";
 	}
+
+
+
+
+	
 
 }

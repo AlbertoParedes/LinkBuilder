@@ -95,7 +95,7 @@ public class Data extends HttpServlet {
 		String[] jsonArray = json.split(";;");
 		//System.out.println("0-Categorias :"+jsonArray[0]);
 		//System.out.println("1-Tematicas :"+jsonArray[1]);
-		//System.out.println("2-Empleados :"+jsonArray[2]);
+		System.out.println("2-Empleados :"+jsonArray[2]);
 		System.out.println("3-Mis datos :"+jsonArray[3]);
 		
 		this.categorias.clear();
