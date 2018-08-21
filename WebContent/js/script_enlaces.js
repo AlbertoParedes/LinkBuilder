@@ -830,6 +830,7 @@ function openPrecio(x){
 }
 
 function guardarPrecio(x){
+	bloqueamosPantalla();
 	
 	$(x).removeClass('visible');
 	var precio = parseInt($(x).val());
@@ -837,10 +838,25 @@ function guardarPrecio(x){
 		$(x).siblings('span.span_precio').text(precio+' \u20AC');
 	}
 	$(x).val("");
-	
+	var id_resultado=$(x).closest('tr').attr('id');
 	
 	var tr = $(x).closest('tr');
 	obtenerBeneficios(tr);
+	
+	var campo = $(x).attr('data-tipo') == 'compra' ? 'precio_compra' : 'precio_venta';
+	guardarPrecioBBDD(id_resultado, campo, precio);
+	
+}
+function guardarPrecioBBDD(id_resultado, campo, precio){
+	$.post('Data_Enlaces', {
+		metodo : 'enlaces_guardarPrecio',
+		id_resultado: id_resultado,
+		campo: campo,
+		valor: precio,
+	}, function(responseText) {
+		$('#cGuardar').removeClass('cSave');
+		desbloqueamosPantalla();
+	});
 }
 
 function obtenerBeneficios(x){

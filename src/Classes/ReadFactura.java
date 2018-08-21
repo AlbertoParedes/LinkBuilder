@@ -17,6 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Objects.Enlace;
+import Objects.Oferta;
 
 public class ReadFactura {
 	
@@ -26,8 +27,8 @@ public class ReadFactura {
 		super();
 	}
 
-	public ArrayList<Enlace> readExcel(HttpServletRequest request) throws IOException, ServletException {
-		ArrayList<Enlace> enlaces = new ArrayList<Enlace>();
+	public ArrayList<Oferta> readExcel(HttpServletRequest request) throws IOException, ServletException {
+		ArrayList<Oferta> ofertas = new ArrayList<Oferta>();
 		Part archivo = request.getPart("excelFactura");
 		InputStream is = archivo.getInputStream();
 		
@@ -48,6 +49,7 @@ public class ReadFactura {
 			Cell celda;
 
 			String enlace = "";
+			int precio=0;
 			String numFactura = "";
 			Date fecha = null;
 			String medio = "";
@@ -62,12 +64,17 @@ public class ReadFactura {
 				
 				
 				
-				if(row.getRowNum()>1) {
+				if(row.getRowNum()>0) {
 					if(celda.getColumnIndex()==0) {
+						enlace = celda.getStringCellValue();
 						//System.out.print(celda.getStringCellValue());
+						System.out.print(enlace);
 					}else if(celda.getColumnIndex()==1) {
 						//System.out.print(" | "+celda.getStringCellValue());
-					}else if(celda.getColumnIndex()==2) {//enlace
+						precio = (int) celda.getNumericCellValue(); 
+						System.out.println("   ->   "+precio);
+						lineaAcabada=true;
+					}/*else if(celda.getColumnIndex()==2) {//enlace
 						enlace = celda.getStringCellValue();
 					}else if(celda.getColumnIndex()==3) {//numero de factura
 						numFactura = celda.getStringCellValue();
@@ -100,13 +107,17 @@ public class ReadFactura {
 							total = Double.parseDouble(celda.getStringCellValue().replace(",", "."));
 						}
 						lineaAcabada=true;
-					}
+					}*/
 					
 				}
 				if(lineaAcabada) {
-					precioUnidad = total / cantidad;
-					enlaces.add(new Enlace(enlace, numFactura, fecha, medio, cantidad, precioUnidad, iva, total));
+					//precioUnidad = total / cantidad;
+					
+					
+					
+					ofertas.add(new Oferta(enlace, precio));
 					enlace = ""; numFactura = ""; fecha = null; medio = ""; cantidad = 0; iva = ""; total = 0; precioUnidad=0; lineaAcabada=false;
+				
 				}
 				
 
@@ -117,7 +128,7 @@ public class ReadFactura {
 		workbook.close();
 		// cerramos el libro excel
 		is.close();
-		return enlaces;
+		return ofertas;
 	}
 
 }

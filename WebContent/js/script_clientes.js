@@ -459,38 +459,7 @@ function eliminarClientesSeleccionados(x){
 }
 
 
-//subir factura a bbdd
-function uploadExcelFactura(x){
-	var target = event.target || event.srcElement;
-	
-	if (target.value.length == 0) {
-		$(x).closest('form').find('input[name="nombre"]').val('');
-	}else {
-		var file = $("#excelFactura")[0].files[0];
-		$('#uploadFactura input[name="nombre"]').val(file.name);
-		var form = $('#uploadFactura')[0]; 
-	    var data = new FormData(form);
-		
-		$.ajax({
-			type:"post",
-			url:"Data",
-			enctype : 'multipart/form-data',
-			data : data,
-            processData : false,
-            contentType : false,
-            cache : false,
-            
-            success : function(responseText) {
-               $('#panelConfirmacion').addClass('displayTable');
-               $('#panelConfirmacion .tableRow .tableCell').html(responseText);
-            } 
-		
-		});
-		
-		
-		
-	}
-}
+
 function openOpcionesNuevaFactura(x){
 	$(x).children('ul').addClass('visible');
 }

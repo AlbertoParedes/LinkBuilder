@@ -166,7 +166,6 @@ public class Data_Enlaces extends HttpServlet {
 		
 		HttpSession session = request.getSession();
 		Empleado empleado = (Empleado) session.getAttribute("empleado");
-		System.out.println(empleado);
 
 		String metodo = request.getParameter("metodo");
 		response.setContentType( "text/html; charset=iso-8859-1" );
@@ -206,8 +205,13 @@ public class Data_Enlaces extends HttpServlet {
 			aplicarFiltrosEnlaces(request, response, out, empleado);
 		}else if(metodo.equals("addNewEnlacePaid")) {
 			addNewEnlacePaid(request, response, out, empleado);
+			
+		}else if(metodo.equals("enlaces_guardarPrecio")) {
+			enlaces_guardarPrecio(request, response, out);
 		}
 
+
+		
 	}
 
 	private void aplicarFiltrosEnlaces(HttpServletRequest request, HttpServletResponse response, PrintWriter out, Empleado empleado) throws IOException {
@@ -835,6 +839,15 @@ public class Data_Enlaces extends HttpServlet {
 		int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
 		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
 		ws.updateResultado(id_resultado+"", "categoria", idCategoria+"" , "updateResultado.php");
+		System.out.println("Insertado");
+	}
+	
+	private void enlaces_guardarPrecio(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+		System.out.println("Metodo: guardar Precio");
+		String campo = request.getParameter("campo");
+		String valor = request.getParameter("valor");
+		int id_resultado = Integer.parseInt(request.getParameter("id_resultado"));
+		ws.updateResultado(id_resultado+"", campo, valor , "updateResultado.php");
 		System.out.println("Insertado");
 	}
 

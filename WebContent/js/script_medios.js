@@ -356,3 +356,86 @@ function resize_head_table_medios(){
 	
 	
 }
+
+
+
+
+
+
+
+
+//subir factura a bbdd
+function uploadExcelFactura(x){
+	var target = event.target || event.srcElement;
+	
+	if (target.value.length == 0) {
+		$(x).closest('form').find('input[name="nombre"]').val('');
+	}else {
+		var file = $("#excelFactura")[0].files[0];
+		
+		$('#uploadFactura input[name="nombre"]').val(file.name);
+		var form = $('#uploadFactura')[0]; 
+		console.log("forn",form)
+	    var data = new FormData(form);
+		console.log("data", data)
+	    
+		$.ajax({
+			type:"post",
+			url:"Data_Medios",
+			enctype : 'multipart/form-data',
+			data : data,
+            processData : false,
+            contentType : false,
+            cache : false,
+            
+            success : function(responseText) {
+               $('#panelConfirmacion').addClass('displayTable');
+               $('#panelConfirmacion .tableRow .tableCell').html(responseText);
+            } 
+		
+		});
+		
+		
+		
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

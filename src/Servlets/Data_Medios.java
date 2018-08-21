@@ -11,23 +11,29 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import Classes.ReadFactura;
 import Classes.Webservice;
+import Objects.Enlace;
+import Objects.Oferta;
 import Objects.Gson.Empleado;
 import Objects.Gson.ForoGson;
 
 
 @WebServlet("/Data_Medios")
+@MultipartConfig
 public class Data_Medios extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
@@ -72,7 +78,7 @@ public class Data_Medios extends HttpServlet {
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 		
-
+		System.out.println(metodo);
 		if(metodo.equals("cargarCategorias")) {
 			cargarCategorias(request, response, out, empleado);
 		}else if(metodo.equals("guardarForoCompleto")) {
@@ -81,6 +87,8 @@ public class Data_Medios extends HttpServlet {
 			mostrarForos(request, response, out);
 		}else if(metodo.equals("guardarForo")) {
 			guardarForo(request, response, out);
+		}else if(metodo.equals("uploadFactura")) {
+			subirNuevaFactura(request, response, id_user, out);
 		}
 
 	}
@@ -92,7 +100,8 @@ public class Data_Medios extends HttpServlet {
 		out.println("	<div class='titleCategory'><div class='titleInner'>Categorias<div class='horDiv wa'><div id='addK' class='addK'><i class='material-icons addKi'>add</i></div><div onclick='searchKey(event)'><div id='ipkey' class='srchI'><i class='material-icons addKi'>search</i><input id='searchK' class='searchI' type='text' oninput='searchK()'></div></div></div></div></div>");
 		out.println("	<div class='infoCategory'><div class='info'>"+Data.categorias.size()+" Categorias</div></div>");
 		out.println("		<div id='lkkI' class='listItems list_categoria_medios'>");
-		for (int i = 1; i < Data.categorias.size(); i++) {
+		for (int i = 0; i < Data.categorias.size(); i++) {
+			System.out.println(Data.categorias.get(i).getEnlace());
 			if(Data.categorias.get(i).getType().equals(empleado.getCategoria())) {
 				if(i==1) {out.println("<div id='"+Data.categorias.get(i).getIdCategoria()+"' posicion='"+i+"' onclick='selectCategoria(this)' class='item'><div class='itemChild childKey'><div class='dominioItem'>"+Data.categorias.get(i).getEnlace()+"</div></div></div>");
 				}else {out.println("<div id='"+Data.categorias.get(i).getIdCategoria()+"' posicion='"+i+"' onclick='selectCategoria(this)' class='item'><div class='line'></div><div class='itemChild childKey'><div class='dominioItem'>"+Data.categorias.get(i).getEnlace()+"</div></div></div>");}
@@ -174,7 +183,7 @@ public class Data_Medios extends HttpServlet {
 
 		String form="";
 		if(id_categoria==18) {
-			form ="	<form class='formNewFactura' name='uploadFactura' id='uploadFactura' method='post' action='Data' enctype='multipart/form-data' autocomplete='off'>" + 
+			form ="	<form class='formNewFactura' name='uploadFactura' id='uploadFactura' method='post' action='Data_Medios' enctype='multipart/form-data' autocomplete='off'>" + 
 					"			<label class='fileContainer'>" + 
 					"				<input onchange='uploadExcelFactura(this)' type='file' class='inputAddFactura' name='excelFactura' id='excelFactura' value=''/>" + 
 					"			</label>" + 
@@ -367,6 +376,125 @@ public class Data_Medios extends HttpServlet {
 		out.println("<div class='divBlock'></div>");
 	}
 	
+	
+	@SuppressWarnings("unchecked")
+	private void subirNuevaFactura(HttpServletRequest request, HttpServletResponse response, int id_user, PrintWriter out) throws IOException, ServletException {
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
+
+
+		String nameFile = request.getParameter("nombre");
+		System.out.println(nameFile);
+		ArrayList<Oferta> ofertas = new ArrayList<Oferta>();
+		ReadFactura rf = new ReadFactura();
+		if(nameFile.endsWith(".xlsx")) ofertas = rf.readExcel(request);	
+		else System.out.println("No se encontro ningun archivo");
+
+		String contenidoTabla="";
+		JSONArray json = new JSONArray();
+		for (Oferta e : ofertas) {
+
+			//comprobamos que el medio no se encuentra ya en la base de datos
+			String dominio = e.getUrl().replace("http://", "").replace("https://","").replace("www.","");
+			System.out.println(dominio);
+			dominio = dominio.substring(0, dominio.lastIndexOf("."));
+			
+			String respuesta = ws.getForoByPieceDominio(dominio, "getForoByPieceDominio.php");
+			System.out.println(respuesta);
+			Gson gson = new Gson();
+			ArrayList<ForoGson> forosGson = gson.fromJson(respuesta, new TypeToken<List<ForoGson>>(){}.getType());
+
+			boolean coincidenciaExacta =false;
+			String claseStatus ="",onclick="";
+			String coincidenciaParcial="<ul class='slCt effect7 pop_up'><i onclick='resetEnlaceFactura(this)' class='material-icons crossReset'> cached </i>";
+
+			if(forosGson.size()>0) {//si obtenemos algun resulatado analizaremos cuan se repite y cual se le parece
+				for (ForoGson f : forosGson) {//recorremos los foros que nos devuelve tras coparar si exite ese medio o se encuentran coincidencias
+					if(f.getWebForo().equals( e.getUrl())) {
+						coincidenciaExacta=true;
+						coincidenciaParcial="<span>"+e.getUrl()+"</span>";
+						claseStatus = "sOK";
+						break;
+					}else {//rellenamos el ul
+						coincidenciaParcial += "<li class='pd_rigth_28 pr' onclick='selectCoincidencia(this)' data-id-foro='"+f.getIdForo()+"' data-webForo='"+f.getWebForo()+"'>" 
+								+ "<span onmouseover='viewCampo(this)' onmouseout='restartCampo(this)'>"+f.getWebForo()+"</span>"
+								+"						<div class='req replace_input_medio' onclick='stopPropagation()' onmouseover='showPopUpCoincidencias(this)' onmouseout='hidePopUpCoincidencias(this)'>"
+								+ "							<label class='switch req'>"
+								+ "								<input type='checkbox' onchange='replaceInputMedio(this)'>"
+								+ "								<span class='slider round req'></span>"
+								+ "							</label>"
+								+ "						</div>"
+								+"						</li>";
+						claseStatus = "s_pendiente_opciones";
+					}
+				}
+				if(coincidenciaExacta==false) {
+					coincidenciaParcial="<div class='tdCat tdWeb pr'><span class='tdCat' data-origen='"+e.getUrl()+"'>"+e.getUrl()+"</span><i class='material-icons arrow'>arrow_drop_down</i></div>"+coincidenciaParcial
+							+ "							<div class='popup effect7 pop_up_coincidencia'>"
+							+ "								<span class='mensaje_coincidencia'></span>"
+							+ "							</div>"
+							+ "</ul>";
+					onclick = "onclick='openOpcionesNuevaFactura(this)'";
+				}
+			}else {
+				coincidenciaParcial=e.getUrl();
+				claseStatus = "s_nuevo_opciones";
+			}
+			contenidoTabla+="<tr>"
+					+ "			<td class='cStatus'><div class='divStatus "+claseStatus+"'></div></td>"
+					+ "			<td class='pr' "+onclick+">"
+					+ 				coincidenciaParcial
+					+ "			</td>"
+					+ "			<td class='f_cantidad'>"
+					+ "				<span>"+e.getPrecio()+"</span>"
+					+ "			</td>"
+					+ "			<td class='f_total'>"
+					+ "				<span>"+e.getPrecio()+"&euro;</span>"
+					+ "			</td>"
+					+ "		</tr>";
+		}
+
+		out.print("<div class='tableCellContent'>");
+		out.print("		<div class='icono_confirmacion'><i class='material-icons'> cloud_upload </i></div>");
+		out.print("		<div class='divTitle'>");
+		out.print("			<div class='titleConfirmacion'>Importar Ofertas</div>");
+		out.print("		</div>");
+		out.print("		<div class='separator'></div>");
+
+
+
+		//anadir
+		out.println(	"<table id='tablaNewFactura' class='table'>");
+		out.println("			<thead><tr>"
+				+ "					<th class='cabeceraTable cStatus info_div' onmouseover='showPopUp(this)' onmouseout='hidePopUp(this)'>"
+				+ "						<div class='divStatus sPendiente'></div>"
+				+ "						<div class='popup effect7'>"
+				+ "							<div class='pr pd_left_30'><div class='divStatus sOK p_a p_cicles'></div>Existe</div>"
+				+ "							<div class='pr pd_left_30'><div class='divStatus s_nuevo_opciones p_a p_cicles'></div>Nuevo</div>"
+				+ "							<div class='pr pd_left_30'><div class='divStatus s_pendiente_opciones p_a p_cicles'></div>Coincidencias</div>"
+				+ "						</div>"
+				+ "					</th>"
+				+ "					<th class='cabeceraTable f_Medio'>Medio</th>"
+				+ "					<th class='cabeceraTable f_cantidad'>Cantidad</th>"
+				+ "					<th class='cabeceraTable f_total'>Total</th>"
+				+ "				</tr></thead>");
+		out.println("			<tbody>"+contenidoTabla+"</tbody>");
+		out.println(	"</table>");
+
+		out.print("		<div class='botonesConfirmacion'>");
+		out.print("			<div>");
+		out.print("				<span class='btnsConfi cancelBotonConfirmacion'>Cancelar</span>");
+		out.print("				<span class='btnsConfi aceptarBotonConfirmacion'>Aceptar</span>");
+		out.print("			</div>");
+		out.print("		</div>");
+		out.print("</div>");
+
+		System.out.println(json.toString());
+		//out.print(json);
+
+	}
 	
 	private String htmlReutilizable() {
 		String htmlReutilizable = "	<ul class='slCt effect7 nuevaWeb pop_up'>";

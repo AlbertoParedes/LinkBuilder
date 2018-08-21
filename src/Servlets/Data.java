@@ -68,6 +68,7 @@ public class Data extends HttpServlet {
 	public static ArrayList<TematicaGson> tematicas = new ArrayList<TematicaGson>();
 	public static ArrayList<Empleado> empleados = new ArrayList<Empleado>();
 	public static HashMap<String, Empleado> empleadosHashMap;
+	public static String fecha;
 	//private Empleado empleado = new Empleado();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -87,13 +88,22 @@ public class Data extends HttpServlet {
 	@SuppressWarnings("static-access")
 	private void cargarPage(HttpServletRequest request, HttpServletResponse response, int idEmpleado, String name_user, String role) throws ServletException, IOException, ParseException {
 		
+		// obtenemos la fecha sin el dia del hoy-------------------------------------------------------------------------------------
+		Date today = new Date(); 
+		Calendar cal = Calendar.getInstance(); cal.setTime(today);
+		int month = cal.get(Calendar.MONTH)+1, year = cal.get(Calendar.YEAR);
+		String mes = month+""; if(month<10) mes= "0"+mes;
+		fecha = year+"-"+mes;
+		//---------------------------------------------------------------------------------------------------------------------------
+		
+		
 		//obtenemos todos los datos comunes: categorias, empleados, tematicas
 		
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(idEmpleado+""));
 		String json = ws.data(wbList, "getCommonData", "data.php");
 		//System.out.println(json);
 		String[] jsonArray = json.split(";;");
-		//System.out.println("0-Categorias :"+jsonArray[0]);
+		System.out.println("0-Categorias :"+jsonArray[0]);
 		//System.out.println("1-Tematicas :"+jsonArray[1]);
 		System.out.println("2-Empleados :"+jsonArray[2]);
 		System.out.println("3-Mis datos :"+jsonArray[3]);
@@ -117,7 +127,7 @@ public class Data extends HttpServlet {
 			request.setAttribute("empleado", empleado);
 			request.setAttribute("empleados", empleados);
 			request.getRequestDispatcher("Data_Enlaces").forward(request, response);
-		
+			
 		}else if(empleado.getPanel().equals("medios")) {
 			//cambiar
 			request.setAttribute("empleado", empleado);
@@ -126,7 +136,7 @@ public class Data extends HttpServlet {
 			
 		}else if(empleado.getPanel().equals("clientes")) {
 			request.setAttribute("empleado", empleado);
-			request.getRequestDispatcher("Data_Enlaces").forward(request, response);
+			request.getRequestDispatcher("Data_Clientes").forward(request, response);
 		}
 		
 		//obtenemosForos();
@@ -166,8 +176,6 @@ public class Data extends HttpServlet {
 		ArrayList<String> wbList = new ArrayList<>(Arrays.asList(id_empleado+"",panel+""));
 		ws.data(wbList, "guardarPanelSesion", "data.php");
 	}
-
-
 
 	
 }
