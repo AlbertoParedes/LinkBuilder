@@ -84,7 +84,7 @@ function guardarEnlaceResultado(x){
 	var link = $(x).val();
 	var tipo = $("tr#"+id_resultado+" .cTipo").attr("tipo");
 	
-	var mes = $('.datedropper .picker [data-k="m"] .pick-sl').val();  mes = mes <10 ? "0"+mes : 0;
+	var mes = $('.datedropper .picker [data-k="m"] .pick-sl').val();  mes = mes <10 ? "0"+mes : mes;
 	var year = $('.datedropper .picker [data-k="y"] .pick-sl').val();
 
 	var id_empleado = $(x).closest('tr').children('td.cCUser').find("div span[data-info='empCli']").attr('data-id-empleado');
